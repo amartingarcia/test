@@ -1286,11 +1286,14 @@
   "unresolvedPlacements": [],
   "findings": [],
   "legend": {
-    "net": "Network / namespaces",
-    "compute": "Compute / capacity",
-    "eks": "EKS / ArgoCD",
+    "default": "Compartments",
+    "net": "Network",
+    "compute": "VMs",
     "k8s": "Workloads",
-    "edgeapp": "DNS, LB & services",
-    "cfg": "Config & storage"
+    "edgeapp": "LB & DNS",
+    "cfg": "Secrets & storage",
+    "eks": "OKE / ArgoCD",
+    "data": "Data services",
+    "iam": "IAM"
   }
 }

@@ -1146,11 +1146,14 @@
   ],
   "findings": [],
   "legend": {
-    "net": "Network / namespaces",
-    "compute": "Compute / capacity",
-    "eks": "EKS / ArgoCD",
+    "default": "Compartments",
+    "compute": "VMs",
     "k8s": "Workloads",
-    "edgeapp": "DNS, LB & services",
-    "cfg": "Config & storage"
+    "net": "Network",
+    "eks": "OKE / ArgoCD",
+    "data": "Data services",
+    "edgeapp": "LB & DNS",
+    "iam": "IAM",
+    "cfg": "Secrets & storage"
   }
 }

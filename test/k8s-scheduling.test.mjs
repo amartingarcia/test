@@ -47,8 +47,8 @@ test('nothing compatible is reported as such', () => {
 test('constructs we do not evaluate make the answer unknown, not wrong', () => {
   const r = candidatePools({ affinity: { nodeAffinity: { requiredDuringSchedulingIgnoredDuringExecution: { nodeSelectorTerms: [{ matchExpressions: [{ key: 'a', operator: 'Gt', values: ['1'] }] }] } } } }, pools);
   assert.equal(r.status, 'unknown');
-  const two = candidatePools({ affinity: { nodeAffinity: { requiredDuringSchedulingIgnoredDuringExecution: { nodeSelectorTerms: [{ matchExpressions: [] }, { matchExpressions: [] }] } } } }, pools);
-  assert.equal(two.status, 'unknown');
+  const fields = candidatePools({ affinity: { nodeAffinity: { requiredDuringSchedulingIgnoredDuringExecution: { nodeSelectorTerms: [{ matchFields: [{ key: 'metadata.name', operator: 'In', values: ['n'] }] }] } } } }, pools);
+  assert.equal(fields.status, 'unknown');
 });
 
 test('a toleration with empty key and Exists tolerates every taint', () => {

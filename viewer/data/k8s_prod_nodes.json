@@ -2278,10 +2278,6 @@
       "unmapped": [],
       "unresolvedBoundaries": []
     },
-    "gitops": {
-      "unmapped": [],
-      "unresolvedBoundaries": []
-    },
     "k8s": {
       "unmapped": [],
       "unresolvedBoundaries": []
@@ -2306,11 +2302,9 @@
   ],
   "findings": [],
   "legend": {
-    "net": "Network / namespaces",
-    "compute": "Compute / capacity",
-    "eks": "EKS / ArgoCD",
+    "default": "Cluster",
+    "compute": "Node pools",
     "k8s": "Workloads",
-    "edgeapp": "DNS, LB & services",
-    "cfg": "Config & storage"
+    "eks": "ArgoCD"
   }
 }

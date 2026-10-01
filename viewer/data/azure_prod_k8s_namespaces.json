@@ -1538,11 +1538,14 @@
   "unresolvedPlacements": [],
   "findings": [],
   "legend": {
-    "net": "Network / namespaces",
-    "compute": "Compute / capacity",
-    "eks": "EKS / ArgoCD",
+    "default": "Resource groups",
+    "net": "Network",
+    "compute": "VMs",
     "k8s": "Workloads",
-    "edgeapp": "DNS, LB & services",
-    "cfg": "Config & storage"
+    "edgeapp": "LB, DNS & endpoints",
+    "cfg": "Secrets & storage",
+    "eks": "AKS / ArgoCD",
+    "data": "Data services",
+    "iam": "Identity"
   }
 }
