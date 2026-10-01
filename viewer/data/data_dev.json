@@ -1,0 +1,185 @@
+{
+  "environment": "data_dev",
+  "entities": [
+    {
+      "id": "network:aws.vpc:main",
+      "kind": "aws.vpc",
+      "repoId": "network",
+      "sourceAddress": "aws_vpc.main",
+      "parent": null
+    },
+    {
+      "id": "network:aws.subnet.public:aws_subnet.public",
+      "kind": "aws.subnet.public",
+      "repoId": "network",
+      "sourceAddress": "aws_subnet.public",
+      "parent": "network:aws.vpc:main"
+    },
+    {
+      "id": "network:aws.subnet.private:aws_subnet.private",
+      "kind": "aws.subnet.private",
+      "repoId": "network",
+      "sourceAddress": "aws_subnet.private",
+      "parent": "network:aws.vpc:main"
+    },
+    {
+      "id": "network:aws.nat_gateway:main",
+      "kind": "aws.nat_gateway",
+      "repoId": "network",
+      "sourceAddress": "aws_nat_gateway.main",
+      "parent": "network:aws.vpc:main"
+    },
+    {
+      "id": "network:aws.internet_gateway:main",
+      "kind": "aws.internet_gateway",
+      "repoId": "network",
+      "sourceAddress": "aws_internet_gateway.main",
+      "parent": "network:aws.vpc:main"
+    },
+    {
+      "id": "network:aws.security_group:default",
+      "kind": "aws.security_group",
+      "repoId": "network",
+      "sourceAddress": "aws_security_group.default",
+      "parent": "network:aws.vpc:main"
+    },
+    {
+      "id": "infra:aws.eks.cluster:this",
+      "kind": "aws.eks.cluster",
+      "repoId": "infra",
+      "sourceAddress": "aws_eks_cluster.this",
+      "parent": null,
+      "details": {
+        "name": {
+          "resolved": true,
+          "value": "prod-cluster"
+        },
+        "version": {
+          "resolved": true,
+          "value": "1.29"
+        }
+      }
+    },
+    {
+      "id": "infra:aws.eks.nodegroup:default",
+      "kind": "aws.eks.nodegroup",
+      "repoId": "infra",
+      "sourceAddress": "aws_eks_node_group.default",
+      "parent": "infra:aws.eks.cluster:this",
+      "details": {
+        "cluster_name": {
+          "resolved": false,
+          "raw": "aws_eks_cluster.this.name"
+        },
+        "node_group_name": {
+          "resolved": true,
+          "value": "default"
+        },
+        "instance_types": {
+          "resolved": false,
+          "raw": "[\"m5.large\", \"m5a.large\"]"
+        },
+        "capacity_type": {
+          "resolved": true,
+          "value": "ON_DEMAND"
+        },
+        "scaling_config": {
+          "resolved": false,
+          "raw": "{\n    min_size     = 2\n    max_size     = 6\n    desired_size = 3\n  }"
+        }
+      }
+    },
+    {
+      "id": "infra:aws.eks.addon:vpc_cni",
+      "kind": "aws.eks.addon",
+      "repoId": "infra",
+      "sourceAddress": "aws_eks_addon.vpc_cni",
+      "parent": "infra:aws.eks.cluster:this",
+      "details": {
+        "cluster_name": {
+          "resolved": false,
+          "raw": "aws_eks_cluster.this.name"
+        },
+        "addon_name": {
+          "resolved": true,
+          "value": "vpc-cni"
+        },
+        "addon_version": {
+          "resolved": true,
+          "value": "v1.18.1-eksbuild.1"
+        }
+      }
+    },
+    {
+      "id": "infra:aws.eks.addon:coredns",
+      "kind": "aws.eks.addon",
+      "repoId": "infra",
+      "sourceAddress": "aws_eks_addon.coredns",
+      "parent": "infra:aws.eks.cluster:this",
+      "details": {
+        "cluster_name": {
+          "resolved": false,
+          "raw": "aws_eks_cluster.this.name"
+        },
+        "addon_name": {
+          "resolved": true,
+          "value": "coredns"
+        },
+        "addon_version": {
+          "resolved": true,
+          "value": "v1.11.1-eksbuild.9"
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "from": "network:aws.subnet.public:aws_subnet.public",
+      "to": "network:aws.vpc:main"
+    },
+    {
+      "from": "network:aws.subnet.private:aws_subnet.private",
+      "to": "network:aws.vpc:main"
+    },
+    {
+      "from": "network:aws.nat_gateway:main",
+      "to": "network:aws.subnet.public:aws_subnet.public"
+    },
+    {
+      "from": "network:aws.internet_gateway:main",
+      "to": "network:aws.vpc:main"
+    },
+    {
+      "from": "network:aws.security_group:default",
+      "to": "network:aws.vpc:main"
+    },
+    {
+      "from": "infra:aws.eks.nodegroup:default",
+      "to": "infra:aws.eks.cluster:this"
+    },
+    {
+      "from": "infra:aws.eks.addon:vpc_cni",
+      "to": "infra:aws.eks.cluster:this"
+    },
+    {
+      "from": "infra:aws.eks.addon:coredns",
+      "to": "infra:aws.eks.cluster:this"
+    },
+    {
+      "from": "infra:aws.eks.cluster:this",
+      "to": "network:aws.vpc:main",
+      "label": "runs in"
+    }
+  ],
+  "coverage": {
+    "network": {
+      "unmapped": [],
+      "unresolvedBoundaries": []
+    },
+    "infra": {
+      "unmapped": [],
+      "unresolvedBoundaries": []
+    }
+  },
+  "unresolvedCrossRepoLinks": []
+}

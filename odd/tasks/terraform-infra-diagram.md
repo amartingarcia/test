@@ -313,6 +313,21 @@ This adds a new layer ahead of Layer A:
       `crossRepoLinks` alone covers the real case. Revisit if a future repo
       pair does use remote state.
 
+### Backlog item found while building T7's sample data
+
+`boundary` (T4/T6) only resolves within one repo — tried setting the EKS
+cluster's boundary to `aws.vpc` (a different repo) in
+`scripts/build-sample-data.mjs` and the compiler correctly refused to guess
+(`candidateCount: 0`, reported in `coverage.infra.unresolvedBoundaries`),
+exactly as designed. But this means a cross-repo parent/child relationship
+(EKS nested inside its VPC) cannot be expressed as compound-node containment
+today — only as a plain edge via `crossRepoLinks`. The demo's EKS cluster is
+therefore a top-level entity linked to the VPC by a labeled edge ("runs
+in"), not visually nested inside it. Real nesting across repos (if wanted)
+needs `crossRepoLinks` extended with its own `nest: true` option that sets
+`parent` the same way same-repo `boundary` does, once there's a concrete
+case asking for it — not building it speculatively now.
+
 ## Next step
 T7 — Viewer: Cytoscape.js + expand-collapse, environment selector,
 drill-down into EKS node showing config-derived details (via T5's
