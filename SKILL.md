@@ -16,7 +16,7 @@ never hand-drawn: if something cannot be resolved from the source it is reported
 
 1. **Extract (A)** `lib/extract/` — scratch copy of the repo (never write in the source repo), local backend override, `terraform graph -type=plan` with the environment's tfvars as `terraform.auto.tfvars`. Offline, no credentials. See [terraform-extraction](references/terraform-extraction.md).
 2. **Details (A2)** `lib/extract/extract-resource-details.mjs` + `lib/parse/` — HCL attributes (nested blocks flattened to dotted keys), resolved against tfvars: literals, `var.x`, lists/objects, `cond ? a : b`. Unresolvable values are returned as `{resolved:false, raw}`, never coerced. `count` resolving to 0 = resource not instantiated.
-3. **Manifest (B)** per repo, hand/model-authored: ordered rules, first match wins, mapping resource addresses to entities (`kind`, `idFrom`, `boundary`, `embed`) or `ignore`. See [manifest-authoring](references/manifest-authoring.md).
+3. **Manifest (B)** per repo, hand/model-authored: ordered rules, first match wins, mapping resource addresses to entities (`kind`, `idFrom`, `boundary`, `embed`) `ignore`, or `link` (helper resource turned into an edge). See [manifest-authoring](references/manifest-authoring.md).
 4. **Compile (C)** `lib/compile/compile-environment-graph.mjs` — merges repos into one compound graph per environment. Placement precedence: explicit `boundary` > cross-repo `nest` link > `inferPlacement` (references found in source) > catalog kind-level placement. Ambiguity is reported in `unresolvedPlacements`.
 5. **Catalog** `catalog/providers/<provider>.json` — the "architect": what goes inside what, ordering, glyph per kind. See [catalog](references/catalog.md).
 6. **Viewer** `viewer/` — Cytoscape; 4 styles (Blueprint, Draft, Neon, Soft) x light/dark, zoom, expand/collapse, fixed layout (no dragging), PNG / PDF / vector SVG export, `#env=<id>&style=<preset>` links.
@@ -32,7 +32,7 @@ Environments = tfvars files: each one is compiled separately and may yield a dif
 3. List resource types present; author the manifest (B) following the checklist.
 4. **Always** run `node scripts/lint.mjs <manifest.json>` and fix every error; read each warning.
 5. Compile and inspect coverage: `unmapped`, `unresolvedBoundaries`, `unresolvedPlacements`. Iterate on the manifest/catalog until each is empty or consciously accepted.
-6. Compare entity counts with `terraform` resource counts per type; explain the difference (ignored helpers, `count = 0`).
+6. Compare entity counts with `terraform` resource counts per type; explain the difference (ignored helpers, `count = 0`). `node scripts/verify.mjs` automates integrity and coverage checks.
 7. Report to the user: what was mapped, what is unresolved and why.
 
 Follow the model-specific rules in [model-guidance](references/model-guidance.md).

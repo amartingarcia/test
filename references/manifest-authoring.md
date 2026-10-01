@@ -13,6 +13,7 @@ One manifest per repo: `{ "repoId": "...", "rules": [...] }`. Schema: `schemas/m
 
 - `match` keys: `type` (string or list), `isData`, `modulePathPrefix`, `nameRegex` (against local name). At least one key.
 - `entity`: `kind` (namespaced, `<provider>.<service>[.<variant>]`), `idFrom` = `name` | `address` | `literal` (+`id`), optional `boundary` (exact kind of the parent), optional `embed` (property of parent, not drawn).
+- `link: {fromType, toType, label?}` (exclusive with `entity` and `ignore`): helper resource that only joins two others (route/NSG/NAT associations, instance profiles, peerings). It is not drawn nor reported as unmapped; each from/to pair among its graph neighbours gets one edge. A missing side yields a `link-not-resolved` finding.
 - `ignore: true` (exclusive with `entity`): helper resources (IAM attachments, subnet groups, route associations) that must not count as unmapped.
 - First match wins: put specific rules (variants, regexes) before generic ones.
 - Prefer evidence to names: a `nameRegex` such as `^private` only encodes a naming convention. For AWS subnet tiers map `aws_subnet` to `aws.subnet` and derive the tier from route tables (`refineKind` + `deriveSubnetTiers`, see SKILL.md).
@@ -29,3 +30,7 @@ One manifest per repo: `{ "repoId": "...", "rules": [...] }`. Schema: `schemas/m
 ## Cross-repo
 
 Relations that Terraform does not express (e.g. EKS discovers subnets by tag) go in `crossRepoLinks` of the compile call: `{fromKind, toKind, label?, nest?}`. `nest: true` places `from` entities inside the single `to` entity; zero or several targets are reported, never guessed.
+
+## Verify
+
+`node scripts/verify.mjs --graph out/prod.json [--manifest m.json] [--strict]` (or `npm run verify` for the samples) checks a compiled graph offline: duplicate ids, dangling parents/edges, parent cycles, unmapped resources, unresolved boundaries/placements/cross-repo links and compiler findings. JSON report with a repair hint per issue; exit 1 on errors (or warnings with `--strict`).
