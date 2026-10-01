@@ -1,0 +1,13 @@
+{
+  "name": "infra-diagram",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Architect-aware extractor + compiler + viewer for real Terraform/AWS/Kubernetes infrastructure diagrams.",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "node --test test/"
+  }
+}
