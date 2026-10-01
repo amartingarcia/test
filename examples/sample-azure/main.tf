@@ -201,6 +201,18 @@ resource "azurerm_role_assignment" "acr_pull" {
   principal_id         = azurerm_kubernetes_cluster.main.kubelet_identity[0].object_id
 }
 
+resource "azurerm_private_dns_zone" "pg" {
+  name                = "pg-${var.env}.private.postgres.database.azure.com"
+  resource_group_name = azurerm_resource_group.app.name
+}
+
+resource "azurerm_private_dns_zone_virtual_network_link" "pg" {
+  name                  = "pg-spoke"
+  resource_group_name   = azurerm_resource_group.app.name
+  private_dns_zone_name = azurerm_private_dns_zone.pg.name
+  virtual_network_id    = azurerm_virtual_network.spoke.id
+}
+
 resource "azurerm_postgresql_flexible_server" "pg" {
   name                   = "pg-${var.env}"
   resource_group_name    = azurerm_resource_group.app.name
@@ -209,6 +221,8 @@ resource "azurerm_postgresql_flexible_server" "pg" {
   sku_name               = var.pg_sku
   storage_mb             = var.pg_storage_mb
   delegated_subnet_id    = azurerm_subnet.spoke_data.id
+  private_dns_zone_id    = azurerm_private_dns_zone.pg.id
+  public_network_access_enabled = false
   administrator_login    = "pgadmin"
   administrator_password = var.pg_admin_password
 }

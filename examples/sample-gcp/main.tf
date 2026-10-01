@@ -86,6 +86,10 @@ resource "google_container_cluster" "gke" {
   workload_identity_config {
     workload_pool = "${var.project}.svc.id.goog"
   }
+
+  ip_allocation_policy {
+    cluster_secondary_range_name = "pods"
+  }
 }
 
 resource "google_container_node_pool" "general" {
@@ -162,6 +166,12 @@ resource "google_compute_instance" "bastion" {
   name         = "bastion"
   machine_type = "e2-small"
   zone         = "${var.region}-b"
+
+  boot_disk {
+    initialize_params {
+      image = "debian-cloud/debian-12"
+    }
+  }
 
   network_interface {
     subnetwork = google_compute_subnetwork.data.id

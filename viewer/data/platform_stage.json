@@ -45,6 +45,10 @@
           "resolved": false,
           "raw": "aws_subnet.shared_public[0].id"
         },
+        "associate_public_ip_address": {
+          "resolved": true,
+          "value": true
+        },
         "iam_instance_profile": {
           "resolved": false,
           "raw": "aws_iam_instance_profile.ec2[0].name"
@@ -563,6 +567,26 @@
         "cluster_config.instance_count": {
           "resolved": true,
           "value": 2
+        },
+        "cluster_config.zone_awareness_enabled": {
+          "resolved": false,
+          "raw": "var.opensearch_nodes >= 2"
+        },
+        "cluster_config.dynamic.zone_awareness_config.for_each": {
+          "resolved": false,
+          "raw": "var.opensearch_nodes >= 2 ? [2] : []"
+        },
+        "cluster_config.dynamic.zone_awareness_config.content.availability_zone_count": {
+          "resolved": false,
+          "raw": "zone_awareness_config.value"
+        },
+        "ebs_options.ebs_enabled": {
+          "resolved": true,
+          "value": true
+        },
+        "ebs_options.volume_size": {
+          "resolved": true,
+          "value": 20
         },
         "vpc_options.subnet_ids": {
           "resolved": false,

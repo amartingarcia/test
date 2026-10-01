@@ -10,6 +10,7 @@ resource "aws_instance" "bastion" {
   ami                  = "ami-0a1b2c3d4e5f67890"
   instance_type        = "t3.micro"
   subnet_id            = aws_subnet.shared_public[0].id
+  associate_public_ip_address = true
   iam_instance_profile = aws_iam_instance_profile.ec2[0].name
 }
 

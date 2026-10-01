@@ -246,6 +246,10 @@
         "workload_identity_config.workload_pool": {
           "resolved": false,
           "raw": "\"${var.project}.svc.id.goog\""
+        },
+        "ip_allocation_policy.cluster_secondary_range_name": {
+          "resolved": true,
+          "value": "pods"
         }
       }
     },
@@ -343,6 +347,10 @@
         "zone": {
           "resolved": false,
           "raw": "\"${var.region}-b\""
+        },
+        "boot_disk.initialize_params.image": {
+          "resolved": true,
+          "value": "debian-cloud/debian-12"
         },
         "network_interface.subnetwork": {
           "resolved": false,

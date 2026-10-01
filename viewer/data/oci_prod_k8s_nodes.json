@@ -424,7 +424,7 @@
       "kind": "oci.instance",
       "repoId": "oci",
       "sourceAddress": "oci_core_instance.bastion",
-      "parent": "oci:oci.subnet:api",
+      "parent": "oci:oci.subnet:lb",
       "details": {
         "compartment_id": {
           "resolved": false,
@@ -440,7 +440,7 @@
         },
         "create_vnic_details.subnet_id": {
           "resolved": false,
-          "raw": "oci_core_subnet.api.id"
+          "raw": "oci_core_subnet.lb.id"
         }
       }
     },
@@ -466,6 +466,14 @@
         "subnet_ids": {
           "resolved": false,
           "raw": "[oci_core_subnet.lb.id]"
+        },
+        "shape_details.minimum_bandwidth_in_mbps": {
+          "resolved": true,
+          "value": 10
+        },
+        "shape_details.maximum_bandwidth_in_mbps": {
+          "resolved": true,
+          "value": 10
         }
       }
     },
@@ -1050,7 +1058,7 @@
     },
     {
       "from": "oci:oci.instance:bastion",
-      "to": "oci:oci.subnet:api"
+      "to": "oci:oci.subnet:lb"
     },
     {
       "from": "oci:oci.lb:lb",
@@ -1142,7 +1150,7 @@
     "compute": "VMs",
     "k8s": "Workloads",
     "net": "Network",
-    "eks": "OKE / ArgoCD",
+    "eks": "OKE",
     "data": "Data services",
     "edgeapp": "LB & DNS",
     "iam": "IAM",

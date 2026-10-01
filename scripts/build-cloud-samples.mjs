@@ -40,7 +40,8 @@ const CLOUDS = {
       ['azurerm_virtual_network_peering', { link: { fromType: 'azurerm_virtual_network', toType: 'azurerm_virtual_network', label: 'peers' } }],
       ['azurerm_subnet_network_security_group_association', { link: { fromType: 'azurerm_subnet', toType: 'azurerm_network_security_group', label: 'secured by' } }],
       ['azurerm_nat_gateway_public_ip_association', { link: { fromType: 'azurerm_nat_gateway', toType: 'azurerm_public_ip', label: 'uses' } }],
-      ['azurerm_subnet_nat_gateway_association', { link: { fromType: 'azurerm_subnet', toType: 'azurerm_nat_gateway', label: 'egress via' } }], ['azurerm_role_assignment', null], ['azurerm_network_interface', null],
+      ['azurerm_subnet_nat_gateway_association', { link: { fromType: 'azurerm_subnet', toType: 'azurerm_nat_gateway', label: 'egress via' } }], ['azurerm_role_assignment', null], ['azurerm_private_dns_zone', null], ['azurerm_private_dns_zone_virtual_network_link', null],
+      ['azurerm_network_interface', { link: { fromType: 'azurerm_linux_virtual_machine', toType: 'azurerm_subnet', label: 'in subnet' } }],
     ],
     edgeLabels: [
       { fromKind: 'azure.aks.cluster', toKind: 'azure.identity', label: 'control-plane identity' },

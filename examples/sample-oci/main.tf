@@ -153,7 +153,7 @@ resource "oci_core_instance" "bastion" {
   shape               = "VM.Standard.E4.Flex"
 
   create_vnic_details {
-    subnet_id = oci_core_subnet.api.id
+    subnet_id = oci_core_subnet.lb.id
   }
 }
 
@@ -162,6 +162,11 @@ resource "oci_load_balancer_load_balancer" "lb" {
   display_name   = "lb-${var.env}"
   shape          = "flexible"
   subnet_ids     = [oci_core_subnet.lb.id]
+
+  shape_details {
+    minimum_bandwidth_in_mbps = 10
+    maximum_bandwidth_in_mbps = 10
+  }
 }
 
 resource "oci_mysql_mysql_db_system" "mysql" {

@@ -135,6 +135,7 @@
       "placement": {
         "parentKinds": [
           "aws.subnet.public",
+          "aws.subnet.private",
           "aws.vpc"
         ]
       }

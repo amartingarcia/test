@@ -58,6 +58,20 @@ resource "aws_opensearch_domain" "logs" {
   cluster_config {
     instance_type  = "r6g.large.search"
     instance_count = var.opensearch_nodes
+
+    zone_awareness_enabled = var.opensearch_nodes >= 2
+
+    dynamic "zone_awareness_config" {
+      for_each = var.opensearch_nodes >= 2 ? [2] : []
+      content {
+        availability_zone_count = zone_awareness_config.value
+      }
+    }
+  }
+
+  ebs_options {
+    ebs_enabled = true
+    volume_size = 20
   }
 
   vpc_options {

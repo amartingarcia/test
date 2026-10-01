@@ -26,7 +26,7 @@ const cloud = {
 test('node groups are derived from the cloud graph; unresolved labels are flagged uncertain, taints mapped to k8s effects', () => {
   const { nodeGroups } = nodeGroupsFromCloud(cloud.entities);
   const sys = nodeGroups.find((g) => g.name === 'system');
-  assert.deepEqual(sys.labels, { 'eks.amazonaws.com/capacityType': 'ON_DEMAND', 'node-role': 'system' });
+  assert.deepEqual(sys.labels, { 'eks.amazonaws.com/capacityType': 'ON_DEMAND', 'eks.amazonaws.com/nodegroup': 'system', 'node-role': 'system' });
   assert.deepEqual(sys.taints, [{ key: 'CriticalAddonsOnly', value: undefined, effect: 'NoSchedule' }]);
   assert.equal(nodeGroups.find((g) => g.name === 'odd').uncertain, true);
 });

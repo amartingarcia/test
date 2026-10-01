@@ -588,6 +588,14 @@
           "resolved": false,
           "raw": "azurerm_subnet.spoke_data.id"
         },
+        "private_dns_zone_id": {
+          "resolved": false,
+          "raw": "azurerm_private_dns_zone.pg.id"
+        },
+        "public_network_access_enabled": {
+          "resolved": true,
+          "value": false
+        },
         "administrator_login": {
           "resolved": true,
           "value": "pgadmin"
@@ -1019,6 +1027,11 @@
       "from": "azure:azure.subnet:hub_mgmt",
       "to": "azure:azure.nat_gateway:hub",
       "label": "egress via"
+    },
+    {
+      "from": "azure:azure.vm:bastion",
+      "to": "azure:azure.subnet:hub_mgmt",
+      "label": "in subnet"
     }
   ],
   "coverage": {

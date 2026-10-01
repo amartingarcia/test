@@ -40,3 +40,10 @@ npm run build:samples    # regenerate viewer/data from examples/
 ## License
 
 [MIT](LICENSE)
+
+## Known limitations
+
+- Not modelled (silently absent from the diagram, never guessed): EKS Pod Identity (`aws_eks_pod_identity_association`), GKE Workload Identity bindings (`google_service_account_iam_member`), GCP project container, private service access (`google_service_networking_connection`), DocDB cluster instances.
+- AKS clusters are drawn inside the node subnet (taken from `default_node_pool.vnet_subnet_id`) so the subnet stays visible; the control plane itself is not subnet-scoped.
+- Implicit OKE node labels/taints are not modelled: OKE pools only carry user-declared `initial_node_labels`.
+- Scheduling is decided from labels, taints and requirements only; anything undecidable is reported as unknown/ambiguous.

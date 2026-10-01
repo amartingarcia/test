@@ -588,6 +588,14 @@
           "resolved": false,
           "raw": "azurerm_subnet.spoke_data.id"
         },
+        "private_dns_zone_id": {
+          "resolved": false,
+          "raw": "azurerm_private_dns_zone.pg.id"
+        },
+        "public_network_access_enabled": {
+          "resolved": true,
+          "value": false
+        },
         "administrator_login": {
           "resolved": true,
           "value": "pgadmin"
@@ -947,7 +955,7 @@
       "details": {
         "labels": {
           "resolved": true,
-          "value": "kubernetes.azure.com/agentpool=system"
+          "value": "kubernetes.azure.com/agentpool=system, kubernetes.azure.com/mode=system"
         },
         "taints": {
           "resolved": true,
@@ -1502,6 +1510,11 @@
       "label": "egress via"
     },
     {
+      "from": "azure:azure.vm:bastion",
+      "to": "azure:azure.subnet:hub_mgmt",
+      "label": "in subnet"
+    },
+    {
       "from": "k8s:k8s.service:ingress-nginx/ingress-nginx-controller",
       "to": "k8s:k8s.deployment:ingress-nginx/ingress-nginx-controller"
     },
@@ -1552,7 +1565,7 @@
     "k8s": "Workloads",
     "edgeapp": "LB, DNS & endpoints",
     "cfg": "Secrets & storage",
-    "eks": "AKS / ArgoCD",
+    "eks": "AKS",
     "data": "Data services",
     "iam": "Identity"
   }
