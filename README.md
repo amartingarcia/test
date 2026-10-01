@@ -15,6 +15,22 @@ AWS · Azure · GCP · OCI · Kubernetes (Karpenter, ArgoCD) · one environment 
 
 *Gallery images are generated from the synthetic samples in `examples/` (invented values).*
 
+## Install as a skill
+
+The skill is this whole folder (`SKILL.md` plus the engine in `lib/`, `scripts/`, `viewer/`, `catalog/`). It needs Node and, only to extract real Terraform, the `terraform` binary on the machine that runs it. Nothing is published to npm.
+
+```bash
+set -euo pipefail
+# personal (all projects)
+git clone https://github.com/<org>/<repo>.git ~/.claude/skills/infra-diagram
+# or per project
+git clone https://github.com/<org>/<repo>.git .claude/skills/infra-diagram
+```
+
+Update with `git -C ~/.claude/skills/infra-diagram pull`. `npx skills add <org>/<repo>` is the installer other skills use; it has not been tested with this repo yet.
+
+Without Claude, the scripts run standalone: `npm test`, `npm run export:html`, `npm run verify`.
+
 ## Outputs
 
 | Output | Command | Notes |
