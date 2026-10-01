@@ -94,7 +94,8 @@
   #graph::after { top: 10px; right: 10px; border-left: 0; border-bottom: 0; }
   #frame-b::before { bottom: 10px; left: 10px; border-right: 0; border-top: 0; }
   #frame-b::after { bottom: 10px; right: 10px; border-left: 0; border-top: 0; }
-  #cy { position: absolute; inset: 0; }
+  /* own stacking context: Cytoscape's drag canvas uses z-index 999 and would otherwise sit above the HUD and swallow its clicks */
+  #cy { position: absolute; inset: 0; z-index: 0; }
 
   #sidebar {
     width: 360px; flex-shrink: 0; padding: 18px; overflow-y: auto;
