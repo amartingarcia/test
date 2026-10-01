@@ -355,6 +355,7 @@ function renderGraph(graph) {
     sidebar.innerHTML = '<div class="empty">Click a resource to see its configuration.<br />Scroll to zoom, drag to pan.</div>';
   });
   cy.on('zoom', updateZoomLabel);
+  window.__infraCy = cy; // handle for debugging / browser tests
 
   paintCards();
   applyLayout();
