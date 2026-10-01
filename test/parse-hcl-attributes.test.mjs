@@ -71,3 +71,31 @@ test('ignores comments', () => {
 test('returns an empty object for a body with no attributes', () => {
   assert.deepEqual(parseHclAttributes('  # nothing here\n'), {});
 });
+
+// Found against futurice/terraform-examples (aws_vpc_msk): function calls with
+// spaces/newlines were truncated at the first whitespace, and `1 + 2` was
+// captured as just `1` (which then resolved to the number 1 — a silent guess).
+test('captures a multi-token expression up to the end of the line, not the first space', () => {
+  const attrs = parseHclAttributes('a = 1 + 2\nb = var.x ? "y" : "z"\nc = length(var.list)');
+  assert.equal(attrs.a, '1 + 2');
+  assert.equal(attrs.b, 'var.x ? "y" : "z"');
+  assert.equal(attrs.c, 'length(var.list)');
+});
+
+test('captures a function call spanning several lines', () => {
+  const attrs = parseHclAttributes('tags = merge(\n  var.tags,\n  { Name = "x" }\n)\nnext = 1');
+  assert.equal(attrs.tags, 'merge(\n  var.tags,\n  { Name = "x" }\n)');
+  assert.equal(attrs.next, '1');
+});
+
+test('captures a heredoc body whole, up to its terminator', () => {
+  const attrs = parseHclAttributes('policy = <<EOF\n{ "a": "b" }\nEOF\nafter = 2');
+  assert.equal(attrs.policy, '<<EOF\n{ "a": "b" }\nEOF');
+  assert.equal(attrs.after, '2');
+});
+
+test('supports indented heredocs (<<-TAG)', () => {
+  const attrs = parseHclAttributes('policy = <<-EOT\n  hello\n  EOT\nafter = 2');
+  assert.equal(attrs.policy, '<<-EOT\n  hello\n  EOT');
+  assert.equal(attrs.after, '2');
+});

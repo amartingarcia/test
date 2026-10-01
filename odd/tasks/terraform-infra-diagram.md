@@ -213,6 +213,23 @@ can nest them under it.
       environment via manifests into one compound-node JSON graph.
 - [ ] T7 — Viewer: Cytoscape.js + expand-collapse, environment selector,
       drill-down into EKS node showing config-derived details.
+- [x] T7b — Viewer redesign: blueprint grid, neon glow per kind, animated link
+      flow (toggle), focus-on-select (dims non-neighbours), one-time entrance
+      animation, light/dark theme (persisted, follows `prefers-color-scheme`),
+      zoom HUD (+/-/reset/fit, wheel, keys `+ - 0 F`). Verified live.
+- [x] T5b — Real-world probe against `futurice/terraform-examples/aws/aws_vpc_msk`
+      (public; flat root config + tfvars). Found and fixed in
+      `parseHclAttributes`: unquoted values were cut at the first space (raw
+      `merge(` instead of the whole call; worse, `1 + 2` was captured as `1`
+      and resolved as a number — a silent guess). Now an unquoted value runs
+      to end of line / top-level comma, balancing `()[]{}` and strings, and
+      heredocs (`<<EOF`, `<<-EOT`) are captured whole (never resolved).
+      Remaining unresolved-by-design in that repo: `count`/`for_each`
+      resources, `merge(...)`, `element(split(...))`, `local.*`, data refs.
+      Notes on the AWS examples in general: most are root configs; several
+      pull modules from the registry (`terraform-aws-modules/vpc`) or
+      `git::ssh://` (needs network/keys at `terraform init`), so Layer A needs
+      module download access — only `aws_vpc_msk` is fully self-contained.
 - [ ] T8 — End-to-end validation against at least one environment for both
       repos; confirm zero writes happened inside the source repos (e.g.
       `git status --porcelain` clean).
