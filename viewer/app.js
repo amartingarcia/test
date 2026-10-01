@@ -419,6 +419,7 @@ function renderGraph(graph) {
     minZoom: MIN_ZOOM,
     maxZoom: MAX_ZOOM,
     wheelSensitivity: 0.25,
+    autoungrabify: true, // layout is computed, never hand-edited: nothing persists, so boxes stay put
   });
 
   cy.on('tap', 'node', (evt) => {
@@ -597,7 +598,54 @@ function setFlow(on) {
   if (!on) cy?.edges().style('line-dash-offset', 0);
 }
 
+/* --------------------------------------------------------------- export */
+
+const exportName = () => `${envSelect.value || 'diagram'}-${document.documentElement.getAttribute('data-preset')}-${currentTheme()}`;
+
+function download(href, filename) {
+  const a = document.createElement('a');
+  a.href = href; a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+}
+
+// Whole diagram (not just the viewport), at 2x, on the current background colour.
+function renderPng(scale = 2) {
+  return cy.png({ full: true, scale, bg: cssVar('--bg'), output: 'base64uri' });
+}
+
+function exportPng() {
+  if (cy) download(renderPng(), `${exportName()}.png`);
+}
+
+let jspdfLoading = null;
+function loadJsPdf() {
+  if (window.jspdf) return Promise.resolve(window.jspdf);
+  jspdfLoading ??= new Promise((resolve, reject) => {
+    const el = document.createElement('script');
+    el.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+    el.onload = () => resolve(window.jspdf);
+    el.onerror = () => { jspdfLoading = null; reject(new Error('jsPDF failed to load')); };
+    document.head.appendChild(el);
+  });
+  return jspdfLoading;
+}
+
+async function exportPdf() {
+  if (!cy) return;
+  const [{ jsPDF }, uri] = await Promise.all([loadJsPdf(), Promise.resolve(renderPng(2))]);
+  const img = new Image();
+  await new Promise((res, rej) => { img.onload = res; img.onerror = rej; img.src = uri; });
+  const landscape = img.width >= img.height;
+  // page sized to the diagram (px → pt at 0.5 since the PNG is 2x): one page, vector-free but sharp
+  const pdf = new jsPDF({ orientation: landscape ? 'l' : 'p', unit: 'pt', format: [img.width / 2, img.height / 2] });
+  pdf.addImage(uri, 'PNG', 0, 0, img.width / 2, img.height / 2);
+  pdf.save(`${exportName()}.pdf`);
+}
+
 /* --------------------------------------------------------------- wiring */
+
+document.getElementById('export-png').addEventListener('click', exportPng);
+document.getElementById('export-pdf').addEventListener('click', () => exportPdf().catch((e) => { coverageEl.textContent = `⚠ PDF export failed: ${e.message}`; }));
 
 document.getElementById('fit-btn').addEventListener('click', fit);
 document.getElementById('zoom-in').addEventListener('click', () => zoomBy(ZOOM_STEP));
