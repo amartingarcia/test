@@ -382,7 +382,7 @@ const layoutConfig = () => ({
 });
 
 /** Packs the currently visible nodes by lanes; also used after expand/collapse. */
-function applyLayout(animate = false) {
+function applyLayout(animate = false, onDone = null) {
   if (!cy) return;
   const nodes = cy.nodes().map((n) => ({ id: n.id(), parent: n.parent().length ? n.parent().id() : null, kind: n.data('kind') }));
   const { centers } = layoutLanes(nodes, layoutConfig());
@@ -392,6 +392,7 @@ function applyLayout(animate = false) {
     fit: false,
     animate: animate && !REDUCED_MOTION,
     animationDuration: 250,
+    stop: () => onDone?.(),
   }).run();
 }
 
@@ -508,7 +509,7 @@ zoomLevelEl.addEventListener('click', () => zoomTo(1));
 document.getElementById('expand-all-btn').addEventListener('click', () => cy?.expandCollapse('get').expandAll());
 document.getElementById('collapse-all-btn').addEventListener('click', () => cy?.expandCollapse('get').collapseAll());
 document.getElementById('theme-btn').addEventListener('click', toggleTheme);
-document.getElementById('rotate-btn').addEventListener('click', () => { vertical = !vertical; applyLayout(true); setTimeout(fit, REDUCED_MOTION ? 0 : 280); });
+document.getElementById('rotate-btn').addEventListener('click', () => { vertical = !vertical; applyLayout(true, fit); });
 flowBtn.addEventListener('click', () => setFlow(!flowOn));
 envSelect.addEventListener('change', () => loadEnvironment(envSelect.value));
 
