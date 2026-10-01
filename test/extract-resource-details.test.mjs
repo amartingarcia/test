@@ -48,3 +48,58 @@ test('returns null when the target block is not found in any file', () => {
   const result = extractResourceDetails(files, { blockType: 'resource', labels: ['aws_vpc', 'missing'] }, {});
   assert.equal(result, null);
 });
+
+const nestedFiles = [
+  {
+    filePath: 'eks.tf',
+    content: `
+resource "aws_eks_cluster" "this" {
+  name = "prod"
+  vpc_config {
+    subnet_ids              = [aws_subnet.private.id]
+    endpoint_private_access = true
+    inner {
+      depth = 2
+    }
+  }
+  ingress {
+    from_port = 80
+  }
+  ingress {
+    from_port = 443
+  }
+  rule "r1" {
+    k = 2
+  }
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+`,
+  },
+];
+const nestedTarget = { blockType: 'resource', labels: ['aws_eks_cluster', 'this'] };
+
+test('flattens nested blocks into dotted keys; references inside stay unresolved with raw text', () => {
+  const a = extractResourceDetails(nestedFiles, nestedTarget, {}).attributes;
+  assert.deepEqual(a['vpc_config.endpoint_private_access'], { resolved: true, value: true });
+  assert.deepEqual(a['vpc_config.subnet_ids'], { resolved: false, raw: '[aws_subnet.private.id]' });
+  assert.deepEqual(a['vpc_config.inner.depth'], { resolved: true, value: 2 });
+});
+
+test('repeated nested blocks are indexed; labeled ones carry their label', () => {
+  const a = extractResourceDetails(nestedFiles, nestedTarget, {}).attributes;
+  assert.deepEqual(a['ingress[0].from_port'], { resolved: true, value: 80 });
+  assert.deepEqual(a['ingress[1].from_port'], { resolved: true, value: 443 });
+  assert.deepEqual(a['rule.r1.k'], { resolved: true, value: 2 });
+});
+
+test('meta blocks (lifecycle, provisioner, connection) are not configuration', () => {
+  const a = extractResourceDetails(nestedFiles, nestedTarget, {}).attributes;
+  assert.equal(Object.keys(a).some((k) => k.startsWith('lifecycle')), false);
+});
+
+test('detailFields can select a dotted nested key', () => {
+  const result = extractResourceDetails(nestedFiles, nestedTarget, {}, { detailFields: ['vpc_config.subnet_ids'] });
+  assert.deepEqual(Object.keys(result.attributes), ['vpc_config.subnet_ids']);
+});

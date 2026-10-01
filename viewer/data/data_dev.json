@@ -64,6 +64,14 @@
         "version": {
           "resolved": true,
           "value": "1.29"
+        },
+        "vpc_config.endpoint_private_access": {
+          "resolved": true,
+          "value": true
+        },
+        "vpc_config.endpoint_public_access": {
+          "resolved": true,
+          "value": false
         }
       }
     },

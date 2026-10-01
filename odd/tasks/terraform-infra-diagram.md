@@ -247,6 +247,11 @@ can nest them under it.
       and load only providers present in the repo; the catalog stays an
       override layer (order/glyph/exceptions). No runtime web lookups: Layer A
       is offline and a lookup would be a guess presented as fact.
+- [x] T9c — Nested blocks in A2: `parseHclNestedBlocks` + flattened dotted keys
+      (`vpc_config.subnet_ids`, `ingress[1].from_port`, `rule.r1.k`); meta
+      blocks (lifecycle/provisioner/connection) excluded; depth cap 4.
+      References inside nested blocks stay unresolved-with-raw, so placement
+      inference now sees e.g. EKS `vpc_config.subnet_ids`.
 - [ ] T8 — End-to-end validation against at least one environment for both
       repos; confirm zero writes happened inside the source repos (e.g.
       `git status --porcelain` clean).

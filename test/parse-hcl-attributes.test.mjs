@@ -99,3 +99,41 @@ test('supports indented heredocs (<<-TAG)', () => {
   assert.equal(attrs.policy, '<<-EOT\n  hello\n  EOT');
   assert.equal(attrs.after, '2');
 });
+
+import { parseHclNestedBlocks } from '../lib/parse/parse-hcl-attributes.mjs';
+
+test('parseHclNestedBlocks returns nested blocks (labeled or not) and ignores object/heredoc attribute values', () => {
+  const body = `
+  name = "x"
+  tags = {
+    a = 1
+  }
+  vpc_config {
+    subnet_ids = [aws_subnet.a.id]
+    inner {
+      z = 1
+    }
+  }
+  ingress {
+    from_port = 80
+  }
+  ingress {
+    from_port = 443
+  }
+  rule "r1" {
+    k = 2
+  }
+  policy = <<EOF
+  { "a": 1 }
+EOF
+`;
+  const blocks = parseHclNestedBlocks(body);
+  assert.deepEqual(blocks.map((b) => [b.type, b.labels]), [
+    ['vpc_config', []],
+    ['ingress', []],
+    ['ingress', []],
+    ['rule', ['r1']],
+  ]);
+  assert.match(blocks[0].body, /subnet_ids = \[aws_subnet\.a\.id\]/);
+  assert.match(blocks[0].body, /inner \{/);
+});
