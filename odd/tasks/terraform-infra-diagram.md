@@ -354,6 +354,13 @@ can nest them under it.
       selector (by namespace / by node pool) appears next to the environment
       selector. Synthetic workloads in examples/sample-k8s-multi; combined envs
       `{azure,gcp,oci}_prod_k8s_{namespaces,nodes}` via `npm run build:samples`.
+- [x] T12 — Specialist architect reviewers (`.claude/agents/*.md`).
+      Six read-only agents (aws, azure, gcp, oci, kubernetes, cloud-k8s-join), each with
+      a shared charter (no edits/commits/builds; evidence-graded claims VERIFIED /
+      UNVERIFIED / UNKNOWN; judge CORRECT, HONEST, OPTIMAL; fixed report format with
+      VERDICT / FINDINGS / VERIFIED OK / NOT CHECKED / QUESTIONS) and a technology
+      scope, checklist and known-gaps list. They report only to the orchestrator.
+      Definitions are written; a first review run is pending the user's go-ahead.
 - [ ] T8 — End-to-end validation against at least one environment for both
       repos; confirm zero writes happened inside the source repos (e.g.
       `git status --porcelain` clean).

@@ -37,6 +37,10 @@ Environments = tfvars files: each one is compiled separately and may yield a dif
 
 Follow the model-specific rules in [model-guidance](references/model-guidance.md).
 
+## Architect review (specialist agents)
+
+`.claude/agents/` holds one read-only reviewer per diagram technology: `aws-architect`, `azure-architect`, `gcp-architect`, `oci-architect`, `kubernetes-architect` and `cloud-k8s-join-architect`. They validate that each slice is correct, honest (nothing invented) and optimal, and report to the orchestrating session, which alone decides what to apply. Findings are graded `VERIFIED | UNVERIFIED | UNKNOWN` against official docs; the orchestrator fixes confirmed ones test-first and discards or asks about the rest. They never edit, commit or run the build scripts.
+
 ## Hard rules
 
 - Never write inside a source repository; extraction works on a scratch copy.
