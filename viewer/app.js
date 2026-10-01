@@ -1,21 +1,32 @@
 // infra-diagram viewer — Cytoscape.js + expand-collapse, environment selector,
 // attribute drill-down panel, light/dark theme, zoom HUD, animated link flow.
 // Static page, no build step: reads a pre-compiled compound graph from
-// data/<environment>.json (see scripts/build-sample-data.mjs).
+// data/<environment>.json plus data/catalog.json (see
+// scripts/build-sample-data.mjs).
+//
+// Layout is NOT a force layout: boxes are packed by lanes (lanes-layout.mjs)
+// using the catalog's "what goes inside what" knowledge and ordering, so the
+// diagram reads like an architecture (edge -> public -> private -> data).
 //
 // Known limitation: the environment list below is hardcoded because this
 // is a static site with no directory listing — add an entry here whenever
 // scripts/build-sample-data.mjs (or its real-repo equivalent) writes a new
 // data/<env>.json.
+import { layoutLanes } from './lanes-layout.mjs';
+
 const ENVIRONMENTS = ['data_dev'];
 
-cytoscape.use(cytoscapeFcose);
 // cytoscape-expand-collapse (UMD, v4.x) self-registers against the global
 // `cytoscape` once both scripts are loaded — no explicit cytoscape.use() call.
 
+const CLASSES = ['net', 'eks', 'iam', 'data', 'k8s', 'default'];
+const CLASS_NAMES = { net: 'Network', eks: 'EKS', iam: 'IAM', data: 'Data stores', k8s: 'Workloads', default: 'Other' };
 const KIND_CLASS = (kind) => {
-  if (kind.startsWith('aws.vpc') || kind.startsWith('aws.subnet') || kind.startsWith('aws.nat') || kind.startsWith('aws.internet') || kind.startsWith('aws.route') || kind.startsWith('aws.security_group')) return 'net';
   if (kind.startsWith('aws.eks')) return 'eks';
+  if (kind.startsWith('aws.iam') || kind.startsWith('group.iam')) return 'iam';
+  if (kind.startsWith('aws.rds') || kind.startsWith('aws.docdb') || kind.startsWith('aws.dynamodb') || kind.startsWith('aws.elasticache')) return 'data';
+  if (kind.startsWith('k8s.')) return 'k8s';
+  if (/^aws\.(vpc|subnet|nat|internet|route|security_group)/.test(kind)) return 'net';
   return 'default';
 };
 
@@ -40,12 +51,33 @@ for (const env of ENVIRONMENTS) {
 }
 
 let cy = null;
+let catalog = { kinds: {}, groups: {} };
 let flowOn = !REDUCED_MOTION;
+
+/* ---------------------------------------------------------------- catalog */
+
+/** Exact kind, then longest dotted prefix (mirror of lib/catalog/spec-for-kind.mjs). */
+function specFor(kind) {
+  const parts = kind.split('.');
+  for (let n = parts.length; n > 0; n--) {
+    const spec = catalog.kinds[parts.slice(0, n).join('.')];
+    if (spec) return spec;
+  }
+  return {};
+}
+
+const isGroupKind = (kind) => kind.startsWith('group.');
+const groupOfKind = (kind) => (isGroupKind(kind) ? catalog.groups[kind.slice('group.'.length)] : null);
+
+const CARD = { w: 176, h: 64 };
+const CHIP = { w: 172, h: 50 };
+const sizeOf = (kind) => (specFor(kind).size === 'chip' ? CHIP : CARD);
 
 /* ------------------------------------------------------------------ theme */
 
 const cssVar = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 const currentTheme = () => document.documentElement.getAttribute('data-theme');
+const classColor = (cls) => cssVar(`--${cls === 'default' ? 'def' : cls}`);
 
 function syncThemeLabel() {
   themeLabel.textContent = currentTheme() === 'light' ? 'Light' : 'Dark';
@@ -61,95 +93,120 @@ function toggleTheme() {
 
 /* ------------------------------------------------------------------ cards */
 
-// Cytoscape can't draw HTML in a node, so each resource card is an SVG
+// Cytoscape can't draw HTML in a node, so each resource is an SVG card
 // (icon chip, name, kind) rendered to a data URI and used as the node's
 // background image. Regenerated on theme change. Fonts: an SVG used as an
 // <img> can't load web fonts, hence the system stacks.
-const CARD_W = 176;
-const CARD_H = 64;
-const GLYPHS = [
-  ['eks.nodegroup', 'M3 6l7-3 7 3-7 3zM3 10l7 3 7-3M3 14l7 3 7-3'],
-  ['eks.addon', 'M4 4h12v12H4zM10 7v6M7 10h6'],
-  ['eks', 'M10 2l7 4v8l-7 4-7-4V6z'],
-  ['internet_gateway', 'M3 10h14M10 3c3 3 3 11 0 14M10 3c-3 3-3 11 0 14M3 10a7 7 0 1 0 14 0a7 7 0 1 0-14 0'],
-  ['nat', 'M4 10h12M12 6l4 4-4 4'],
-  ['route', 'M4 15l4-4 3 3 5-6'],
-  ['security_group', 'M10 3l6 2v5c0 4-3 6-6 7-3-1-6-3-6-7V5z'],
-  ['subnet', 'M3 3h6v6H3zM11 3h6v6h-6zM3 11h6v6H3zM11 11h6v6h-6z'],
-  ['vpc', 'M6 15a3.5 3.5 0 0 1 .5-6.9A5 5 0 0 1 16 9a3 3 0 0 1 0 6H6z'],
-];
-const glyphFor = (kind) => (GLYPHS.find(([k]) => kind.includes(k)) ?? [null, 'M4 4h12v12H4z'])[1];
+const GLYPHS = {
+  vpc: 'M6 15a3.5 3.5 0 0 1 .5-6.9A5 5 0 0 1 16 9a3 3 0 0 1 0 6H6z',
+  internet_gateway: 'M3 10h14M10 3c3 3 3 11 0 14M10 3c-3 3-3 11 0 14M3 10a7 7 0 1 0 14 0a7 7 0 1 0-14 0',
+  subnet: 'M3 3h6v6H3zM11 3h6v6h-6zM3 11h6v6H3zM11 11h6v6h-6z',
+  nat: 'M4 10h12M12 6l4 4-4 4',
+  route: 'M4 15l4-4 3 3 5-6',
+  security_group: 'M10 3l6 2v5c0 4-3 6-6 7-3-1-6-3-6-7V5z',
+  eks: 'M10 2l7 4v8l-7 4-7-4V6z',
+  nodegroup: 'M3 6l7-3 7 3-7 3zM3 10l7 3 7-3M3 14l7 3 7-3',
+  addon: 'M4 4h12v12H4zM10 7v6M7 10h6',
+  database: 'M4 5c0-1.4 2.7-2.5 6-2.5s6 1.1 6 2.5-2.7 2.5-6 2.5S4 6.4 4 5zM4 5v10c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5V5M4 10c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5',
+  document: 'M5 2.5h7l3 3v12H5zM12 2.5v3h3M7.5 10h5M7.5 13h5',
+  key: 'M12.5 3a4.5 4.5 0 1 0 .8 8.9L14 13h2v2h2v-2.3l-4.8-4.8A4.5 4.5 0 0 0 12.5 3zM11 7.5a1 1 0 1 0 2 0 1 1 0 0 0-2 0',
+  pod: 'M10 2l6.5 3.7v7.6L10 17l-6.5-3.7V5.7zM10 9.5l6.5-3.8M10 9.5L3.5 5.7M10 9.5V17',
+  box: 'M4 4h12v12H4z',
+};
 const xmlEscape = (t) => String(t).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;' }[c]));
 const clip = (t, n) => (t.length > n ? `${t.slice(0, n - 1)}…` : t);
+const resolved = (details, key) => (details?.[key]?.resolved ? details[key].value : undefined);
 
-function cardSvg({ name, kind, class: cls }) {
-  const accent = { net: cssVar('--net'), eks: cssVar('--eks'), default: cssVar('--def') }[cls] ?? cssVar('--def');
+function cardSvg({ name, kind, class: cls, details }) {
+  const accent = classColor(cls);
   const nodeBg = cssVar('--node');
   const text = cssVar('--text');
   const muted = cssVar('--muted');
+  const spec = specFor(kind);
+  const { w, h } = sizeOf(kind);
+  const compact = h < 60;
   const kindShort = kind.split('.').slice(1).join('.');
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${CARD_W}" height="${CARD_H}" viewBox="0 0 ${CARD_W} ${CARD_H}">
+
+  // chips (workloads): "chart vX.Y" is more useful than the kind
+  let sub = kindShort;
+  if (compact) {
+    const chart = resolved(details, 'chart');
+    const version = resolved(details, 'version');
+    sub = chart ? `${chart}${version ? ` v${version}` : ''}` : kindShort;
+  }
+
+  const chip = compact ? 30 : 36;
+  const cy0 = (h - chip) / 2;
+  const glyphScale = chip / 36;
+  const tx = chip + 24;
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">
   <defs>
     <linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${accent}" stop-opacity=".20"/><stop offset=".6" stop-color="${accent}" stop-opacity="0"/></linearGradient>
   </defs>
-  <rect width="${CARD_W}" height="${CARD_H}" fill="${nodeBg}"/>
-  <rect width="${CARD_W}" height="${CARD_H}" fill="url(#g)"/>
-  <rect x="12" y="14" width="36" height="36" rx="10" fill="${accent}" fill-opacity=".16" stroke="${accent}" stroke-opacity=".55"/>
-  <g transform="translate(20 22)" fill="none" stroke="${accent}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="${glyphFor(kind)}"/></g>
-  <text x="58" y="30" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="14" font-weight="700" fill="${text}">${xmlEscape(clip(name, 15))}</text>
-  <text x="58" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="${muted}">${xmlEscape(clip(kindShort, 21))}</text>
-  <circle cx="${CARD_W - 14}" cy="14" r="3" fill="${accent}"/>
+  <rect width="${w}" height="${h}" fill="${nodeBg}"/>
+  <rect width="${w}" height="${h}" fill="url(#g)"/>
+  <rect x="12" y="${cy0}" width="${chip}" height="${chip}" rx="${compact ? 9 : 10}" fill="${accent}" fill-opacity=".16" stroke="${accent}" stroke-opacity=".55"/>
+  <g transform="translate(${12 + (chip - 20 * glyphScale) / 2} ${cy0 + (chip - 20 * glyphScale) / 2}) scale(${glyphScale})" fill="none" stroke="${accent}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="${GLYPHS[spec.glyph] ?? GLYPHS.box}"/></g>
+  <text x="${tx}" y="${compact ? 22 : 30}" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="${compact ? 13 : 14}" font-weight="700" fill="${text}">${xmlEscape(clip(name, compact ? 16 : 15))}</text>
+  <text x="${tx}" y="${compact ? 37 : 46}" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="${muted}">${xmlEscape(clip(sub, compact ? 20 : 21))}</text>
+  <circle cx="${w - 14}" cy="14" r="3" fill="${accent}"/>
 </svg>`;
   return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
 }
 
 function paintCards() {
-  cy?.batch(() => cy.nodes().forEach((n) => n.data('card', cardSvg(n.data()))));
+  cy?.batch(() => cy.nodes().forEach((n) => { if (!isGroupKind(n.data('kind'))) n.data('card', cardSvg(n.data())); }));
 }
 
 /* ----------------------------------------------------------------- styles */
 
 function buildStyle() {
-  const colors = { net: cssVar('--net'), eks: cssVar('--eks'), default: cssVar('--def') };
   const text = cssVar('--text');
   const muted = cssVar('--muted');
   const nodeBg = cssVar('--node');
   const bg = cssVar('--bg');
   const glow = Number(cssVar('--glow')) || 0.3;
   const hit = cssVar('--hit');
-  const edgeAlt = cssVar('--edge-alt');
+  const mono = 'JetBrains Mono, ui-monospace, monospace';
 
   const style = [
     { selector: 'node', style: {
-      'label': '', 'shape': 'round-rectangle', 'corner-radius': 14, 'width': CARD_W, 'height': CARD_H,
+      'label': '', 'shape': 'round-rectangle', 'corner-radius': 14, 'width': CARD.w, 'height': CARD.h,
       'background-color': nodeBg, 'background-image': 'data(card)', 'background-fit': 'cover', 'background-clip': 'node',
-      'border-width': 1.5, 'border-color': colors.default,
-      'underlay-color': colors.default, 'underlay-opacity': glow, 'underlay-padding': 7, 'underlay-shape': 'round-rectangle',
+      'border-width': 1.5, 'border-color': classColor('default'),
+      'underlay-color': classColor('default'), 'underlay-opacity': glow, 'underlay-padding': 7, 'underlay-shape': 'round-rectangle',
       'transition-property': 'opacity, border-width, underlay-opacity', 'transition-duration': '0.18s',
     }},
+    { selector: 'node[kind ^= "k8s."]', style: { 'width': CHIP.w, 'height': CHIP.h, 'corner-radius': 12 } },
     { selector: ':parent', style: {
-      'background-image': 'none', 'background-opacity': 0.07, 'background-color': colors.default, 'border-width': 1.5, 'border-style': 'dashed',
-      'label': 'data(groupLabel)', 'color': text, 'font-family': 'JetBrains Mono, ui-monospace, monospace', 'font-size': 12, 'font-weight': 'bold',
+      'background-image': 'none', 'background-opacity': 0.07, 'background-color': classColor('default'), 'border-width': 1.5, 'border-style': 'dashed',
+      'label': 'data(groupLabel)', 'color': text, 'font-family': mono, 'font-size': 12, 'font-weight': 'bold', 'text-wrap': 'wrap', 'line-height': 1.35,
       'text-valign': 'top', 'text-halign': 'center', 'text-margin-y': -2, 'padding': '30px', 'corner-radius': 18,
       'text-background-color': bg, 'text-background-opacity': 1, 'text-background-padding': '5px', 'text-background-shape': 'round-rectangle',
       'underlay-opacity': glow * 0.35,
     }},
-    ...Object.entries(colors).filter(([k]) => k !== 'default').flatMap(([cls, c]) => [
-      { selector: `node[class = "${cls}"]`, style: { 'border-color': c, 'underlay-color': c } },
-      { selector: `:parent[class = "${cls}"]`, style: { 'background-color': c, 'border-color': c, 'underlay-color': c } },
-    ]),
+    ...CLASSES.filter((c) => c !== 'default').flatMap((cls) => {
+      const c = classColor(cls);
+      return [
+        { selector: `node[class = "${cls}"]`, style: { 'border-color': c, 'underlay-color': c } },
+        { selector: `:parent[class = "${cls}"]`, style: { 'background-color': c, 'border-color': c, 'underlay-color': c } },
+      ];
+    }),
     { selector: 'edge', style: {
-      'width': 2, 'curve-style': 'bezier', 'line-color': colors.default, 'target-arrow-color': colors.default,
+      'width': 2, 'curve-style': 'taxi', 'taxi-direction': 'auto', 'taxi-turn': '50%', 'taxi-radius': 10,
+      'line-color': classColor('default'), 'target-arrow-color': classColor('default'),
       'target-arrow-shape': 'triangle', 'arrow-scale': 1.1,
       'line-style': 'dashed', 'line-dash-pattern': [8, 6],
-      'underlay-color': colors.default, 'underlay-opacity': glow * 0.7, 'underlay-padding': 3,
-      'label': 'data(label)', 'font-size': 10, 'font-family': 'JetBrains Mono, ui-monospace, monospace', 'color': muted,
-      'text-background-color': bg, 'text-background-opacity': 0.85, 'text-background-padding': '3px', 'text-background-shape': 'round-rectangle',
-      'text-rotation': 'autorotate',
+      'underlay-color': classColor('default'), 'underlay-opacity': glow * 0.7, 'underlay-padding': 3,
+      'label': 'data(label)', 'font-size': 10, 'font-family': mono, 'color': muted,
+      'text-background-color': bg, 'text-background-opacity': 0.9, 'text-background-padding': '3px', 'text-background-shape': 'round-rectangle',
       'transition-property': 'opacity', 'transition-duration': '0.18s',
     }},
-    // cross-repo links get their own hot color: they are the whole point of the tool
-    { selector: 'edge[crossRepo]', style: { 'line-color': edgeAlt, 'target-arrow-color': edgeAlt, 'underlay-color': edgeAlt } },
+    // relationship type decides the link color: who may call whom (iam), where data lands (data), plain connectivity
+    ...['iam', 'data', 'k8s'].map((cls) => ({
+      selector: `edge[cls = "${cls}"]`,
+      style: { 'line-color': classColor(cls), 'target-arrow-color': classColor(cls), 'underlay-color': classColor(cls) },
+    })),
     { selector: 'node:selected', style: { 'border-width': 3, 'border-color': hit, 'underlay-opacity': Math.min(glow * 2, 0.6), 'underlay-padding': 10 } },
     { selector: '.dim', style: { 'opacity': 0.16 } },
     { selector: 'edge.hot', style: { 'width': 3.2, 'underlay-opacity': Math.min(glow * 1.6, 0.6) } },
@@ -162,11 +219,15 @@ function buildStyle() {
 async function loadEnvironment(env) {
   // `no-cache` = always revalidate (cheap, ETag-based): GitHub Pages serves
   // max-age=600, so without this a fresh deploy's data can look stale for 10 min.
-  const res = await fetch(`data/${env}.json`, { cache: 'no-cache' });
+  const [res, catRes] = await Promise.all([
+    fetch(`data/${env}.json`, { cache: 'no-cache' }),
+    fetch('data/catalog.json', { cache: 'no-cache' }),
+  ]);
   if (!res.ok) {
     sidebar.innerHTML = `<div class="empty">Could not load data/${escapeHtml(env)}.json (HTTP ${res.status}).<br />Check that the file exists in viewer/data/.</div>`;
     return;
   }
+  catalog = catRes.ok ? await catRes.json() : { kinds: {}, groups: {} };
   const graph = await res.json();
   renderGraph(graph);
   renderCoverage(graph);
@@ -178,11 +239,7 @@ function entityName(entity) {
   return rawName.includes('.') ? rawName.split('.').pop() : rawName;
 }
 
-/** "vpc\nmain", "subnet.public\npublic", "eks.nodegroup\ndefault": kind first, then name. */
-function entityLabel(entity) {
-  const kindShort = entity.kind.split('.').slice(1).join('.');
-  return `${kindShort}\n${entityName(entity)}`;
-}
+const kindShort = (kind) => kind.split('.').slice(1).join('.');
 
 function renderCoverage(graph) {
   const parts = [];
@@ -193,51 +250,87 @@ function renderCoverage(graph) {
   if ((graph.unresolvedCrossRepoLinks ?? []).length) {
     parts.push(`${graph.unresolvedCrossRepoLinks.length} unresolved cross-repo link(s)`);
   }
+  if ((graph.unresolvedPlacements ?? []).length) {
+    parts.push(`${graph.unresolvedPlacements.length} ambiguous placement(s)`);
+  }
   coverageEl.textContent = parts.length ? `⚠ ${parts.join(' · ')}` : '';
 }
 
 function renderLegend(graph) {
-  const counts = { net: 0, eks: 0, default: 0 };
-  for (const e of graph.entities) counts[KIND_CLASS(e.kind)]++;
-  const names = { net: 'Network', eks: 'Kubernetes', default: 'Other' };
-  const cls = { net: 'net', eks: 'eks', default: 'def' };
-  document.getElementById('legend-row').innerHTML = Object.keys(counts)
-    .filter((k) => counts[k] > 0)
-    .map((k) => `<span class="key-dot ${cls[k]}"><i></i><span>${names[k]} ${counts[k]}</span></span>`)
+  const counts = {};
+  for (const e of graph.entities) {
+    if (e.embedded) continue;
+    const cls = KIND_CLASS(e.kind);
+    counts[cls] = (counts[cls] ?? 0) + 1;
+  }
+  document.getElementById('legend-row').innerHTML = CLASSES.filter((c) => counts[c])
+    .map((c) => `<span class="key-dot ${c === 'default' ? 'def' : c}"><i></i><span>${CLASS_NAMES[c]} ${counts[c]}</span></span>`)
     .join('');
+}
+
+/** Name shown on a container's tab; a cluster also shows its version and the addons it owns. */
+function groupLabel(entity, embeddedOf) {
+  const first = `${kindShort(entity.kind)} · ${entityName(entity)}`;
+  const owned = embeddedOf.get(entity.id);
+  if (!owned?.length) return first;
+  const version = resolved(entity.details, 'version');
+  const names = owned.map((o) => resolved(o.details, 'addon_name') ?? entityName(o));
+  return `${first}\n${version ? `v${version} · ` : ''}addons: ${names.join(', ')}`;
 }
 
 function renderGraph(graph) {
   const elements = [];
+  const visible = graph.entities.filter((e) => !e.embedded);
   const byId = new Map(graph.entities.map((e) => [e.id, e]));
 
-  for (const entity of graph.entities) {
+  // Embedded entities (e.g. EKS addons) are properties of their parent, not boxes.
+  const embeddedOf = new Map();
+  for (const e of graph.entities) {
+    if (!e.embedded || !e.parent) continue;
+    if (!embeddedOf.has(e.parent)) embeddedOf.set(e.parent, []);
+    embeddedOf.get(e.parent).push(e);
+  }
+
+  // Global groups from the catalog (IAM is account-wide, so it sits outside any VPC).
+  const groupIds = new Set();
+  const groupOf = (e) => {
+    const gid = specFor(e.kind).group;
+    return gid && !e.parent ? `group:${gid}` : null;
+  };
+  for (const e of visible) { const g = groupOf(e); if (g) groupIds.add(g); }
+  for (const gid of groupIds) {
+    const key = gid.slice('group:'.length);
+    elements.push({ data: { id: gid, kind: gid.replace(':', '.'), name: key, class: KIND_CLASS(`group.${key}`), groupLabel: catalog.groups[key]?.label ?? key } });
+  }
+
+  for (const entity of visible) {
+    const name = entityName(entity);
     elements.push({
       data: {
         id: entity.id,
-        label: entityLabel(entity),
-        name: entityName(entity),
-        groupLabel: `${entity.kind.split('.').slice(1).join('.')} · ${entityName(entity)}`,
+        name,
+        groupLabel: groupLabel(entity, embeddedOf),
         kind: entity.kind,
-        parent: entity.parent ?? undefined,
+        parent: entity.parent ?? groupOf(entity) ?? undefined,
         repoId: entity.repoId,
         sourceAddress: entity.sourceAddress,
         details: entity.details ?? null,
+        embedded: (embeddedOf.get(entity.id) ?? []).map((o) => ({ name: resolved(o.details, 'addon_name') ?? entityName(o), details: o.details ?? null })),
         class: KIND_CLASS(entity.kind),
       },
     });
   }
 
-  // Containment already says "child belongs to parent"; an edge from a child
-  // to its own parent (e.g. subnet -> vpc, addon -> cluster) would just draw a
-  // noisy loop on top of it, so skip those.
+  // Containment already says "child belongs to parent": an edge from a child
+  // to its own parent would just draw a loop on top of it. Edges touching an
+  // embedded entity have nothing to attach to.
+  const shown = new Set(visible.map((e) => e.id));
   for (const [i, edge] of graph.edges.entries()) {
     const from = byId.get(edge.from);
     const to = byId.get(edge.to);
+    if (!shown.has(edge.from) || !shown.has(edge.to)) continue;
     if (from?.parent === edge.to || to?.parent === edge.from) continue;
-    const data = { id: `e${i}`, source: edge.from, target: edge.to, label: edge.label ?? '' };
-    if (from && to && from.repoId !== to.repoId) data.crossRepo = true;
-    elements.push({ data });
+    elements.push({ data: { id: `e${i}`, source: edge.from, target: edge.to, label: edge.label ?? '', cls: to ? KIND_CLASS(to.kind) : 'default' } });
   }
 
   if (cy) { cy.destroy(); cy = null; }
@@ -248,10 +341,13 @@ function renderGraph(graph) {
     minZoom: MIN_ZOOM,
     maxZoom: MAX_ZOOM,
     wheelSensitivity: 0.25,
-    layout: { name: 'fcose', nodeDimensionsIncludeLabels: true, animate: false, padding: 60, nodeRepulsion: () => 14000, idealEdgeLength: () => 150 },
   });
 
-  cy.on('tap', 'node', (evt) => { renderDetails(evt.target.data()); focusNeighborhood(evt.target); });
+  cy.on('tap', 'node', (evt) => {
+    if (isGroupKind(evt.target.data('kind'))) return;
+    renderDetails(evt.target.data());
+    focusNeighborhood(evt.target);
+  });
   cy.on('tap', (evt) => {
     if (evt.target !== cy) return;
     clearFocus();
@@ -259,13 +355,41 @@ function renderGraph(graph) {
   });
   cy.on('zoom', updateZoomLabel);
 
+  paintCards();
+  applyLayout();
+  cy.fit(undefined, 60);
+
   if (cy.expandCollapse) {
-    cy.expandCollapse({ layoutBy: { name: 'fcose', animate: false }, fisheye: false, undoable: false });
+    cy.expandCollapse({ layoutBy: () => applyLayout(true), fisheye: false, undoable: false, animate: false });
   }
 
-  paintCards();
   updateZoomLabel();
   playEntrance();
+}
+
+/* ----------------------------------------------------------------- layout */
+
+const layoutConfig = () => ({
+  sizeOf,
+  axisOf: (kind) => groupOfKind(kind)?.axis ?? specFor(kind).axis ?? 'column',
+  orderOf: (n) => groupOfKind(n.kind)?.order ?? specFor(n.kind).order ?? 50,
+  gap: 44,
+  pad: 30,
+  padTop: 50,
+});
+
+/** Packs the currently visible nodes by lanes; also used after expand/collapse. */
+function applyLayout(animate = false) {
+  if (!cy) return;
+  const nodes = cy.nodes().map((n) => ({ id: n.id(), parent: n.parent().length ? n.parent().id() : null, kind: n.data('kind') }));
+  const { centers } = layoutLanes(nodes, layoutConfig());
+  cy.layout({
+    name: 'preset',
+    positions: (n) => centers[n.id()] ?? n.position(),
+    fit: false,
+    animate: animate && !REDUCED_MOTION,
+    animationDuration: 250,
+  }).run();
 }
 
 /** One orchestrated moment: nodes light up outermost-first, then links. */
@@ -295,26 +419,39 @@ function clearFocus() {
 
 /* ------------------------------------------------------------ details panel */
 
+function configTable(details) {
+  let html = '<table>';
+  for (const [key, result] of Object.entries(details)) {
+    const val = result.resolved
+      ? `<span class="val">${escapeHtml(JSON.stringify(result.value))}</span>`
+      : `<span class="unresolved">unresolved</span><div class="raw">${escapeHtml(result.raw)}</div>`;
+    html += `<tr><td class="key">${escapeHtml(key)}</td><td class="val">${val}</td></tr>`;
+  }
+  return `${html}</table>`;
+}
+
 function renderDetails(data) {
   const badge = `<span class="badge ${data.class}">${data.class === 'default' ? 'other' : data.class}</span>`;
   let html = `<h2>${escapeHtml(data.name)}${badge}</h2><div class="kind">${escapeHtml(data.kind)}</div>`;
   html += `<table>
     <tr><td class="key">repo</td><td class="val">${escapeHtml(data.repoId)}</td></tr>
     <tr><td class="key">source address</td><td class="val">${escapeHtml(data.sourceAddress)}</td></tr>
-    <tr><td class="key">parent</td><td class="val">${escapeHtml(data.parent ?? '—')}</td></tr>
+    <tr><td class="key">inside</td><td class="val">${escapeHtml(data.parent ?? '—')}</td></tr>
   </table>`;
 
   if (data.details) {
-    html += '<h3>Configuration (from source .tf)</h3><table>';
-    for (const [key, result] of Object.entries(data.details)) {
-      const val = result.resolved
-        ? `<span class="val">${escapeHtml(JSON.stringify(result.value))}</span>`
-        : `<span class="unresolved">unresolved</span><div class="raw">${escapeHtml(result.raw)}</div>`;
-      html += `<tr><td class="key">${escapeHtml(key)}</td><td class="val">${val}</td></tr>`;
-    }
-    html += '</table>';
+    html += `<h3>Configuration (from source .tf)</h3>${configTable(data.details)}`;
   } else {
     html += '<h3>Configuration</h3><div class="empty" style="margin-top:4px">No attribute details extracted for this resource.</div>';
+  }
+
+  // properties owned by this resource (e.g. the addons of an EKS cluster)
+  if (data.embedded?.length) {
+    html += `<h3>Owned by this resource (${data.embedded.length})</h3>`;
+    for (const owned of data.embedded) {
+      html += `<h2 style="font-size:14px;margin-top:10px">${escapeHtml(owned.name)}</h2>`;
+      if (owned.details) html += configTable(owned.details);
+    }
   }
 
   sidebar.innerHTML = html;
@@ -330,11 +467,12 @@ function updateZoomLabel() {
   if (cy) zoomLevelEl.textContent = `${Math.round(cy.zoom() * 100)}%`;
 }
 
-function zoomBy(factor) {
+function zoomTo(level) {
   if (!cy) return;
-  const level = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, cy.zoom() * factor));
-  cy.animate({ zoom: { level, renderedPosition: { x: cy.width() / 2, y: cy.height() / 2 } } }, { duration: REDUCED_MOTION ? 0 : 160 });
+  const clamped = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, level));
+  cy.animate({ zoom: { level: clamped, renderedPosition: { x: cy.width() / 2, y: cy.height() / 2 } } }, { duration: REDUCED_MOTION ? 0 : 160 });
 }
+const zoomBy = (factor) => cy && zoomTo(cy.zoom() * factor);
 
 function fit() { cy?.animate({ fit: { eles: cy.elements(), padding: 60 } }, { duration: REDUCED_MOTION ? 0 : 260 }); }
 
@@ -363,7 +501,7 @@ function setFlow(on) {
 document.getElementById('fit-btn').addEventListener('click', fit);
 document.getElementById('zoom-in').addEventListener('click', () => zoomBy(ZOOM_STEP));
 document.getElementById('zoom-out').addEventListener('click', () => zoomBy(1 / ZOOM_STEP));
-zoomLevelEl.addEventListener('click', () => cy?.animate({ zoom: { level: 1, renderedPosition: { x: cy.width() / 2, y: cy.height() / 2 } } }, { duration: REDUCED_MOTION ? 0 : 160 }));
+zoomLevelEl.addEventListener('click', () => zoomTo(1));
 document.getElementById('expand-all-btn').addEventListener('click', () => cy?.expandCollapse('get').expandAll());
 document.getElementById('collapse-all-btn').addEventListener('click', () => cy?.expandCollapse('get').collapseAll());
 document.getElementById('theme-btn').addEventListener('click', toggleTheme);
@@ -375,7 +513,7 @@ document.addEventListener('keydown', (e) => {
   if (e.key === '+' || e.key === '=') zoomBy(ZOOM_STEP);
   else if (e.key === '-' || e.key === '_') zoomBy(1 / ZOOM_STEP);
   else if (e.key === 'f' || e.key === 'F') fit();
-  else if (e.key === '0') cy?.zoom({ level: 1, renderedPosition: { x: cy.width() / 2, y: cy.height() / 2 } });
+  else if (e.key === '0') zoomTo(1);
 });
 
 flowBtn.setAttribute('aria-pressed', String(flowOn));
