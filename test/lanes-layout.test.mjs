@@ -110,3 +110,14 @@ test('wrap does not trigger below the minimum child count', () => {
   const cfg = { sizeOf: () => ({ w: 100, h: 50 }), axisOf: () => 'row', orderOf: () => 0, gap: 10, pad: 10, padTop: 20 };
   assert.deepEqual(layoutLanes(nodes, { ...cfg, wrap: { min: 5, aspect: 1.6 } }).boxes, layoutLanes(nodes, cfg).boxes);
 });
+
+test('rootWrap folds a long row of top-level boxes into lines (off by default)', () => {
+  const nodes = Array.from({ length: 12 }, (_, i) => ({ id: `n${i}`, parent: null, kind: 'x' }));
+  const base = { sizeOf: () => ({ w: 100, h: 60 }), axisOf: () => 'column', orderOf: () => 0, gap: 20, pad: 10, padTop: 20 };
+  const width = (cfg) => { const { boxes } = layoutLanes(nodes, cfg); return Math.max(...Object.values(boxes).map((b) => b.x + b.w)); };
+  const flat = layoutLanes(nodes, base).boxes;
+  assert.equal(new Set(Object.values(flat).map((b) => b.y)).size, 1, 'one line by default');
+  const wrapped = layoutLanes(nodes, { ...base, rootWrap: { min: 4, aspect: 1.6 } }).boxes;
+  assert.ok(new Set(Object.values(wrapped).map((b) => b.y)).size > 1, 'several lines');
+  assert.ok(width({ ...base, rootWrap: { min: 4, aspect: 1.6 } }) < width(base));
+});

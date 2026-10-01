@@ -1,6 +1,6 @@
 ---
 name: infra-diagram
-description: Generate interactive, drill-down architecture diagrams of real AWS/Terraform/Kubernetes infrastructure from the Terraform source itself (offline `terraform graph` + HCL attribute extraction, no cloud credentials), compiled into a browser viewer with environments (one per tfvars), nested containers (VPC > subnet > EKS > node group > workloads), per-resource detail panels, selectable styles and PNG/PDF export. Use when the user wants to visualize, catalog or audit real infrastructure topology across one or more Terraform repos.
+description: Generate interactive, drill-down architecture diagrams of real AWS/Terraform/Kubernetes infrastructure from the Terraform source itself (offline `terraform graph` + HCL attribute extraction, no cloud credentials), compiled into a browser viewer with environments (one per tfvars), nested containers (VPC > subnet > EKS > node group > workloads), per-resource detail panels, selectable styles, and exports to a single-file offline HTML, vector SVG, PNG and PDF. Use when the user wants to visualize, catalog or audit real infrastructure topology across one or more Terraform repos.
 license: MIT
 metadata:
   version: "0.2"
@@ -19,7 +19,7 @@ never hand-drawn: if something cannot be resolved from the source it is reported
 3. **Manifest (B)** per repo, hand/model-authored: ordered rules, first match wins, mapping resource addresses to entities (`kind`, `idFrom`, `boundary`, `embed`) or `ignore`. See [manifest-authoring](references/manifest-authoring.md).
 4. **Compile (C)** `lib/compile/compile-environment-graph.mjs` — merges repos into one compound graph per environment. Placement precedence: explicit `boundary` > cross-repo `nest` link > `inferPlacement` (references found in source) > catalog kind-level placement. Ambiguity is reported in `unresolvedPlacements`.
 5. **Catalog** `catalog/providers/<provider>.json` — the "architect": what goes inside what, ordering, glyph per kind. See [catalog](references/catalog.md).
-6. **Viewer** `viewer/` — Cytoscape; 4 styles (Blueprint, Draft, Neon, Soft) x light/dark, zoom, expand/collapse, fixed layout (no dragging), PNG/PDF export, `#env=<id>&style=<preset>` links.
+6. **Viewer** `viewer/` — Cytoscape; 4 styles (Blueprint, Draft, Neon, Soft) x light/dark, zoom, expand/collapse, fixed layout (no dragging), PNG / PDF / vector SVG export, `#env=<id>&style=<preset>` links.
 
 Kubernetes (rendered manifests, Karpenter, ArgoCD) has its own layer: see [kubernetes](references/kubernetes.md).
 
@@ -36,6 +36,16 @@ Environments = tfvars files: each one is compiled separately and may yield a dif
 7. Report to the user: what was mapped, what is unresolved and why.
 
 Follow the model-specific rules in [model-guidance](references/model-guidance.md).
+
+## Exports (no browser, no Terraform needed)
+
+- `node scripts/export-html.mjs --out diagram.html` — ONE self-contained HTML (renderer + data inlined, zero external requests): environment selector, 4 styles x light/dark, pan/zoom, details panel, SVG download, vector PDF through print. Milliseconds.
+- `node scripts/export-svg.mjs --env <id> --out-dir out/` — vector SVG (rects, paths, text). Same renderer as the viewer's SVG button (`viewer/render-svg.mjs`, pure; `viewer/diagram-model.mjs` holds the shared graph -> boxes/edges/layout logic).
+- Both take `--graph <compiled.json> --catalog <catalog.json>` for any compiled graph.
+
+## Subnet tier (AWS)
+
+Do not classify subnets by name. Map `aws_subnet` to the generic `aws.subnet` kind and pass `refineKind` to `compileEnvironmentGraph` with `deriveSubnetTiers` (`lib/compile/derive-subnet-tier.mjs`): default route to an internet gateway = public, to a NAT gateway = private, none = isolated. Anything it cannot decide (no explicit route table association, dynamic routes, transit gateway default route...) stays `aws.subnet` and is listed in `findings` — see `scripts/build-platform-sample.mjs`.
 
 ## Architect review (specialist agents)
 

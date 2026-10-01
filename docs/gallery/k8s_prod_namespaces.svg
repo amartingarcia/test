@@ -1,0 +1,808 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="3976" height="1986" viewBox="0 0 3976 1986" data-preset="blueprint" data-theme="dark" role="img"><title>k8s_prod_namespaces</title>
+<defs><linearGradient id="g-edgeapp" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4fdcc2" stop-opacity=".20"/><stop offset=".6" stop-color="#4fdcc2" stop-opacity="0"/></linearGradient><linearGradient id="g-compute" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#52d1e6" stop-opacity=".20"/><stop offset=".6" stop-color="#52d1e6" stop-opacity="0"/></linearGradient><linearGradient id="g-eks" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#b59bff" stop-opacity=".20"/><stop offset=".6" stop-color="#b59bff" stop-opacity="0"/></linearGradient><linearGradient id="g-cfg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9db0c4" stop-opacity=".20"/><stop offset=".6" stop-color="#9db0c4" stop-opacity="0"/></linearGradient><linearGradient id="g-data" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff8fb3" stop-opacity=".20"/><stop offset=".6" stop-color="#ff8fb3" stop-opacity="0"/></linearGradient><linearGradient id="g-iam" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f2c14e" stop-opacity=".20"/><stop offset=".6" stop-color="#f2c14e" stop-opacity="0"/></linearGradient><linearGradient id="g-net" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6fb1ff" stop-opacity=".20"/><stop offset=".6" stop-color="#6fb1ff" stop-opacity="0"/></linearGradient><linearGradient id="g-k8s" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5fdc9a" stop-opacity=".20"/><stop offset=".6" stop-color="#5fdc9a" stop-opacity="0"/></linearGradient><marker id="ah-default" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0 0L10 5L0 10z" fill="#52d1e6"/></marker><marker id="ah-iam" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0 0L10 5L0 10z" fill="#f2c14e"/></marker><marker id="ah-data" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff8fb3"/></marker><marker id="ah-k8s" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0 0L10 5L0 10z" fill="#5fdc9a"/></marker></defs>
+<rect width="3976" height="1986" fill="#07111f"/>
+<g transform="translate(40 40)">
+<g class="c" data-id="group:ssm" transform="translate(2280 1438)"><rect width="236" height="468" rx="18" fill="#9db0c4" fill-opacity=".07" stroke="#9db0c4" stroke-width="1.5" stroke-dasharray="8 6"/></g>
+<g class="c" data-id="group:iam" transform="translate(1560 1438)"><rect width="676" height="468" rx="18" fill="#f2c14e" fill-opacity=".07" stroke="#f2c14e" stroke-width="1.5" stroke-dasharray="8 6"/></g>
+<g class="c" data-id="platform:aws.route53.zone:main" transform="translate(1280 1492)"><rect width="236" height="360" rx="18" fill="#4fdcc2" fill-opacity=".07" stroke="#4fdcc2" stroke-width="1.5" stroke-dasharray="8 6"/></g>
+<g class="c" data-id="platform:aws.vpc:prod" transform="translate(0 0)"><rect width="3896" height="1394" rx="18" fill="#6fb1ff" fill-opacity=".07" stroke="#6fb1ff" stroke-width="1.5" stroke-dasharray="8 6"/></g>
+<g class="c" data-id="platform:aws.vpc:shared" transform="translate(0 1506)"><rect width="1016" height="332" rx="18" fill="#6fb1ff" fill-opacity=".07" stroke="#6fb1ff" stroke-width="1.5" stroke-dasharray="8 6"/></g>
+<g class="c" data-id="platform:aws.subnet.public:prod_public" transform="translate(250 581)"><rect width="236" height="252" rx="18" fill="#6fb1ff" fill-opacity=".07" stroke="#6fb1ff" stroke-width="1.5" stroke-dasharray="8 6"/></g>
+<g class="c" data-id="platform:aws.subnet.private:prod_private" transform="translate(530 50)"><rect width="2836" height="1314" rx="18" fill="#6fb1ff" fill-opacity=".07" stroke="#6fb1ff" stroke-width="1.5" stroke-dasharray="8 6"/></g>
+<g class="c" data-id="platform:aws.subnet.isolated:prod_data" transform="translate(3410 473)"><rect width="236" height="468" rx="18" fill="#6fb1ff" fill-opacity=".07" stroke="#6fb1ff" stroke-width="1.5" stroke-dasharray="8 6"/></g>
+<g class="c" data-id="platform:aws.subnet.public:shared_public" transform="translate(250 1556)"><rect width="236" height="252" rx="18" fill="#6fb1ff" fill-opacity=".07" stroke="#6fb1ff" stroke-width="1.5" stroke-dasharray="8 6"/></g>
+<g class="c" data-id="platform:aws.subnet.private:shared_private" transform="translate(530 1610)"><rect width="236" height="144" rx="18" fill="#6fb1ff" fill-opacity=".07" stroke="#6fb1ff" stroke-width="1.5" stroke-dasharray="8 6"/></g>
+<g class="c" data-id="platform:aws.eks.cluster:this" transform="translate(560 208)"><rect width="2776" height="1126" rx="18" fill="#b59bff" fill-opacity=".07" stroke="#b59bff" stroke-width="1.5" stroke-dasharray="8 6"/></g>
+<g class="c" data-id="k8s:k8s.namespace:kube-system" transform="translate(1406 700)"><rect width="268" height="130" rx="18" fill="#6fb1ff" fill-opacity=".07" stroke="#6fb1ff" stroke-width="1.5" stroke-dasharray="8 6"/></g>
+<g class="c" data-id="k8s:k8s.namespace:karpenter" transform="translate(1406 526)"><rect width="268" height="130" rx="18" fill="#6fb1ff" fill-opacity=".07" stroke="#6fb1ff" stroke-width="1.5" stroke-dasharray="8 6"/></g>
+<g class="c" data-id="k8s:k8s.namespace:argocd" transform="translate(590 798)"><rect width="772" height="506" rx="18" fill="#6fb1ff" fill-opacity=".07" stroke="#6fb1ff" stroke-width="1.5" stroke-dasharray="8 6"/></g>
+<g class="c" data-id="k8s:k8s.namespace:ingress-nginx" transform="translate(1406 258)"><rect width="268" height="224" rx="18" fill="#6fb1ff" fill-opacity=".07" stroke="#6fb1ff" stroke-width="1.5" stroke-dasharray="8 6"/></g>
+<g class="c" data-id="k8s:k8s.namespace:observability" transform="translate(1718 258)"><rect width="772" height="412" rx="18" fill="#6fb1ff" fill-opacity=".07" stroke="#6fb1ff" stroke-width="1.5" stroke-dasharray="8 6"/></g>
+<g class="c" data-id="k8s:k8s.namespace:shop" transform="translate(2534 258)"><rect width="772" height="412" rx="18" fill="#6fb1ff" fill-opacity=".07" stroke="#6fb1ff" stroke-width="1.5" stroke-dasharray="8 6"/></g>
+<g class="c" data-id="k8s:k8s.namespace:payments" transform="translate(1970 714)"><rect width="268" height="412" rx="18" fill="#6fb1ff" fill-opacity=".07" stroke="#6fb1ff" stroke-width="1.5" stroke-dasharray="8 6"/></g>
+<g class="c" data-id="k8s:k8s.namespace:ml" transform="translate(1406 874)"><rect width="268" height="224" rx="18" fill="#6fb1ff" fill-opacity=".07" stroke="#6fb1ff" stroke-width="1.5" stroke-dasharray="8 6"/></g>
+<g class="c" data-id="k8s:k8s.namespace:tenant-acme" transform="translate(2786 714)"><rect width="268" height="130" rx="18" fill="#6fb1ff" fill-opacity=".07" stroke="#6fb1ff" stroke-width="1.5" stroke-dasharray="8 6"/></g>
+<g class="c" data-id="k8s:k8s.namespace:tenant-globex" transform="translate(2786 888)"><rect width="268" height="130" rx="18" fill="#6fb1ff" fill-opacity=".07" stroke="#6fb1ff" stroke-width="1.5" stroke-dasharray="8 6"/></g>
+<path class="e" data-from="platform:aws.lb:public" data-to="platform:aws.security_group:prod_default" d="M456 657L2063 657Q2073 657 2073 667L2073 697Q2073 707 2083 707L3690 707" fill="none" stroke="#52d1e6" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-default)"><title>protected by</title></path>
+<path class="e" data-from="platform:aws.eks.cluster:this" data-to="platform:aws.iam.role.cluster:cluster" d="M1948 1334L1948 1401Q1948 1411 1938 1411L1688 1411Q1678 1411 1678 1421L1678 1488" fill="none" stroke="#f2c14e" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-iam)"><title>assumes</title></path>
+<path class="e" data-from="platform:aws.eks.nodegroup:default" data-to="platform:aws.iam.role.node:node" d="M2832 1094L2309 1094Q2299 1094 2299 1104L2299 1828Q2299 1838 2289 1838L1766 1838" fill="none" stroke="#f2c14e" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-iam)"><title>assumes</title></path>
+<path class="e" data-from="platform:aws.eks.nodegroup:system" data-to="platform:aws.iam.role.node:node" d="M2832 1202L2309 1202Q2299 1202 2299 1212L2299 1840Q2299 1850 2289 1850L1766 1850" fill="none" stroke="#f2c14e" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-iam)"><title>assumes</title></path>
+<path class="e" data-from="platform:aws.ssm.parameter:db_endpoint" data-to="platform:aws.rds.instance:orders" d="M2486 1520L2953 1520Q2963 1520 2963 1510L2963 889Q2963 879 2973 879L3440 879" fill="none" stroke="#ff8fb3" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-data)"><title>stores endpoint</title></path>
+<path class="e" data-from="platform:aws.ssm.parameter:docdb_endpoint" data-to="platform:aws.docdb.cluster:reports" d="M2398 1596L2398 1101.5Q2398 1091.5 2408 1091.5L3518 1091.5Q3528 1091.5 3528 1081.5L3528 587" fill="none" stroke="#ff8fb3" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-data)"><title>stores endpoint</title></path>
+<path class="e" data-from="platform:aws.ssm.parameter:redis_endpoint" data-to="platform:aws.elasticache.redis:sessions" d="M2398 1812L2398 1263.5Q2398 1253.5 2408 1253.5L3518 1253.5Q3528 1253.5 3528 1243.5L3528 695" fill="none" stroke="#ff8fb3" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-data)"><title>stores endpoint</title></path>
+<path class="e" data-from="platform:aws.ssm.parameter:opensearch_endpoint" data-to="platform:aws.opensearch.domain:logs" d="M2486 1736L2953 1736Q2963 1736 2963 1726L2963 781Q2963 771 2973 771L3440 771" fill="none" stroke="#ff8fb3" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-data)"><title>stores endpoint</title></path>
+<path class="e" data-from="platform:aws.route53.record:api" data-to="platform:aws.lb:public" d="M1310 1574L893 1574Q883 1574 883 1564L883 679Q883 669 873 669L456 669" fill="none" stroke="#52d1e6" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-default)"><title>alias</title></path>
+<path class="e" data-from="platform:aws.route53.record:www" data-to="platform:aws.lb:public" d="M1398 1758L1398 1236.5Q1398 1226.5 1388 1226.5L378 1226.5Q368 1226.5 368 1216.5L368 695" fill="none" stroke="#52d1e6" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-default)"><title>alias</title></path>
+<path class="e" data-from="platform:aws.route53.record:bastion" data-to="platform:aws.ec2.instance:bastion" d="M1310 1682L893 1682Q883 1682 883 1672L883 1648Q883 1638 873 1638L456 1638" fill="none" stroke="#52d1e6" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-default)"><title>points to</title></path>
+<path class="e" data-from="platform:aws.rds.instance:orders" data-to="platform:aws.security_group:prod_default" d="M3528 847L3528 803Q3528 793 3538 793L3768 793Q3778 793 3778 783L3778 739" fill="none" stroke="#52d1e6" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-default)"><title>protected by</title></path>
+<path class="e" data-from="platform:aws.vpc_peering:prod_shared" data-to="platform:aws.vpc:prod" d="M1148 1640L1148 1527Q1148 1517 1158 1517L1938 1517Q1948 1517 1948 1507L1948 1394" fill="none" stroke="#52d1e6" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-default)"><title>peers</title></path>
+<path class="e" data-from="platform:aws.vpc_peering:prod_shared" data-to="platform:aws.vpc:shared" d="M1060 1672L1048 1672Q1038 1672 1028 1672L1016 1672" fill="none" stroke="#52d1e6" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-default)"><title>peers</title></path>
+<path class="e" data-from="k8s:k8s.nodepool:general" data-to="k8s:k8s.nodeclass:default" d="M976 474L976 404Q976 398 970 398L970 398Q964 398 964 392L964 322" fill="none" stroke="#52d1e6" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-default)"><title>uses</title></path>
+<path class="e" data-from="k8s:k8s.nodepool:spot-batch" data-to="k8s:k8s.nodeclass:default" d="M976 690L976 516Q976 506 976 496L976 322" fill="none" stroke="#52d1e6" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-default)"><title>uses</title></path>
+<path class="e" data-from="k8s:k8s.nodepool:gpu" data-to="k8s:k8s.nodeclass:gpu" d="M976 582L976 509Q976 506 973 506L973 506Q970 506 970 503L970 430" fill="none" stroke="#52d1e6" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-default)"><title>uses</title></path>
+<path class="e" data-from="k8s:k8s.service:argocd/argocd-server" data-to="k8s:k8s.deployment:argocd/argocd-server" d="M1228 1224L1228 1212Q1228 1202 1228 1192L1228 1180" fill="none" stroke="#5fdc9a" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-k8s)"></path>
+<path class="e" data-from="k8s:k8s.service:ingress-nginx/ingress-nginx-controller" data-to="k8s:k8s.deployment:ingress-nginx/ingress-nginx-controller" d="M1540 402L1540 383Q1540 380 1537 380L1537 380Q1534 380 1534 377L1534 358" fill="none" stroke="#5fdc9a" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-k8s)"></path>
+<path class="e" data-from="k8s:k8s.service:observability/prometheus" data-to="k8s:k8s.statefulset:observability/prometheus" d="M2000 427L1988 427Q1978 427 1978 437L1978 511Q1978 521 1968 521L1956 521" fill="none" stroke="#5fdc9a" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-k8s)"></path>
+<path class="e" data-from="k8s:k8s.service:observability/grafana" data-to="k8s:k8s.deployment:observability/grafana" d="M2000 333L1981 333Q1978 333 1978 330L1978 330Q1978 327 1975 327L1956 327" fill="none" stroke="#5fdc9a" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-k8s)"></path>
+<path class="e" data-from="k8s:k8s.service:shop/web" data-to="k8s:k8s.deployment:shop/web" d="M2914 590L2914 531Q2914 521 2904 521L2672 521Q2662 521 2662 511L2662 452" fill="none" stroke="#5fdc9a" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-k8s)"></path>
+<path class="e" data-from="k8s:k8s.service:shop/api" data-to="k8s:k8s.deployment:shop/api" d="M2816 427L2804 427Q2794 427 2794 417L2794 334.3Q2794 324.3 2784 324.3L2772 324.3" fill="none" stroke="#5fdc9a" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-k8s)"></path>
+<path class="e" data-from="k8s:k8s.service:shop/redis" data-to="k8s:k8s.statefulset:shop/redis" d="M2816 521L2804 521Q2794 521 2794 531L2794 605Q2794 615 2784 615L2772 615" fill="none" stroke="#5fdc9a" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-k8s)"></path>
+<path class="e" data-from="k8s:k8s.service:payments/payments-api" data-to="k8s:k8s.deployment:payments/payments-api" d="M2104 858L2104 842Q2104 836 2098 836L2098 836Q2092 836 2092 830L2092 814" fill="none" stroke="#5fdc9a" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-k8s)"></path>
+<path class="e" data-from="k8s:k8s.ingress:observability/grafana" data-to="k8s:k8s.service:observability/grafana" d="M2104 496L2104 437Q2104 427 2104 417L2104 358" fill="none" stroke="#52d1e6" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-default)"><title>grafana.example.com/</title></path>
+<path class="e" data-from="k8s:k8s.ingress:shop/shop" data-to="k8s:k8s.service:shop/web" d="M3172 358L3172 464Q3172 474 3162 474L2936 474Q2926 474 2926 484L2926 590" fill="none" stroke="#52d1e6" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-default)"><title>shop.example.com/</title></path>
+<path class="e" data-from="k8s:k8s.ingress:shop/shop" data-to="k8s:k8s.service:shop/api" d="M3068 333L3056 333Q3046 333 3046 343L3046 417Q3046 427 3036 427L3024 427" fill="none" stroke="#52d1e6" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-default)"><title>shop.example.com/api</title></path>
+<path class="e" data-from="k8s:k8s.ingress:payments/payments" data-to="k8s:k8s.service:payments/payments-api" d="M2104 952L2104 940Q2104 930 2104 920L2104 908" fill="none" stroke="#52d1e6" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-default)"><title>pay.example.com/</title></path>
+<path class="e" data-from="k8s:k8s.deployment:observability/grafana" data-to="k8s:k8s.configmap:observability/grafana-cfg" d="M1852 358L1852 464Q1852 474 1862 474L2094 474Q2104 474 2104 484L2104 590" fill="none" stroke="#52d1e6" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-default)"></path>
+<path class="e" data-from="k8s:k8s.deployment:observability/grafana" data-to="k8s:k8s.secret:observability/grafana-admin" d="M1956 339L2101 339Q2104 339 2104 336L2104 336Q2104 333 2107 333L2252 333" fill="none" stroke="#52d1e6" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-default)"></path>
+<path class="e" data-from="k8s:k8s.deployment:shop/web" data-to="k8s:k8s.configmap:shop/web-cfg" d="M2772 427L2915.7 427Q2920 427 2920 422.7L2920 422.7Q2920 418.3 2924.3 418.3L3068 418.3" fill="none" stroke="#52d1e6" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-default)"></path>
+<path class="e" data-from="k8s:k8s.deployment:shop/api" data-to="k8s:k8s.configmap:shop/web-cfg" d="M2772 333L2910 333Q2920 333 2920 343L2920 417Q2920 427 2930 427L3068 427" fill="none" stroke="#52d1e6" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-default)"></path>
+<path class="e" data-from="k8s:k8s.deployment:shop/api" data-to="k8s:k8s.secret:shop/db-credentials" d="M2772 341.7L2910 341.7Q2920 341.7 2920 351.7L2920 511Q2920 521 2930 521L3068 521" fill="none" stroke="#52d1e6" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-default)"></path>
+<path class="e" data-from="k8s:k8s.deployment:shop/worker" data-to="k8s:k8s.configmap:shop/web-cfg" d="M2772 521L2910 521Q2920 521 2920 511L2920 445.7Q2920 435.7 2930 435.7L3068 435.7" fill="none" stroke="#52d1e6" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-default)"></path>
+<path class="e" data-from="k8s:k8s.deployment:payments/payments-api" data-to="k8s:k8s.secret:payments/psp-credentials" d="M2104 814L2104 920Q2104 930 2104 940L2104 1046" fill="none" stroke="#52d1e6" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-default)"></path>
+<path class="e" data-from="k8s:k8s.argo.application:argocd/shop" data-to="k8s:k8s.namespace:shop" d="M1080 1144.2L1797 1144.2Q1807 1144.2 1807 1134.2L1807 474Q1807 464 1817 464L2534 464" fill="none" stroke="#52d1e6" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-default)"><title>deploys to</title></path>
+<path class="e" data-from="k8s:k8s.argo.application:argocd/payments" data-to="k8s:k8s.namespace:payments" d="M1080 1055L1515 1055Q1525 1055 1525 1045L1525 930Q1525 920 1535 920L1970 920" fill="none" stroke="#52d1e6" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-default)"><title>deploys to</title></path>
+<path class="e" data-from="k8s:k8s.argo.application:argocd/observability" data-to="k8s:k8s.namespace:observability" d="M1080 956.6L1389 956.6Q1399 956.6 1399 946.6L1399 474Q1399 464 1409 464L1718 464" fill="none" stroke="#52d1e6" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-default)"><title>deploys to</title></path>
+<path class="e" data-from="k8s:k8s.argo.application:argocd/ingress-nginx" data-to="k8s:k8s.namespace:ingress-nginx" d="M718 1130L718 816Q718 806 728 806L1530 806Q1540 806 1540 796L1540 482" fill="none" stroke="#52d1e6" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-default)"><title>deploys to</title></path>
+<path class="e" data-from="k8s:k8s.argo.application:argocd/karpenter" data-to="k8s:k8s.namespace:karpenter" d="M828 1243L1107 1243Q1117 1243 1117 1233L1117 601Q1117 591 1127 591L1406 591" fill="none" stroke="#52d1e6" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-default)"><title>deploys to</title></path>
+<path class="e" data-from="k8s:k8s.argo.application:argocd/ml" data-to="k8s:k8s.namespace:ml" d="M1080 864.3L1233 864.3Q1243 864.3 1243 874.3L1243 976Q1243 986 1253 986L1406 986" fill="none" stroke="#52d1e6" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-default)"><title>deploys to</title></path>
+<path class="e" data-from="k8s:k8s.argo.application:argocd/tenant-acme" data-to="k8s:k8s.namespace:tenant-acme" d="M1080 1243L1923 1243Q1933 1243 1933 1233L1933 789Q1933 779 1943 779L2786 779" fill="none" stroke="#52d1e6" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-default)"><title>deploys to</title></path>
+<path class="e" data-from="k8s:k8s.argo.applicationset:argocd/tenants" data-to="k8s:k8s.argo.application:argocd/tenant-acme" d="M724 992L724 1098Q724 1108 734 1108L966 1108Q976 1108 976 1118L976 1224" fill="none" stroke="#52d1e6" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-default)"><title>generates</title></path>
+<path class="e" data-from="k8s:k8s.argo.application:argocd/tenant-globex" data-to="k8s:k8s.namespace:tenant-globex" d="M1332 867L2049 867Q2059 867 2059 877L2059 943Q2059 953 2069 953L2786 953" fill="none" stroke="#52d1e6" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-default)"><title>deploys to</title></path>
+<path class="e" data-from="k8s:k8s.argo.applicationset:argocd/tenants" data-to="k8s:k8s.argo.application:argocd/tenant-globex" d="M828 967L966 967Q976 967 976 957L976 883Q976 873 986 873L1124 873" fill="none" stroke="#52d1e6" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-default)"><title>generates</title></path>
+<path class="e" data-from="k8s:k8s.argo.application:argocd/karpenter" data-to="k8s:k8s.deployment:karpenter/karpenter" d="M828 1255L1122 1255Q1132 1255 1132 1245L1132 611Q1132 601 1142 601L1436 601" fill="none" stroke="#5fdc9a" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-k8s)"><title>manages</title></path>
+<path class="e" data-from="k8s:k8s.argo.application:argocd/argocd" data-to="k8s:k8s.deployment:argocd/argocd-server" d="M828 1052.3L966 1052.3Q976 1052.3 976 1062.3L976 1145Q976 1155 986 1155L1124 1155" fill="none" stroke="#5fdc9a" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-k8s)"><title>manages</title></path>
+<path class="e" data-from="k8s:k8s.argo.application:argocd/argocd" data-to="k8s:k8s.deployment:argocd/argocd-repo-server" d="M828 1061L966 1061Q976 1061 986 1061L1124 1061" fill="none" stroke="#5fdc9a" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-k8s)"><title>manages</title></path>
+<path class="e" data-from="k8s:k8s.argo.application:argocd/argocd" data-to="k8s:k8s.deployment:argocd/argocd-applicationset-controller" d="M828 1069.7L966 1069.7Q976 1069.7 976 1059.7L976 977Q976 967 986 967L1124 967" fill="none" stroke="#5fdc9a" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-k8s)"><title>manages</title></path>
+<path class="e" data-from="k8s:k8s.argo.application:argocd/ingress-nginx" data-to="k8s:k8s.deployment:ingress-nginx/ingress-nginx-controller" d="M730 1130L730 754Q730 744 740 744L1536 744Q1546 744 1546 734L1546 358" fill="none" stroke="#5fdc9a" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-k8s)"><title>manages</title></path>
+<path class="e" data-from="k8s:k8s.argo.application:argocd/observability" data-to="k8s:k8s.statefulset:observability/prometheus" d="M1080 961.8L1404 961.8Q1414 961.8 1414 951.8L1414 531Q1414 521 1424 521L1748 521" fill="none" stroke="#5fdc9a" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-k8s)"><title>manages</title></path>
+<path class="e" data-from="k8s:k8s.argo.application:argocd/observability" data-to="k8s:k8s.deployment:observability/grafana" d="M1080 967L1404 967Q1414 967 1414 957L1414 343Q1414 333 1424 333L1748 333" fill="none" stroke="#5fdc9a" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-k8s)"><title>manages</title></path>
+<path class="e" data-from="k8s:k8s.argo.application:argocd/observability" data-to="k8s:k8s.deployment:observability/loki" d="M1080 972.2L1404 972.2Q1414 972.2 1414 962.2L1414 437Q1414 427 1424 427L1748 427" fill="none" stroke="#5fdc9a" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-k8s)"><title>manages</title></path>
+<path class="e" data-from="k8s:k8s.argo.application:argocd/observability" data-to="k8s:k8s.daemonset:observability/node-exporter" d="M1080 977.4L1404 977.4Q1414 977.4 1414 967.4L1414 625Q1414 615 1424 615L1748 615" fill="none" stroke="#5fdc9a" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-k8s)"><title>manages</title></path>
+<path class="e" data-from="k8s:k8s.argo.application:argocd/shop" data-to="k8s:k8s.deployment:shop/web" d="M1080 1148.5L1812 1148.5Q1822 1148.5 1822 1138.5L1822 437Q1822 427 1832 427L2564 427" fill="none" stroke="#5fdc9a" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-k8s)"><title>manages</title></path>
+<path class="e" data-from="k8s:k8s.argo.application:argocd/shop" data-to="k8s:k8s.deployment:shop/api" d="M1080 1152.8L1812 1152.8Q1822 1152.8 1822 1142.8L1822 343Q1822 333 1832 333L2564 333" fill="none" stroke="#5fdc9a" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-k8s)"><title>manages</title></path>
+<path class="e" data-from="k8s:k8s.argo.application:argocd/shop" data-to="k8s:k8s.deployment:shop/worker" d="M1080 1157.2L1812 1157.2Q1822 1157.2 1822 1147.2L1822 531Q1822 521 1832 521L2564 521" fill="none" stroke="#5fdc9a" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-k8s)"><title>manages</title></path>
+<path class="e" data-from="k8s:k8s.argo.application:argocd/shop" data-to="k8s:k8s.statefulset:shop/redis" d="M1080 1161.5L1812 1161.5Q1822 1161.5 1822 1151.5L1822 625Q1822 615 1832 615L2564 615" fill="none" stroke="#5fdc9a" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-k8s)"><title>manages</title></path>
+<path class="e" data-from="k8s:k8s.argo.application:argocd/shop" data-to="k8s:k8s.cronjob:shop/nightly-report" d="M1080 1165.8L1938 1165.8Q1948 1165.8 1948 1155.8L1948 343Q1948 333 1958 333L2816 333" fill="none" stroke="#5fdc9a" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-k8s)"><title>manages</title></path>
+<path class="e" data-from="k8s:k8s.argo.application:argocd/payments" data-to="k8s:k8s.deployment:payments/payments-api" d="M1080 1067L1530 1067Q1540 1067 1540 1057L1540 799Q1540 789 1550 789L2000 789" fill="none" stroke="#5fdc9a" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-k8s)"><title>manages</title></path>
+<path class="e" data-from="k8s:k8s.argo.application:argocd/ml" data-to="k8s:k8s.deployment:ml/recommender" d="M1080 873L1248 873Q1258 873 1258 883L1258 939Q1258 949 1268 949L1436 949" fill="none" stroke="#5fdc9a" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-k8s)"><title>manages</title></path>
+<path class="e" data-from="k8s:k8s.argo.application:argocd/ml" data-to="k8s:k8s.deployment:ml/trainer" d="M1080 881.7L1248 881.7Q1258 881.7 1258 891.7L1258 1033Q1258 1043 1268 1043L1436 1043" fill="none" stroke="#5fdc9a" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-k8s)"><title>manages</title></path>
+<path class="e" data-from="k8s:k8s.argo.application:argocd/tenant-acme" data-to="k8s:k8s.deployment:tenant-acme/app" d="M1080 1255L1938 1255Q1948 1255 1948 1245L1948 799Q1948 789 1958 789L2816 789" fill="none" stroke="#5fdc9a" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-k8s)"><title>manages</title></path>
+<path class="e" data-from="k8s:k8s.argo.application:argocd/tenant-globex" data-to="k8s:k8s.deployment:tenant-globex/app" d="M1332 879L2064 879Q2074 879 2074 889L2074 953Q2074 963 2084 963L2816 963" fill="none" stroke="#5fdc9a" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-k8s)"><title>manages</title></path>
+<path class="e" data-from="k8s:k8s.nodeclass:default" data-to="platform:aws.iam.role.workload:wl_karpenter_node" d="M988 322L988 1003Q988 1013 998 1013L1882 1013Q1892 1013 1892 1023L1892 1704" fill="none" stroke="#f2c14e" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-iam)"><title>node role</title></path>
+<path class="e" data-from="k8s:k8s.nodeclass:gpu" data-to="platform:aws.iam.role.workload:wl_karpenter_node" d="M982 430L982 1057Q982 1067 992 1067L1894 1067Q1904 1067 1904 1077L1904 1704" fill="none" stroke="#f2c14e" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-iam)"><title>node role</title></path>
+<path class="e" data-from="k8s:k8s.deployment:karpenter/karpenter" data-to="platform:aws.iam.role.workload:wl_karpenter" d="M1540 626L1540 1101Q1540 1111 1550 1111L1888 1111Q1898 1111 1898 1121L1898 1596" fill="none" stroke="#f2c14e" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-iam)"><title>annotated to assume (IRSA)</title></path>
+<path class="e" data-from="k8s:k8s.deployment:shop/web" data-to="platform:aws.iam.role.workload:wl_web" d="M2674 452L2674 960Q2674 970 2664 970L2128 970Q2118 970 2118 980L2118 1488" fill="none" stroke="#f2c14e" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-iam)"><title>annotated to assume (IRSA)</title></path>
+<path class="e" data-from="k8s:k8s.deployment:shop/api" data-to="platform:aws.iam.role.workload:wl_api" d="M2668 358L2668 913Q2668 923 2658 923L1908 923Q1898 923 1898 933L1898 1488" fill="none" stroke="#f2c14e" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-iam)"><title>annotated to assume (IRSA)</title></path>
+<path class="e" data-from="k8s:k8s.deployment:shop/worker" data-to="platform:aws.iam.role.workload:wl_worker" d="M2668 546L2668 1061Q2668 1071 2658 1071L2128 1071Q2118 1071 2118 1081L2118 1596" fill="none" stroke="#f2c14e" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-iam)"><title>annotated to assume (IRSA)</title></path>
+<path class="e" data-from="k8s:k8s.deployment:payments/payments-api" data-to="platform:aws.iam.role.workload:wl_payments" d="M2116 814L2116 1303Q2116 1313 2106 1313L1908 1313Q1898 1313 1898 1323L1898 1812" fill="none" stroke="#f2c14e" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-iam)"><title>annotated to assume (IRSA)</title></path>
+<g class="l" transform="translate(2280 1438)"><rect x="22.4" y="8" width="191.2" height="26" rx="6" fill="#07111f" fill-opacity=".92"/><text x="118" y="22" text-anchor="middle" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="12" font-weight="700" fill="#d6e6ff"><tspan x="118" dy="0">Parameter Store · config</tspan></text></g>
+<g class="l" transform="translate(1560 1438)"><rect x="238.8" y="8" width="198.5" height="26" rx="6" fill="#07111f" fill-opacity=".92"/><text x="338" y="22" text-anchor="middle" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="12" font-weight="700" fill="#d6e6ff"><tspan x="338" dy="0">IAM · identities &amp; access</tspan></text></g>
+<g class="l" transform="translate(1280 1492)"><rect x="40.7" y="8" width="154.7" height="26" rx="6" fill="#07111f" fill-opacity=".92"/><text x="118" y="22" text-anchor="middle" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="12" font-weight="700" fill="#d6e6ff"><tspan x="118" dy="0">route53.zone · main</tspan></text></g>
+<g class="l" transform="translate(0 0)"><rect x="1903.5" y="8" width="89" height="26" rx="6" fill="#07111f" fill-opacity=".92"/><text x="1948" y="22" text-anchor="middle" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="12" font-weight="700" fill="#d6e6ff"><tspan x="1948" dy="0">vpc · prod</tspan></text></g>
+<g class="l" transform="translate(0 1506)"><rect x="456.2" y="8" width="103.6" height="26" rx="6" fill="#07111f" fill-opacity=".92"/><text x="508" y="22" text-anchor="middle" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="12" font-weight="700" fill="#d6e6ff"><tspan x="508" dy="0">vpc · shared</tspan></text></g>
+<g class="l" transform="translate(250 581)"><rect x="11.5" y="8" width="213.1" height="26" rx="6" fill="#07111f" fill-opacity=".92"/><text x="118" y="22" text-anchor="middle" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="12" font-weight="700" fill="#d6e6ff"><tspan x="118" dy="0">subnet.public · prod_public</tspan></text></g>
+<g class="l" transform="translate(530 50)"><rect x="1304.2" y="8" width="227.7" height="26" rx="6" fill="#07111f" fill-opacity=".92"/><text x="1418" y="22" text-anchor="middle" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="12" font-weight="700" fill="#d6e6ff"><tspan x="1418" dy="0">subnet.private · prod_private</tspan></text></g>
+<g class="l" transform="translate(3410 473)"><rect x="11.5" y="8" width="213.1" height="26" rx="6" fill="#07111f" fill-opacity=".92"/><text x="118" y="22" text-anchor="middle" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="12" font-weight="700" fill="#d6e6ff"><tspan x="118" dy="0">subnet.isolated · prod_data</tspan></text></g>
+<g class="l" transform="translate(250 1556)"><rect x="8" y="8" width="220" height="26" rx="6" fill="#07111f" fill-opacity=".92"/><text x="118" y="22" text-anchor="middle" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="12" font-weight="700" fill="#d6e6ff"><tspan x="118" dy="0">subnet.public · shared_public</tspan></text></g>
+<g class="l" transform="translate(530 1610)"><rect x="8" y="8" width="220" height="26" rx="6" fill="#07111f" fill-opacity=".92"/><text x="118" y="22" text-anchor="middle" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="12" font-weight="700" fill="#d6e6ff"><tspan x="118" dy="0">subnet.private · shared_private</tspan></text></g>
+<g class="l" transform="translate(560 208)"><rect x="1219.4" y="8" width="337.2" height="40" rx="6" fill="#07111f" fill-opacity=".92"/><text x="1388" y="22" text-anchor="middle" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="12" font-weight="700" fill="#d6e6ff"><tspan x="1388" dy="0">eks.cluster · this</tspan><tspan x="1388" dy="14">v1.29 · addons: vpc-cni, coredns, kube-proxy</tspan></text></g>
+<g class="l" transform="translate(1406 700)"><rect x="42.1" y="8" width="183.9" height="26" rx="6" fill="#07111f" fill-opacity=".92"/><text x="134" y="22" text-anchor="middle" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="12" font-weight="700" fill="#d6e6ff"><tspan x="134" dy="0">namespace · kube-system</tspan></text></g>
+<g class="l" transform="translate(1406 526)"><rect x="49.4" y="8" width="169.3" height="26" rx="6" fill="#07111f" fill-opacity=".92"/><text x="134" y="22" text-anchor="middle" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="12" font-weight="700" fill="#d6e6ff"><tspan x="134" dy="0">namespace · karpenter</tspan></text></g>
+<g class="l" transform="translate(590 798)"><rect x="312.3" y="8" width="147.4" height="26" rx="6" fill="#07111f" fill-opacity=".92"/><text x="386" y="22" text-anchor="middle" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="12" font-weight="700" fill="#d6e6ff"><tspan x="386" dy="0">namespace · argocd</tspan></text></g>
+<g class="l" transform="translate(1406 258)"><rect x="34.8" y="8" width="198.5" height="26" rx="6" fill="#07111f" fill-opacity=".92"/><text x="134" y="22" text-anchor="middle" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="12" font-weight="700" fill="#d6e6ff"><tspan x="134" dy="0">namespace · ingress-nginx</tspan></text></g>
+<g class="l" transform="translate(1718 258)"><rect x="286.8" y="8" width="198.5" height="26" rx="6" fill="#07111f" fill-opacity=".92"/><text x="386" y="22" text-anchor="middle" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="12" font-weight="700" fill="#d6e6ff"><tspan x="386" dy="0">namespace · observability</tspan></text></g>
+<g class="l" transform="translate(2534 258)"><rect x="319.6" y="8" width="132.8" height="26" rx="6" fill="#07111f" fill-opacity=".92"/><text x="386" y="22" text-anchor="middle" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="12" font-weight="700" fill="#d6e6ff"><tspan x="386" dy="0">namespace · shop</tspan></text></g>
+<g class="l" transform="translate(1970 714)"><rect x="53" y="8" width="162" height="26" rx="6" fill="#07111f" fill-opacity=".92"/><text x="134" y="22" text-anchor="middle" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="12" font-weight="700" fill="#d6e6ff"><tspan x="134" dy="0">namespace · payments</tspan></text></g>
+<g class="l" transform="translate(1406 874)"><rect x="74.9" y="8" width="118.2" height="26" rx="6" fill="#07111f" fill-opacity=".92"/><text x="134" y="22" text-anchor="middle" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="12" font-weight="700" fill="#d6e6ff"><tspan x="134" dy="0">namespace · ml</tspan></text></g>
+<g class="l" transform="translate(2786 714)"><rect x="42.1" y="8" width="183.9" height="26" rx="6" fill="#07111f" fill-opacity=".92"/><text x="134" y="22" text-anchor="middle" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="12" font-weight="700" fill="#d6e6ff"><tspan x="134" dy="0">namespace · tenant-acme</tspan></text></g>
+<g class="l" transform="translate(2786 888)"><rect x="34.8" y="8" width="198.5" height="26" rx="6" fill="#07111f" fill-opacity=".92"/><text x="134" y="22" text-anchor="middle" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="12" font-weight="700" fill="#d6e6ff"><tspan x="134" dy="0">namespace · tenant-globex</tspan></text></g>
+<g class="n" data-id="platform:aws.lb:public" transform="translate(280 631)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#4fdcc2" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-edgeapp)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#4fdcc2" fill-opacity=".16" stroke="#4fdcc2" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#4fdcc2" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3v14M5 17h10M4 6l3 5H1zM16 6l3 5h-6z"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">public</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">lb</text>
+<circle cx="162" cy="14" r="3" fill="#4fdcc2"/>
+</g>
+<g class="n" data-id="platform:aws.ec2.instance:bastion" transform="translate(280 1606)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#52d1e6" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-compute)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#52d1e6" fill-opacity=".16" stroke="#52d1e6" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#52d1e6" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h14v5H3zM3 11h14v5H3zM6.5 6.5h.01M6.5 13.5h.01"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">bastion</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">ec2.instance</text>
+<circle cx="162" cy="14" r="3" fill="#52d1e6"/>
+</g>
+<g class="n" data-id="platform:aws.ec2.instance:ci_runner" transform="translate(560 1660)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#52d1e6" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-compute)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#52d1e6" fill-opacity=".16" stroke="#52d1e6" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#52d1e6" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h14v5H3zM3 11h14v5H3zM6.5 6.5h.01M6.5 13.5h.01"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">ci_runner</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">ec2.instance</text>
+<circle cx="162" cy="14" r="3" fill="#52d1e6"/>
+</g>
+<g class="n" data-id="platform:aws.ec2.instance:legacy_api" transform="translate(1860 100)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#52d1e6" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-compute)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#52d1e6" fill-opacity=".16" stroke="#52d1e6" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#52d1e6" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h14v5H3zM3 11h14v5H3zM6.5 6.5h.01M6.5 13.5h.01"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">legacy_api</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">ec2.instance</text>
+<circle cx="162" cy="14" r="3" fill="#52d1e6"/>
+</g>
+<g class="n" data-id="platform:aws.eks.nodegroup:default" transform="translate(2832 1062)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#b59bff" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-eks)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#b59bff" fill-opacity=".16" stroke="#b59bff" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#b59bff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6l7-3 7 3-7 3zM3 10l7 3 7-3M3 14l7 3 7-3"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">default</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">eks.nodegroup</text>
+<circle cx="162" cy="14" r="3" fill="#b59bff"/>
+</g>
+<g class="n" data-id="platform:aws.eks.nodegroup:system" transform="translate(2832 1170)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#b59bff" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-eks)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#b59bff" fill-opacity=".16" stroke="#b59bff" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#b59bff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6l7-3 7 3-7 3zM3 10l7 3 7-3M3 14l7 3 7-3"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">system</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">eks.nodegroup</text>
+<circle cx="162" cy="14" r="3" fill="#b59bff"/>
+</g>
+<g class="n" data-id="platform:aws.ssm.parameter:db_endpoint" transform="translate(2310 1488)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#9db0c4" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-cfg)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#9db0c4" fill-opacity=".16" stroke="#9db0c4" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#9db0c4" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h12M4 10h12M4 14h12M7 4v4M13 8v4M9 12v4"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">db_endpoint</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">ssm.parameter</text>
+<circle cx="162" cy="14" r="3" fill="#9db0c4"/>
+</g>
+<g class="n" data-id="platform:aws.ssm.parameter:docdb_endpoint" transform="translate(2310 1596)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#9db0c4" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-cfg)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#9db0c4" fill-opacity=".16" stroke="#9db0c4" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#9db0c4" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h12M4 10h12M4 14h12M7 4v4M13 8v4M9 12v4"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">docdb_endpoint</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">ssm.parameter</text>
+<circle cx="162" cy="14" r="3" fill="#9db0c4"/>
+</g>
+<g class="n" data-id="platform:aws.ssm.parameter:redis_endpoint" transform="translate(2310 1812)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#9db0c4" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-cfg)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#9db0c4" fill-opacity=".16" stroke="#9db0c4" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#9db0c4" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h12M4 10h12M4 14h12M7 4v4M13 8v4M9 12v4"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">redis_endpoint</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">ssm.parameter</text>
+<circle cx="162" cy="14" r="3" fill="#9db0c4"/>
+</g>
+<g class="n" data-id="platform:aws.ssm.parameter:opensearch_endpoint" transform="translate(2310 1704)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#9db0c4" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-cfg)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#9db0c4" fill-opacity=".16" stroke="#9db0c4" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#9db0c4" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h12M4 10h12M4 14h12M7 4v4M13 8v4M9 12v4"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">opensearch_end…</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">ssm.parameter</text>
+<circle cx="162" cy="14" r="3" fill="#9db0c4"/>
+</g>
+<g class="n" data-id="platform:aws.route53.record:api" transform="translate(1310 1542)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#4fdcc2" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-edgeapp)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#4fdcc2" fill-opacity=".16" stroke="#4fdcc2" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#4fdcc2" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h12v12H4zM7 8h6M7 12h4"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">api</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">route53.record</text>
+<circle cx="162" cy="14" r="3" fill="#4fdcc2"/>
+</g>
+<g class="n" data-id="platform:aws.route53.record:www" transform="translate(1310 1758)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#4fdcc2" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-edgeapp)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#4fdcc2" fill-opacity=".16" stroke="#4fdcc2" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#4fdcc2" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h12v12H4zM7 8h6M7 12h4"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">www</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">route53.record</text>
+<circle cx="162" cy="14" r="3" fill="#4fdcc2"/>
+</g>
+<g class="n" data-id="platform:aws.route53.record:bastion" transform="translate(1310 1650)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#4fdcc2" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-edgeapp)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#4fdcc2" fill-opacity=".16" stroke="#4fdcc2" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#4fdcc2" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h12v12H4zM7 8h6M7 12h4"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">bastion</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">route53.record</text>
+<circle cx="162" cy="14" r="3" fill="#4fdcc2"/>
+</g>
+<g class="n" data-id="platform:aws.rds.instance:orders" transform="translate(3440 847)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#ff8fb3" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-data)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#ff8fb3" fill-opacity=".16" stroke="#ff8fb3" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#ff8fb3" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5c0-1.4 2.7-2.5 6-2.5s6 1.1 6 2.5-2.7 2.5-6 2.5S4 6.4 4 5zM4 5v10c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5V5M4 10c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">orders</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">rds.instance</text>
+<circle cx="162" cy="14" r="3" fill="#ff8fb3"/>
+</g>
+<g class="n" data-id="platform:aws.docdb.cluster:reports" transform="translate(3440 523)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#ff8fb3" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-data)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#ff8fb3" fill-opacity=".16" stroke="#ff8fb3" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#ff8fb3" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 2.5h7l3 3v12H5zM12 2.5v3h3M7.5 10h5M7.5 13h5"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">reports</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">docdb.cluster</text>
+<circle cx="162" cy="14" r="3" fill="#ff8fb3"/>
+</g>
+<g class="n" data-id="platform:aws.elasticache.redis:sessions" transform="translate(3440 631)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#ff8fb3" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-data)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#ff8fb3" fill-opacity=".16" stroke="#ff8fb3" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#ff8fb3" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M11 2L4 11h5l-1 7 7-9h-5z"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">sessions</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">elasticache.redis</text>
+<circle cx="162" cy="14" r="3" fill="#ff8fb3"/>
+</g>
+<g class="n" data-id="platform:aws.opensearch.domain:logs" transform="translate(3440 739)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#ff8fb3" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-data)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#ff8fb3" fill-opacity=".16" stroke="#ff8fb3" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#ff8fb3" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3a6 6 0 1 0 .01 0zM14 14l4 4"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">logs</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">opensearch.domain</text>
+<circle cx="162" cy="14" r="3" fill="#ff8fb3"/>
+</g>
+<g class="n" data-id="platform:aws.iam.role.cluster:cluster" transform="translate(1590 1488)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#f2c14e" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-iam)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#f2c14e" fill-opacity=".16" stroke="#f2c14e" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#f2c14e" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12.5 3a4.5 4.5 0 1 0 .8 8.9L14 13h2v2h2v-2.3l-4.8-4.8A4.5 4.5 0 0 0 12.5 3zM11 7.5a1 1 0 1 0 2 0 1 1 0 0 0-2 0"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">cluster</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">iam.role.cluster</text>
+<circle cx="162" cy="14" r="3" fill="#f2c14e"/>
+</g>
+<g class="n" data-id="platform:aws.iam.role.node:node" transform="translate(1590 1812)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#f2c14e" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-iam)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#f2c14e" fill-opacity=".16" stroke="#f2c14e" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#f2c14e" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12.5 3a4.5 4.5 0 1 0 .8 8.9L14 13h2v2h2v-2.3l-4.8-4.8A4.5 4.5 0 0 0 12.5 3zM11 7.5a1 1 0 1 0 2 0 1 1 0 0 0-2 0"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">node</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">iam.role.node</text>
+<circle cx="162" cy="14" r="3" fill="#f2c14e"/>
+</g>
+<g class="n" data-id="platform:aws.iam.role.irsa:orders_api_irsa" transform="translate(1590 1704)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#f2c14e" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-iam)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#f2c14e" fill-opacity=".16" stroke="#f2c14e" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#f2c14e" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12.5 3a4.5 4.5 0 1 0 .8 8.9L14 13h2v2h2v-2.3l-4.8-4.8A4.5 4.5 0 0 0 12.5 3zM11 7.5a1 1 0 1 0 2 0 1 1 0 0 0-2 0"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">orders_api_irsa</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">iam.role.irsa</text>
+<circle cx="162" cy="14" r="3" fill="#f2c14e"/>
+</g>
+<g class="n" data-id="platform:aws.iam.role.ec2:ec2_ssm" transform="translate(1590 1596)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#f2c14e" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-iam)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#f2c14e" fill-opacity=".16" stroke="#f2c14e" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#f2c14e" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12.5 3a4.5 4.5 0 1 0 .8 8.9L14 13h2v2h2v-2.3l-4.8-4.8A4.5 4.5 0 0 0 12.5 3zM11 7.5a1 1 0 1 0 2 0 1 1 0 0 0-2 0"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">ec2_ssm</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">iam.role.ec2</text>
+<circle cx="162" cy="14" r="3" fill="#f2c14e"/>
+</g>
+<g class="n" data-id="platform:aws.iam.role.workload:wl_web" transform="translate(2030 1488)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#f2c14e" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-iam)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#f2c14e" fill-opacity=".16" stroke="#f2c14e" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#f2c14e" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12.5 3a4.5 4.5 0 1 0 .8 8.9L14 13h2v2h2v-2.3l-4.8-4.8A4.5 4.5 0 0 0 12.5 3zM11 7.5a1 1 0 1 0 2 0 1 1 0 0 0-2 0"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">wl_web</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">iam.role.workload</text>
+<circle cx="162" cy="14" r="3" fill="#f2c14e"/>
+</g>
+<g class="n" data-id="platform:aws.iam.role.workload:wl_api" transform="translate(1810 1488)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#f2c14e" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-iam)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#f2c14e" fill-opacity=".16" stroke="#f2c14e" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#f2c14e" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12.5 3a4.5 4.5 0 1 0 .8 8.9L14 13h2v2h2v-2.3l-4.8-4.8A4.5 4.5 0 0 0 12.5 3zM11 7.5a1 1 0 1 0 2 0 1 1 0 0 0-2 0"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">wl_api</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">iam.role.workload</text>
+<circle cx="162" cy="14" r="3" fill="#f2c14e"/>
+</g>
+<g class="n" data-id="platform:aws.iam.role.workload:wl_worker" transform="translate(2030 1596)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#f2c14e" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-iam)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#f2c14e" fill-opacity=".16" stroke="#f2c14e" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#f2c14e" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12.5 3a4.5 4.5 0 1 0 .8 8.9L14 13h2v2h2v-2.3l-4.8-4.8A4.5 4.5 0 0 0 12.5 3zM11 7.5a1 1 0 1 0 2 0 1 1 0 0 0-2 0"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">wl_worker</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">iam.role.workload</text>
+<circle cx="162" cy="14" r="3" fill="#f2c14e"/>
+</g>
+<g class="n" data-id="platform:aws.iam.role.workload:wl_payments" transform="translate(1810 1812)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#f2c14e" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-iam)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#f2c14e" fill-opacity=".16" stroke="#f2c14e" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#f2c14e" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12.5 3a4.5 4.5 0 1 0 .8 8.9L14 13h2v2h2v-2.3l-4.8-4.8A4.5 4.5 0 0 0 12.5 3zM11 7.5a1 1 0 1 0 2 0 1 1 0 0 0-2 0"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">wl_payments</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">iam.role.workload</text>
+<circle cx="162" cy="14" r="3" fill="#f2c14e"/>
+</g>
+<g class="n" data-id="platform:aws.iam.role.workload:wl_karpenter" transform="translate(1810 1596)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#f2c14e" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-iam)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#f2c14e" fill-opacity=".16" stroke="#f2c14e" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#f2c14e" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12.5 3a4.5 4.5 0 1 0 .8 8.9L14 13h2v2h2v-2.3l-4.8-4.8A4.5 4.5 0 0 0 12.5 3zM11 7.5a1 1 0 1 0 2 0 1 1 0 0 0-2 0"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">wl_karpenter</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">iam.role.workload</text>
+<circle cx="162" cy="14" r="3" fill="#f2c14e"/>
+</g>
+<g class="n" data-id="platform:aws.iam.role.workload:wl_karpenter_node" transform="translate(1810 1704)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#f2c14e" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-iam)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#f2c14e" fill-opacity=".16" stroke="#f2c14e" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#f2c14e" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12.5 3a4.5 4.5 0 1 0 .8 8.9L14 13h2v2h2v-2.3l-4.8-4.8A4.5 4.5 0 0 0 12.5 3zM11 7.5a1 1 0 1 0 2 0 1 1 0 0 0-2 0"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">wl_karpenter_n…</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">iam.role.workload</text>
+<circle cx="162" cy="14" r="3" fill="#f2c14e"/>
+</g>
+<g class="n" data-id="platform:aws.vpc_peering:prod_shared" transform="translate(1060 1640)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#6fb1ff" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-net)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#6fb1ff" fill-opacity=".16" stroke="#6fb1ff" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#6fb1ff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 12l4-4M7 9L5 11a3 3 0 0 0 4 4l2-2M13 11l2-2a3 3 0 0 0-4-4L9 7"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">prod_shared</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">vpc_peering</text>
+<circle cx="162" cy="14" r="3" fill="#6fb1ff"/>
+</g>
+<g class="n" data-id="platform:aws.internet_gateway:prod" transform="translate(30 675)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#6fb1ff" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-net)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#6fb1ff" fill-opacity=".16" stroke="#6fb1ff" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#6fb1ff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10h14M10 3c3 3 3 11 0 14M10 3c-3 3-3 11 0 14M3 10a7 7 0 1 0 14 0a7 7 0 1 0-14 0"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">prod</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">internet_gateway</text>
+<circle cx="162" cy="14" r="3" fill="#6fb1ff"/>
+</g>
+<g class="n" data-id="platform:aws.internet_gateway:shared" transform="translate(30 1650)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#6fb1ff" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-net)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#6fb1ff" fill-opacity=".16" stroke="#6fb1ff" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#6fb1ff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10h14M10 3c3 3 3 11 0 14M10 3c-3 3-3 11 0 14M3 10a7 7 0 1 0 14 0a7 7 0 1 0-14 0"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">shared</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">internet_gateway</text>
+<circle cx="162" cy="14" r="3" fill="#6fb1ff"/>
+</g>
+<g class="n" data-id="platform:aws.nat_gateway:prod" transform="translate(280 739)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#6fb1ff" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-net)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#6fb1ff" fill-opacity=".16" stroke="#6fb1ff" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#6fb1ff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h12M12 6l4 4-4 4"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">prod</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">nat_gateway</text>
+<circle cx="162" cy="14" r="3" fill="#6fb1ff"/>
+</g>
+<g class="n" data-id="platform:aws.nat_gateway:shared" transform="translate(280 1714)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#6fb1ff" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-net)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#6fb1ff" fill-opacity=".16" stroke="#6fb1ff" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#6fb1ff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h12M12 6l4 4-4 4"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">shared</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">nat_gateway</text>
+<circle cx="162" cy="14" r="3" fill="#6fb1ff"/>
+</g>
+<g class="n" data-id="platform:aws.security_group:prod_default" transform="translate(3690 675)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#6fb1ff" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-net)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#6fb1ff" fill-opacity=".16" stroke="#6fb1ff" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#6fb1ff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3l6 2v5c0 4-3 6-6 7-3-1-6-3-6-7V5z"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">prod_default</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">security_group</text>
+<circle cx="162" cy="14" r="3" fill="#6fb1ff"/>
+</g>
+<g class="n" data-id="platform:aws.security_group:shared_default" transform="translate(810 1650)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#6fb1ff" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-net)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#6fb1ff" fill-opacity=".16" stroke="#6fb1ff" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#6fb1ff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3l6 2v5c0 4-3 6-6 7-3-1-6-3-6-7V5z"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">shared_default</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">security_group</text>
+<circle cx="162" cy="14" r="3" fill="#6fb1ff"/>
+</g>
+<g class="n" data-id="k8s:k8s.nodeclass:default" transform="translate(888 258)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#52d1e6" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-compute)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#52d1e6" fill-opacity=".16" stroke="#52d1e6" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#52d1e6" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h14v5H3zM3 11h14v5H3zM6.5 6.5h.01M6.5 13.5h.01"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">default</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">nodeclass</text>
+<circle cx="162" cy="14" r="3" fill="#52d1e6"/>
+</g>
+<g class="n" data-id="k8s:k8s.nodeclass:gpu" transform="translate(888 366)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#52d1e6" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-compute)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#52d1e6" fill-opacity=".16" stroke="#52d1e6" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#52d1e6" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h14v5H3zM3 11h14v5H3zM6.5 6.5h.01M6.5 13.5h.01"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">gpu</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">nodeclass</text>
+<circle cx="162" cy="14" r="3" fill="#52d1e6"/>
+</g>
+<g class="n" data-id="k8s:k8s.nodepool:general" transform="translate(888 474)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#52d1e6" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-compute)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#52d1e6" fill-opacity=".16" stroke="#52d1e6" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#52d1e6" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6l7-3 7 3-7 3zM3 10l7 3 7-3M3 14l7 3 7-3"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">general</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">nodepool</text>
+<circle cx="162" cy="14" r="3" fill="#52d1e6"/>
+</g>
+<g class="n" data-id="k8s:k8s.nodepool:spot-batch" transform="translate(888 690)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#52d1e6" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-compute)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#52d1e6" fill-opacity=".16" stroke="#52d1e6" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#52d1e6" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6l7-3 7 3-7 3zM3 10l7 3 7-3M3 14l7 3 7-3"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">spot-batch</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">nodepool</text>
+<circle cx="162" cy="14" r="3" fill="#52d1e6"/>
+</g>
+<g class="n" data-id="k8s:k8s.nodepool:gpu" transform="translate(888 582)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#52d1e6" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-compute)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#52d1e6" fill-opacity=".16" stroke="#52d1e6" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#52d1e6" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6l7-3 7 3-7 3zM3 10l7 3 7-3M3 14l7 3 7-3"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">gpu</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">nodepool</text>
+<circle cx="162" cy="14" r="3" fill="#52d1e6"/>
+</g>
+<g class="n" data-id="k8s:k8s.deployment:karpenter/karpenter" transform="translate(1436 576)">
+<rect width="208" height="50" rx="14" fill="#0b1b30" stroke="#5fdc9a" stroke-width="1.5"/><rect width="208" height="50" rx="14" fill="url(#g-k8s)"/>
+<rect x="12" y="10" width="30" height="30" rx="10" fill="#5fdc9a" fill-opacity=".16" stroke="#5fdc9a" stroke-opacity="0.55"/>
+<g transform="translate(18.666666666666664 16.666666666666664) scale(0.8333333333333334)" fill="none" stroke="#5fdc9a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2l6.5 3.7v7.6L10 17l-6.5-3.7V5.7zM10 9.5l6.5-3.8M10 9.5L3.5 5.7M10 9.5V17"/></g>
+<text x="54" y="22" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12.5" font-weight="700" fill="#d6e6ff">karpenter</text>
+<text x="54" y="37" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">controller:1.0.0</text>
+<circle cx="194" cy="14" r="3" fill="#5fdc9a"/>
+</g>
+<g class="n" data-id="k8s:k8s.deployment:kube-system/coredns" transform="translate(1436 750)">
+<rect width="208" height="50" rx="14" fill="#0b1b30" stroke="#5fdc9a" stroke-width="1.5"/><rect width="208" height="50" rx="14" fill="url(#g-k8s)"/>
+<rect x="12" y="10" width="30" height="30" rx="10" fill="#5fdc9a" fill-opacity=".16" stroke="#5fdc9a" stroke-opacity="0.55"/>
+<g transform="translate(18.666666666666664 16.666666666666664) scale(0.8333333333333334)" fill="none" stroke="#5fdc9a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2l6.5 3.7v7.6L10 17l-6.5-3.7V5.7zM10 9.5l6.5-3.8M10 9.5L3.5 5.7M10 9.5V17"/></g>
+<text x="54" y="22" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12.5" font-weight="700" fill="#d6e6ff">coredns</text>
+<text x="54" y="37" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">coredns:v1.11.1</text>
+<circle cx="194" cy="14" r="3" fill="#5fdc9a"/>
+</g>
+<g class="n" data-id="k8s:k8s.deployment:argocd/argocd-server" transform="translate(1124 1130)">
+<rect width="208" height="50" rx="14" fill="#0b1b30" stroke="#5fdc9a" stroke-width="1.5"/><rect width="208" height="50" rx="14" fill="url(#g-k8s)"/>
+<rect x="12" y="10" width="30" height="30" rx="10" fill="#5fdc9a" fill-opacity=".16" stroke="#5fdc9a" stroke-opacity="0.55"/>
+<g transform="translate(18.666666666666664 16.666666666666664) scale(0.8333333333333334)" fill="none" stroke="#5fdc9a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2l6.5 3.7v7.6L10 17l-6.5-3.7V5.7zM10 9.5l6.5-3.8M10 9.5L3.5 5.7M10 9.5V17"/></g>
+<text x="54" y="22" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12.5" font-weight="700" fill="#d6e6ff">argocd-server</text>
+<text x="54" y="37" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">argocd:v2.12.0</text>
+<circle cx="194" cy="14" r="3" fill="#5fdc9a"/>
+</g>
+<g class="n" data-id="k8s:k8s.deployment:argocd/argocd-repo-server" transform="translate(1124 1036)">
+<rect width="208" height="50" rx="14" fill="#0b1b30" stroke="#5fdc9a" stroke-width="1.5"/><rect width="208" height="50" rx="14" fill="url(#g-k8s)"/>
+<rect x="12" y="10" width="30" height="30" rx="10" fill="#5fdc9a" fill-opacity=".16" stroke="#5fdc9a" stroke-opacity="0.55"/>
+<g transform="translate(18.666666666666664 16.666666666666664) scale(0.8333333333333334)" fill="none" stroke="#5fdc9a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2l6.5 3.7v7.6L10 17l-6.5-3.7V5.7zM10 9.5l6.5-3.8M10 9.5L3.5 5.7M10 9.5V17"/></g>
+<text x="54" y="22" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12.5" font-weight="700" fill="#d6e6ff">argocd-repo-server</text>
+<text x="54" y="37" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">argocd:v2.12.0</text>
+<circle cx="194" cy="14" r="3" fill="#5fdc9a"/>
+</g>
+<g class="n" data-id="k8s:k8s.deployment:argocd/argocd-applicationset-controller" transform="translate(1124 942)">
+<rect width="208" height="50" rx="14" fill="#0b1b30" stroke="#5fdc9a" stroke-width="1.5"/><rect width="208" height="50" rx="14" fill="url(#g-k8s)"/>
+<rect x="12" y="10" width="30" height="30" rx="10" fill="#5fdc9a" fill-opacity=".16" stroke="#5fdc9a" stroke-opacity="0.55"/>
+<g transform="translate(18.666666666666664 16.666666666666664) scale(0.8333333333333334)" fill="none" stroke="#5fdc9a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2l6.5 3.7v7.6L10 17l-6.5-3.7V5.7zM10 9.5l6.5-3.8M10 9.5L3.5 5.7M10 9.5V17"/></g>
+<text x="54" y="22" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12.5" font-weight="700" fill="#d6e6ff">argocd-applications…</text>
+<text x="54" y="37" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">argocd:v2.12.0</text>
+<circle cx="194" cy="14" r="3" fill="#5fdc9a"/>
+</g>
+<g class="n" data-id="k8s:k8s.deployment:ingress-nginx/ingress-nginx-controller" transform="translate(1436 308)">
+<rect width="208" height="50" rx="14" fill="#0b1b30" stroke="#5fdc9a" stroke-width="1.5"/><rect width="208" height="50" rx="14" fill="url(#g-k8s)"/>
+<rect x="12" y="10" width="30" height="30" rx="10" fill="#5fdc9a" fill-opacity=".16" stroke="#5fdc9a" stroke-opacity="0.55"/>
+<g transform="translate(18.666666666666664 16.666666666666664) scale(0.8333333333333334)" fill="none" stroke="#5fdc9a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2l6.5 3.7v7.6L10 17l-6.5-3.7V5.7zM10 9.5l6.5-3.8M10 9.5L3.5 5.7M10 9.5V17"/></g>
+<text x="54" y="22" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12.5" font-weight="700" fill="#d6e6ff">ingress-nginx-contr…</text>
+<text x="54" y="37" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">controller:v1.11.1</text>
+<circle cx="194" cy="14" r="3" fill="#5fdc9a"/>
+</g>
+<g class="n" data-id="k8s:k8s.statefulset:observability/prometheus" transform="translate(1748 496)">
+<rect width="208" height="50" rx="14" fill="#0b1b30" stroke="#5fdc9a" stroke-width="1.5"/><rect width="208" height="50" rx="14" fill="url(#g-k8s)"/>
+<rect x="12" y="10" width="30" height="30" rx="10" fill="#5fdc9a" fill-opacity=".16" stroke="#5fdc9a" stroke-opacity="0.55"/>
+<g transform="translate(18.666666666666664 16.666666666666664) scale(0.8333333333333334)" fill="none" stroke="#5fdc9a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5c0-1.4 2.7-2.5 6-2.5s6 1.1 6 2.5-2.7 2.5-6 2.5S4 6.4 4 5zM4 5v10c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5V5M4 10c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5"/></g>
+<text x="54" y="22" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12.5" font-weight="700" fill="#d6e6ff">prometheus</text>
+<text x="54" y="37" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">prometheus:v2.53.0</text>
+<circle cx="194" cy="14" r="3" fill="#5fdc9a"/>
+</g>
+<g class="n" data-id="k8s:k8s.deployment:observability/grafana" transform="translate(1748 308)">
+<rect width="208" height="50" rx="14" fill="#0b1b30" stroke="#5fdc9a" stroke-width="1.5"/><rect width="208" height="50" rx="14" fill="url(#g-k8s)"/>
+<rect x="12" y="10" width="30" height="30" rx="10" fill="#5fdc9a" fill-opacity=".16" stroke="#5fdc9a" stroke-opacity="0.55"/>
+<g transform="translate(18.666666666666664 16.666666666666664) scale(0.8333333333333334)" fill="none" stroke="#5fdc9a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2l6.5 3.7v7.6L10 17l-6.5-3.7V5.7zM10 9.5l6.5-3.8M10 9.5L3.5 5.7M10 9.5V17"/></g>
+<text x="54" y="22" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12.5" font-weight="700" fill="#d6e6ff">grafana</text>
+<text x="54" y="37" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">grafana:11.1.0</text>
+<circle cx="194" cy="14" r="3" fill="#5fdc9a"/>
+</g>
+<g class="n" data-id="k8s:k8s.deployment:observability/loki" transform="translate(1748 402)">
+<rect width="208" height="50" rx="14" fill="#0b1b30" stroke="#5fdc9a" stroke-width="1.5"/><rect width="208" height="50" rx="14" fill="url(#g-k8s)"/>
+<rect x="12" y="10" width="30" height="30" rx="10" fill="#5fdc9a" fill-opacity=".16" stroke="#5fdc9a" stroke-opacity="0.55"/>
+<g transform="translate(18.666666666666664 16.666666666666664) scale(0.8333333333333334)" fill="none" stroke="#5fdc9a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2l6.5 3.7v7.6L10 17l-6.5-3.7V5.7zM10 9.5l6.5-3.8M10 9.5L3.5 5.7M10 9.5V17"/></g>
+<text x="54" y="22" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12.5" font-weight="700" fill="#d6e6ff">loki</text>
+<text x="54" y="37" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">loki:3.1.0</text>
+<circle cx="194" cy="14" r="3" fill="#5fdc9a"/>
+</g>
+<g class="n" data-id="k8s:k8s.daemonset:observability/node-exporter" transform="translate(1748 590)">
+<rect width="208" height="50" rx="14" fill="#0b1b30" stroke="#5fdc9a" stroke-width="1.5"/><rect width="208" height="50" rx="14" fill="url(#g-k8s)"/>
+<rect x="12" y="10" width="30" height="30" rx="10" fill="#5fdc9a" fill-opacity=".16" stroke="#5fdc9a" stroke-opacity="0.55"/>
+<g transform="translate(18.666666666666664 16.666666666666664) scale(0.8333333333333334)" fill="none" stroke="#5fdc9a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h14v5H3zM3 11h14v5H3zM6.5 6.5h.01M6.5 13.5h.01"/></g>
+<text x="54" y="22" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12.5" font-weight="700" fill="#d6e6ff">node-exporter</text>
+<text x="54" y="37" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">node-exporter:v1.8.1</text>
+<circle cx="194" cy="14" r="3" fill="#5fdc9a"/>
+</g>
+<g class="n" data-id="k8s:k8s.deployment:shop/web" transform="translate(2564 402)">
+<rect width="208" height="50" rx="14" fill="#0b1b30" stroke="#5fdc9a" stroke-width="1.5"/><rect width="208" height="50" rx="14" fill="url(#g-k8s)"/>
+<rect x="12" y="10" width="30" height="30" rx="10" fill="#5fdc9a" fill-opacity=".16" stroke="#5fdc9a" stroke-opacity="0.55"/>
+<g transform="translate(18.666666666666664 16.666666666666664) scale(0.8333333333333334)" fill="none" stroke="#5fdc9a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2l6.5 3.7v7.6L10 17l-6.5-3.7V5.7zM10 9.5l6.5-3.8M10 9.5L3.5 5.7M10 9.5V17"/></g>
+<text x="54" y="22" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12.5" font-weight="700" fill="#d6e6ff">web</text>
+<text x="54" y="37" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">web:2.4.1</text>
+<circle cx="194" cy="14" r="3" fill="#5fdc9a"/>
+</g>
+<g class="n" data-id="k8s:k8s.deployment:shop/api" transform="translate(2564 308)">
+<rect width="208" height="50" rx="14" fill="#0b1b30" stroke="#5fdc9a" stroke-width="1.5"/><rect width="208" height="50" rx="14" fill="url(#g-k8s)"/>
+<rect x="12" y="10" width="30" height="30" rx="10" fill="#5fdc9a" fill-opacity=".16" stroke="#5fdc9a" stroke-opacity="0.55"/>
+<g transform="translate(18.666666666666664 16.666666666666664) scale(0.8333333333333334)" fill="none" stroke="#5fdc9a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2l6.5 3.7v7.6L10 17l-6.5-3.7V5.7zM10 9.5l6.5-3.8M10 9.5L3.5 5.7M10 9.5V17"/></g>
+<text x="54" y="22" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12.5" font-weight="700" fill="#d6e6ff">api</text>
+<text x="54" y="37" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">api:2.4.1</text>
+<circle cx="194" cy="14" r="3" fill="#5fdc9a"/>
+</g>
+<g class="n" data-id="k8s:k8s.deployment:shop/worker" transform="translate(2564 496)">
+<rect width="208" height="50" rx="14" fill="#0b1b30" stroke="#5fdc9a" stroke-width="1.5"/><rect width="208" height="50" rx="14" fill="url(#g-k8s)"/>
+<rect x="12" y="10" width="30" height="30" rx="10" fill="#5fdc9a" fill-opacity=".16" stroke="#5fdc9a" stroke-opacity="0.55"/>
+<g transform="translate(18.666666666666664 16.666666666666664) scale(0.8333333333333334)" fill="none" stroke="#5fdc9a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2l6.5 3.7v7.6L10 17l-6.5-3.7V5.7zM10 9.5l6.5-3.8M10 9.5L3.5 5.7M10 9.5V17"/></g>
+<text x="54" y="22" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12.5" font-weight="700" fill="#d6e6ff">worker</text>
+<text x="54" y="37" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">worker:2.4.1</text>
+<circle cx="194" cy="14" r="3" fill="#5fdc9a"/>
+</g>
+<g class="n" data-id="k8s:k8s.statefulset:shop/redis" transform="translate(2564 590)">
+<rect width="208" height="50" rx="14" fill="#0b1b30" stroke="#5fdc9a" stroke-width="1.5"/><rect width="208" height="50" rx="14" fill="url(#g-k8s)"/>
+<rect x="12" y="10" width="30" height="30" rx="10" fill="#5fdc9a" fill-opacity=".16" stroke="#5fdc9a" stroke-opacity="0.55"/>
+<g transform="translate(18.666666666666664 16.666666666666664) scale(0.8333333333333334)" fill="none" stroke="#5fdc9a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5c0-1.4 2.7-2.5 6-2.5s6 1.1 6 2.5-2.7 2.5-6 2.5S4 6.4 4 5zM4 5v10c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5V5M4 10c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5"/></g>
+<text x="54" y="22" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12.5" font-weight="700" fill="#d6e6ff">redis</text>
+<text x="54" y="37" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">redis:7.2</text>
+<circle cx="194" cy="14" r="3" fill="#5fdc9a"/>
+</g>
+<g class="n" data-id="k8s:k8s.cronjob:shop/nightly-report" transform="translate(2816 308)">
+<rect width="208" height="50" rx="14" fill="#0b1b30" stroke="#5fdc9a" stroke-width="1.5"/><rect width="208" height="50" rx="14" fill="url(#g-k8s)"/>
+<rect x="12" y="10" width="30" height="30" rx="10" fill="#5fdc9a" fill-opacity=".16" stroke="#5fdc9a" stroke-opacity="0.55"/>
+<g transform="translate(18.666666666666664 16.666666666666664) scale(0.8333333333333334)" fill="none" stroke="#5fdc9a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3a7 7 0 1 0 .01 0zM10 6v4l3 2"/></g>
+<text x="54" y="22" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12.5" font-weight="700" fill="#d6e6ff">nightly-report</text>
+<text x="54" y="37" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">report:1.9.0</text>
+<circle cx="194" cy="14" r="3" fill="#5fdc9a"/>
+</g>
+<g class="n" data-id="k8s:k8s.deployment:payments/payments-api" transform="translate(2000 764)">
+<rect width="208" height="50" rx="14" fill="#0b1b30" stroke="#5fdc9a" stroke-width="1.5"/><rect width="208" height="50" rx="14" fill="url(#g-k8s)"/>
+<rect x="12" y="10" width="30" height="30" rx="10" fill="#5fdc9a" fill-opacity=".16" stroke="#5fdc9a" stroke-opacity="0.55"/>
+<g transform="translate(18.666666666666664 16.666666666666664) scale(0.8333333333333334)" fill="none" stroke="#5fdc9a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2l6.5 3.7v7.6L10 17l-6.5-3.7V5.7zM10 9.5l6.5-3.8M10 9.5L3.5 5.7M10 9.5V17"/></g>
+<text x="54" y="22" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12.5" font-weight="700" fill="#d6e6ff">payments-api</text>
+<text x="54" y="37" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">api:5.0.2</text>
+<circle cx="194" cy="14" r="3" fill="#5fdc9a"/>
+</g>
+<g class="n" data-id="k8s:k8s.deployment:ml/recommender" transform="translate(1436 924)">
+<rect width="208" height="50" rx="14" fill="#0b1b30" stroke="#5fdc9a" stroke-width="1.5"/><rect width="208" height="50" rx="14" fill="url(#g-k8s)"/>
+<rect x="12" y="10" width="30" height="30" rx="10" fill="#5fdc9a" fill-opacity=".16" stroke="#5fdc9a" stroke-opacity="0.55"/>
+<g transform="translate(18.666666666666664 16.666666666666664) scale(0.8333333333333334)" fill="none" stroke="#5fdc9a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2l6.5 3.7v7.6L10 17l-6.5-3.7V5.7zM10 9.5l6.5-3.8M10 9.5L3.5 5.7M10 9.5V17"/></g>
+<text x="54" y="22" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12.5" font-weight="700" fill="#d6e6ff">recommender</text>
+<text x="54" y="37" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">recommender:0.7.0</text>
+<circle cx="194" cy="14" r="3" fill="#5fdc9a"/>
+</g>
+<g class="n" data-id="k8s:k8s.deployment:ml/trainer" transform="translate(1436 1018)">
+<rect width="208" height="50" rx="14" fill="#0b1b30" stroke="#5fdc9a" stroke-width="1.5"/><rect width="208" height="50" rx="14" fill="url(#g-k8s)"/>
+<rect x="12" y="10" width="30" height="30" rx="10" fill="#5fdc9a" fill-opacity=".16" stroke="#5fdc9a" stroke-opacity="0.55"/>
+<g transform="translate(18.666666666666664 16.666666666666664) scale(0.8333333333333334)" fill="none" stroke="#5fdc9a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2l6.5 3.7v7.6L10 17l-6.5-3.7V5.7zM10 9.5l6.5-3.8M10 9.5L3.5 5.7M10 9.5V17"/></g>
+<text x="54" y="22" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12.5" font-weight="700" fill="#d6e6ff">trainer</text>
+<text x="54" y="37" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">trainer:0.7.0</text>
+<circle cx="194" cy="14" r="3" fill="#5fdc9a"/>
+</g>
+<g class="n" data-id="k8s:k8s.deployment:tenant-acme/app" transform="translate(2816 764)">
+<rect width="208" height="50" rx="14" fill="#0b1b30" stroke="#5fdc9a" stroke-width="1.5"/><rect width="208" height="50" rx="14" fill="url(#g-k8s)"/>
+<rect x="12" y="10" width="30" height="30" rx="10" fill="#5fdc9a" fill-opacity=".16" stroke="#5fdc9a" stroke-opacity="0.55"/>
+<g transform="translate(18.666666666666664 16.666666666666664) scale(0.8333333333333334)" fill="none" stroke="#5fdc9a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2l6.5 3.7v7.6L10 17l-6.5-3.7V5.7zM10 9.5l6.5-3.8M10 9.5L3.5 5.7M10 9.5V17"/></g>
+<text x="54" y="22" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12.5" font-weight="700" fill="#d6e6ff">app</text>
+<text x="54" y="37" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">app:1.0.0</text>
+<circle cx="194" cy="14" r="3" fill="#5fdc9a"/>
+</g>
+<g class="n" data-id="k8s:k8s.deployment:tenant-globex/app" transform="translate(2816 938)">
+<rect width="208" height="50" rx="14" fill="#0b1b30" stroke="#5fdc9a" stroke-width="1.5"/><rect width="208" height="50" rx="14" fill="url(#g-k8s)"/>
+<rect x="12" y="10" width="30" height="30" rx="10" fill="#5fdc9a" fill-opacity=".16" stroke="#5fdc9a" stroke-opacity="0.55"/>
+<g transform="translate(18.666666666666664 16.666666666666664) scale(0.8333333333333334)" fill="none" stroke="#5fdc9a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2l6.5 3.7v7.6L10 17l-6.5-3.7V5.7zM10 9.5l6.5-3.8M10 9.5L3.5 5.7M10 9.5V17"/></g>
+<text x="54" y="22" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12.5" font-weight="700" fill="#d6e6ff">app</text>
+<text x="54" y="37" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">app:1.0.0</text>
+<circle cx="194" cy="14" r="3" fill="#5fdc9a"/>
+</g>
+<g class="n" data-id="k8s:k8s.service:argocd/argocd-server" transform="translate(1124 1224)">
+<rect width="208" height="50" rx="14" fill="#0b1b30" stroke="#4fdcc2" stroke-width="1.5"/><rect width="208" height="50" rx="14" fill="url(#g-edgeapp)"/>
+<rect x="12" y="10" width="30" height="30" rx="10" fill="#4fdcc2" fill-opacity=".16" stroke="#4fdcc2" stroke-opacity="0.55"/>
+<g transform="translate(18.666666666666664 16.666666666666664) scale(0.8333333333333334)" fill="none" stroke="#4fdcc2" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10h14M10 3c3 3 3 11 0 14M10 3c-3 3-3 11 0 14M3 10a7 7 0 1 0 14 0a7 7 0 1 0-14 0"/></g>
+<text x="54" y="22" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12.5" font-weight="700" fill="#d6e6ff">argocd-server</text>
+<text x="54" y="37" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">service</text>
+<circle cx="194" cy="14" r="3" fill="#4fdcc2"/>
+</g>
+<g class="n" data-id="k8s:k8s.service:ingress-nginx/ingress-nginx-controller" transform="translate(1436 402)">
+<rect width="208" height="50" rx="14" fill="#0b1b30" stroke="#4fdcc2" stroke-width="1.5"/><rect width="208" height="50" rx="14" fill="url(#g-edgeapp)"/>
+<rect x="12" y="10" width="30" height="30" rx="10" fill="#4fdcc2" fill-opacity=".16" stroke="#4fdcc2" stroke-opacity="0.55"/>
+<g transform="translate(18.666666666666664 16.666666666666664) scale(0.8333333333333334)" fill="none" stroke="#4fdcc2" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10h14M10 3c3 3 3 11 0 14M10 3c-3 3-3 11 0 14M3 10a7 7 0 1 0 14 0a7 7 0 1 0-14 0"/></g>
+<text x="54" y="22" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12.5" font-weight="700" fill="#d6e6ff">ingress-nginx-contr…</text>
+<text x="54" y="37" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">service</text>
+<circle cx="194" cy="14" r="3" fill="#4fdcc2"/>
+</g>
+<g class="n" data-id="k8s:k8s.service:observability/prometheus" transform="translate(2000 402)">
+<rect width="208" height="50" rx="14" fill="#0b1b30" stroke="#4fdcc2" stroke-width="1.5"/><rect width="208" height="50" rx="14" fill="url(#g-edgeapp)"/>
+<rect x="12" y="10" width="30" height="30" rx="10" fill="#4fdcc2" fill-opacity=".16" stroke="#4fdcc2" stroke-opacity="0.55"/>
+<g transform="translate(18.666666666666664 16.666666666666664) scale(0.8333333333333334)" fill="none" stroke="#4fdcc2" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10h14M10 3c3 3 3 11 0 14M10 3c-3 3-3 11 0 14M3 10a7 7 0 1 0 14 0a7 7 0 1 0-14 0"/></g>
+<text x="54" y="22" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12.5" font-weight="700" fill="#d6e6ff">prometheus</text>
+<text x="54" y="37" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">service</text>
+<circle cx="194" cy="14" r="3" fill="#4fdcc2"/>
+</g>
+<g class="n" data-id="k8s:k8s.service:observability/grafana" transform="translate(2000 308)">
+<rect width="208" height="50" rx="14" fill="#0b1b30" stroke="#4fdcc2" stroke-width="1.5"/><rect width="208" height="50" rx="14" fill="url(#g-edgeapp)"/>
+<rect x="12" y="10" width="30" height="30" rx="10" fill="#4fdcc2" fill-opacity=".16" stroke="#4fdcc2" stroke-opacity="0.55"/>
+<g transform="translate(18.666666666666664 16.666666666666664) scale(0.8333333333333334)" fill="none" stroke="#4fdcc2" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10h14M10 3c3 3 3 11 0 14M10 3c-3 3-3 11 0 14M3 10a7 7 0 1 0 14 0a7 7 0 1 0-14 0"/></g>
+<text x="54" y="22" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12.5" font-weight="700" fill="#d6e6ff">grafana</text>
+<text x="54" y="37" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">service</text>
+<circle cx="194" cy="14" r="3" fill="#4fdcc2"/>
+</g>
+<g class="n" data-id="k8s:k8s.ingress:observability/grafana" transform="translate(2000 496)">
+<rect width="208" height="50" rx="14" fill="#0b1b30" stroke="#4fdcc2" stroke-width="1.5"/><rect width="208" height="50" rx="14" fill="url(#g-edgeapp)"/>
+<rect x="12" y="10" width="30" height="30" rx="10" fill="#4fdcc2" fill-opacity=".16" stroke="#4fdcc2" stroke-opacity="0.55"/>
+<g transform="translate(18.666666666666664 16.666666666666664) scale(0.8333333333333334)" fill="none" stroke="#4fdcc2" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3v14M5 17h10M4 6l3 5H1zM16 6l3 5h-6z"/></g>
+<text x="54" y="22" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12.5" font-weight="700" fill="#d6e6ff">grafana</text>
+<text x="54" y="37" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">ingress</text>
+<circle cx="194" cy="14" r="3" fill="#4fdcc2"/>
+</g>
+<g class="n" data-id="k8s:k8s.configmap:observability/grafana-cfg" transform="translate(2000 590)">
+<rect width="208" height="50" rx="14" fill="#0b1b30" stroke="#9db0c4" stroke-width="1.5"/><rect width="208" height="50" rx="14" fill="url(#g-cfg)"/>
+<rect x="12" y="10" width="30" height="30" rx="10" fill="#9db0c4" fill-opacity=".16" stroke="#9db0c4" stroke-opacity="0.55"/>
+<g transform="translate(18.666666666666664 16.666666666666664) scale(0.8333333333333334)" fill="none" stroke="#9db0c4" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h12M4 10h12M4 14h12M7 4v4M13 8v4M9 12v4"/></g>
+<text x="54" y="22" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12.5" font-weight="700" fill="#d6e6ff">grafana-cfg</text>
+<text x="54" y="37" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">configmap</text>
+<circle cx="194" cy="14" r="3" fill="#9db0c4"/>
+</g>
+<g class="n" data-id="k8s:k8s.secret:observability/grafana-admin" transform="translate(2252 308)">
+<rect width="208" height="50" rx="14" fill="#0b1b30" stroke="#9db0c4" stroke-width="1.5"/><rect width="208" height="50" rx="14" fill="url(#g-cfg)"/>
+<rect x="12" y="10" width="30" height="30" rx="10" fill="#9db0c4" fill-opacity=".16" stroke="#9db0c4" stroke-opacity="0.55"/>
+<g transform="translate(18.666666666666664 16.666666666666664) scale(0.8333333333333334)" fill="none" stroke="#9db0c4" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12.5 3a4.5 4.5 0 1 0 .8 8.9L14 13h2v2h2v-2.3l-4.8-4.8A4.5 4.5 0 0 0 12.5 3zM11 7.5a1 1 0 1 0 2 0 1 1 0 0 0-2 0"/></g>
+<text x="54" y="22" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12.5" font-weight="700" fill="#d6e6ff">grafana-admin</text>
+<text x="54" y="37" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">secret</text>
+<circle cx="194" cy="14" r="3" fill="#9db0c4"/>
+</g>
+<g class="n" data-id="k8s:k8s.service:shop/web" transform="translate(2816 590)">
+<rect width="208" height="50" rx="14" fill="#0b1b30" stroke="#4fdcc2" stroke-width="1.5"/><rect width="208" height="50" rx="14" fill="url(#g-edgeapp)"/>
+<rect x="12" y="10" width="30" height="30" rx="10" fill="#4fdcc2" fill-opacity=".16" stroke="#4fdcc2" stroke-opacity="0.55"/>
+<g transform="translate(18.666666666666664 16.666666666666664) scale(0.8333333333333334)" fill="none" stroke="#4fdcc2" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10h14M10 3c3 3 3 11 0 14M10 3c-3 3-3 11 0 14M3 10a7 7 0 1 0 14 0a7 7 0 1 0-14 0"/></g>
+<text x="54" y="22" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12.5" font-weight="700" fill="#d6e6ff">web</text>
+<text x="54" y="37" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">service</text>
+<circle cx="194" cy="14" r="3" fill="#4fdcc2"/>
+</g>
+<g class="n" data-id="k8s:k8s.ingress:shop/shop" transform="translate(3068 308)">
+<rect width="208" height="50" rx="14" fill="#0b1b30" stroke="#4fdcc2" stroke-width="1.5"/><rect width="208" height="50" rx="14" fill="url(#g-edgeapp)"/>
+<rect x="12" y="10" width="30" height="30" rx="10" fill="#4fdcc2" fill-opacity=".16" stroke="#4fdcc2" stroke-opacity="0.55"/>
+<g transform="translate(18.666666666666664 16.666666666666664) scale(0.8333333333333334)" fill="none" stroke="#4fdcc2" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3v14M5 17h10M4 6l3 5H1zM16 6l3 5h-6z"/></g>
+<text x="54" y="22" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12.5" font-weight="700" fill="#d6e6ff">shop</text>
+<text x="54" y="37" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">ingress</text>
+<circle cx="194" cy="14" r="3" fill="#4fdcc2"/>
+</g>
+<g class="n" data-id="k8s:k8s.service:shop/api" transform="translate(2816 402)">
+<rect width="208" height="50" rx="14" fill="#0b1b30" stroke="#4fdcc2" stroke-width="1.5"/><rect width="208" height="50" rx="14" fill="url(#g-edgeapp)"/>
+<rect x="12" y="10" width="30" height="30" rx="10" fill="#4fdcc2" fill-opacity=".16" stroke="#4fdcc2" stroke-opacity="0.55"/>
+<g transform="translate(18.666666666666664 16.666666666666664) scale(0.8333333333333334)" fill="none" stroke="#4fdcc2" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10h14M10 3c3 3 3 11 0 14M10 3c-3 3-3 11 0 14M3 10a7 7 0 1 0 14 0a7 7 0 1 0-14 0"/></g>
+<text x="54" y="22" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12.5" font-weight="700" fill="#d6e6ff">api</text>
+<text x="54" y="37" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">service</text>
+<circle cx="194" cy="14" r="3" fill="#4fdcc2"/>
+</g>
+<g class="n" data-id="k8s:k8s.service:shop/redis" transform="translate(2816 496)">
+<rect width="208" height="50" rx="14" fill="#0b1b30" stroke="#4fdcc2" stroke-width="1.5"/><rect width="208" height="50" rx="14" fill="url(#g-edgeapp)"/>
+<rect x="12" y="10" width="30" height="30" rx="10" fill="#4fdcc2" fill-opacity=".16" stroke="#4fdcc2" stroke-opacity="0.55"/>
+<g transform="translate(18.666666666666664 16.666666666666664) scale(0.8333333333333334)" fill="none" stroke="#4fdcc2" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10h14M10 3c3 3 3 11 0 14M10 3c-3 3-3 11 0 14M3 10a7 7 0 1 0 14 0a7 7 0 1 0-14 0"/></g>
+<text x="54" y="22" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12.5" font-weight="700" fill="#d6e6ff">redis</text>
+<text x="54" y="37" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">service</text>
+<circle cx="194" cy="14" r="3" fill="#4fdcc2"/>
+</g>
+<g class="n" data-id="k8s:k8s.configmap:shop/web-cfg" transform="translate(3068 402)">
+<rect width="208" height="50" rx="14" fill="#0b1b30" stroke="#9db0c4" stroke-width="1.5"/><rect width="208" height="50" rx="14" fill="url(#g-cfg)"/>
+<rect x="12" y="10" width="30" height="30" rx="10" fill="#9db0c4" fill-opacity=".16" stroke="#9db0c4" stroke-opacity="0.55"/>
+<g transform="translate(18.666666666666664 16.666666666666664) scale(0.8333333333333334)" fill="none" stroke="#9db0c4" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h12M4 10h12M4 14h12M7 4v4M13 8v4M9 12v4"/></g>
+<text x="54" y="22" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12.5" font-weight="700" fill="#d6e6ff">web-cfg</text>
+<text x="54" y="37" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">configmap</text>
+<circle cx="194" cy="14" r="3" fill="#9db0c4"/>
+</g>
+<g class="n" data-id="k8s:k8s.secret:shop/db-credentials" transform="translate(3068 496)">
+<rect width="208" height="50" rx="14" fill="#0b1b30" stroke="#9db0c4" stroke-width="1.5"/><rect width="208" height="50" rx="14" fill="url(#g-cfg)"/>
+<rect x="12" y="10" width="30" height="30" rx="10" fill="#9db0c4" fill-opacity=".16" stroke="#9db0c4" stroke-opacity="0.55"/>
+<g transform="translate(18.666666666666664 16.666666666666664) scale(0.8333333333333334)" fill="none" stroke="#9db0c4" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12.5 3a4.5 4.5 0 1 0 .8 8.9L14 13h2v2h2v-2.3l-4.8-4.8A4.5 4.5 0 0 0 12.5 3zM11 7.5a1 1 0 1 0 2 0 1 1 0 0 0-2 0"/></g>
+<text x="54" y="22" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12.5" font-weight="700" fill="#d6e6ff">db-credentials</text>
+<text x="54" y="37" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">secret</text>
+<circle cx="194" cy="14" r="3" fill="#9db0c4"/>
+</g>
+<g class="n" data-id="k8s:k8s.service:payments/payments-api" transform="translate(2000 858)">
+<rect width="208" height="50" rx="14" fill="#0b1b30" stroke="#4fdcc2" stroke-width="1.5"/><rect width="208" height="50" rx="14" fill="url(#g-edgeapp)"/>
+<rect x="12" y="10" width="30" height="30" rx="10" fill="#4fdcc2" fill-opacity=".16" stroke="#4fdcc2" stroke-opacity="0.55"/>
+<g transform="translate(18.666666666666664 16.666666666666664) scale(0.8333333333333334)" fill="none" stroke="#4fdcc2" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10h14M10 3c3 3 3 11 0 14M10 3c-3 3-3 11 0 14M3 10a7 7 0 1 0 14 0a7 7 0 1 0-14 0"/></g>
+<text x="54" y="22" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12.5" font-weight="700" fill="#d6e6ff">payments-api</text>
+<text x="54" y="37" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">service</text>
+<circle cx="194" cy="14" r="3" fill="#4fdcc2"/>
+</g>
+<g class="n" data-id="k8s:k8s.secret:payments/psp-credentials" transform="translate(2000 1046)">
+<rect width="208" height="50" rx="14" fill="#0b1b30" stroke="#9db0c4" stroke-width="1.5"/><rect width="208" height="50" rx="14" fill="url(#g-cfg)"/>
+<rect x="12" y="10" width="30" height="30" rx="10" fill="#9db0c4" fill-opacity=".16" stroke="#9db0c4" stroke-opacity="0.55"/>
+<g transform="translate(18.666666666666664 16.666666666666664) scale(0.8333333333333334)" fill="none" stroke="#9db0c4" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12.5 3a4.5 4.5 0 1 0 .8 8.9L14 13h2v2h2v-2.3l-4.8-4.8A4.5 4.5 0 0 0 12.5 3zM11 7.5a1 1 0 1 0 2 0 1 1 0 0 0-2 0"/></g>
+<text x="54" y="22" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12.5" font-weight="700" fill="#d6e6ff">psp-credentials</text>
+<text x="54" y="37" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">secret</text>
+<circle cx="194" cy="14" r="3" fill="#9db0c4"/>
+</g>
+<g class="n" data-id="k8s:k8s.ingress:payments/payments" transform="translate(2000 952)">
+<rect width="208" height="50" rx="14" fill="#0b1b30" stroke="#4fdcc2" stroke-width="1.5"/><rect width="208" height="50" rx="14" fill="url(#g-edgeapp)"/>
+<rect x="12" y="10" width="30" height="30" rx="10" fill="#4fdcc2" fill-opacity=".16" stroke="#4fdcc2" stroke-opacity="0.55"/>
+<g transform="translate(18.666666666666664 16.666666666666664) scale(0.8333333333333334)" fill="none" stroke="#4fdcc2" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3v14M5 17h10M4 6l3 5H1zM16 6l3 5h-6z"/></g>
+<text x="54" y="22" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12.5" font-weight="700" fill="#d6e6ff">payments</text>
+<text x="54" y="37" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">ingress</text>
+<circle cx="194" cy="14" r="3" fill="#4fdcc2"/>
+</g>
+<g class="n" data-id="k8s:k8s.argo.application:argocd/shop" transform="translate(872 1130)">
+<rect width="208" height="50" rx="14" fill="#0b1b30" stroke="#b59bff" stroke-width="1.5"/><rect width="208" height="50" rx="14" fill="url(#g-eks)"/>
+<rect x="12" y="10" width="30" height="30" rx="10" fill="#b59bff" fill-opacity=".16" stroke="#b59bff" stroke-opacity="0.55"/>
+<g transform="translate(18.666666666666664 16.666666666666664) scale(0.8333333333333334)" fill="none" stroke="#b59bff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2l7 4v8l-7 4-7-4V6zM6.5 10l2.5 2.5L14 7.5"/></g>
+<text x="54" y="22" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12.5" font-weight="700" fill="#d6e6ff">shop</text>
+<text x="54" y="37" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">argo.application</text>
+<circle cx="194" cy="14" r="3" fill="#b59bff"/>
+</g>
+<g class="n" data-id="k8s:k8s.argo.application:argocd/payments" transform="translate(872 1036)">
+<rect width="208" height="50" rx="14" fill="#0b1b30" stroke="#b59bff" stroke-width="1.5"/><rect width="208" height="50" rx="14" fill="url(#g-eks)"/>
+<rect x="12" y="10" width="30" height="30" rx="10" fill="#b59bff" fill-opacity=".16" stroke="#b59bff" stroke-opacity="0.55"/>
+<g transform="translate(18.666666666666664 16.666666666666664) scale(0.8333333333333334)" fill="none" stroke="#b59bff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2l7 4v8l-7 4-7-4V6zM6.5 10l2.5 2.5L14 7.5"/></g>
+<text x="54" y="22" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12.5" font-weight="700" fill="#d6e6ff">payments</text>
+<text x="54" y="37" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">argo.application</text>
+<circle cx="194" cy="14" r="3" fill="#b59bff"/>
+</g>
+<g class="n" data-id="k8s:k8s.argo.application:argocd/observability" transform="translate(872 942)">
+<rect width="208" height="50" rx="14" fill="#0b1b30" stroke="#b59bff" stroke-width="1.5"/><rect width="208" height="50" rx="14" fill="url(#g-eks)"/>
+<rect x="12" y="10" width="30" height="30" rx="10" fill="#b59bff" fill-opacity=".16" stroke="#b59bff" stroke-opacity="0.55"/>
+<g transform="translate(18.666666666666664 16.666666666666664) scale(0.8333333333333334)" fill="none" stroke="#b59bff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2l7 4v8l-7 4-7-4V6zM6.5 10l2.5 2.5L14 7.5"/></g>
+<text x="54" y="22" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12.5" font-weight="700" fill="#d6e6ff">observability</text>
+<text x="54" y="37" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">argo.application</text>
+<circle cx="194" cy="14" r="3" fill="#b59bff"/>
+</g>
+<g class="n" data-id="k8s:k8s.argo.application:argocd/ingress-nginx" transform="translate(620 1130)">
+<rect width="208" height="50" rx="14" fill="#0b1b30" stroke="#b59bff" stroke-width="1.5"/><rect width="208" height="50" rx="14" fill="url(#g-eks)"/>
+<rect x="12" y="10" width="30" height="30" rx="10" fill="#b59bff" fill-opacity=".16" stroke="#b59bff" stroke-opacity="0.55"/>
+<g transform="translate(18.666666666666664 16.666666666666664) scale(0.8333333333333334)" fill="none" stroke="#b59bff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2l7 4v8l-7 4-7-4V6zM6.5 10l2.5 2.5L14 7.5"/></g>
+<text x="54" y="22" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12.5" font-weight="700" fill="#d6e6ff">ingress-nginx</text>
+<text x="54" y="37" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">argo.application</text>
+<circle cx="194" cy="14" r="3" fill="#b59bff"/>
+</g>
+<g class="n" data-id="k8s:k8s.argo.application:argocd/karpenter" transform="translate(620 1224)">
+<rect width="208" height="50" rx="14" fill="#0b1b30" stroke="#b59bff" stroke-width="1.5"/><rect width="208" height="50" rx="14" fill="url(#g-eks)"/>
+<rect x="12" y="10" width="30" height="30" rx="10" fill="#b59bff" fill-opacity=".16" stroke="#b59bff" stroke-opacity="0.55"/>
+<g transform="translate(18.666666666666664 16.666666666666664) scale(0.8333333333333334)" fill="none" stroke="#b59bff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2l7 4v8l-7 4-7-4V6zM6.5 10l2.5 2.5L14 7.5"/></g>
+<text x="54" y="22" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12.5" font-weight="700" fill="#d6e6ff">karpenter</text>
+<text x="54" y="37" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">argo.application</text>
+<circle cx="194" cy="14" r="3" fill="#b59bff"/>
+</g>
+<g class="n" data-id="k8s:k8s.argo.application:argocd/argocd" transform="translate(620 1036)">
+<rect width="208" height="50" rx="14" fill="#0b1b30" stroke="#b59bff" stroke-width="1.5"/><rect width="208" height="50" rx="14" fill="url(#g-eks)"/>
+<rect x="12" y="10" width="30" height="30" rx="10" fill="#b59bff" fill-opacity=".16" stroke="#b59bff" stroke-opacity="0.55"/>
+<g transform="translate(18.666666666666664 16.666666666666664) scale(0.8333333333333334)" fill="none" stroke="#b59bff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2l7 4v8l-7 4-7-4V6zM6.5 10l2.5 2.5L14 7.5"/></g>
+<text x="54" y="22" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12.5" font-weight="700" fill="#d6e6ff">argocd</text>
+<text x="54" y="37" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">argo.application</text>
+<circle cx="194" cy="14" r="3" fill="#b59bff"/>
+</g>
+<g class="n" data-id="k8s:k8s.argo.application:argocd/ml" transform="translate(872 848)">
+<rect width="208" height="50" rx="14" fill="#0b1b30" stroke="#b59bff" stroke-width="1.5"/><rect width="208" height="50" rx="14" fill="url(#g-eks)"/>
+<rect x="12" y="10" width="30" height="30" rx="10" fill="#b59bff" fill-opacity=".16" stroke="#b59bff" stroke-opacity="0.55"/>
+<g transform="translate(18.666666666666664 16.666666666666664) scale(0.8333333333333334)" fill="none" stroke="#b59bff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2l7 4v8l-7 4-7-4V6zM6.5 10l2.5 2.5L14 7.5"/></g>
+<text x="54" y="22" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12.5" font-weight="700" fill="#d6e6ff">ml</text>
+<text x="54" y="37" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">argo.application</text>
+<circle cx="194" cy="14" r="3" fill="#b59bff"/>
+</g>
+<g class="n" data-id="k8s:k8s.argo.applicationset:argocd/tenants" transform="translate(620 942)">
+<rect width="208" height="50" rx="14" fill="#0b1b30" stroke="#b59bff" stroke-width="1.5"/><rect width="208" height="50" rx="14" fill="url(#g-eks)"/>
+<rect x="12" y="10" width="30" height="30" rx="10" fill="#b59bff" fill-opacity=".16" stroke="#b59bff" stroke-opacity="0.55"/>
+<g transform="translate(18.666666666666664 16.666666666666664) scale(0.8333333333333334)" fill="none" stroke="#b59bff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2l7 4v8l-7 4-7-4V6zM6.5 10l2.5 2.5L14 7.5"/></g>
+<text x="54" y="22" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12.5" font-weight="700" fill="#d6e6ff">tenants</text>
+<text x="54" y="37" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">argo.applicationset</text>
+<circle cx="194" cy="14" r="3" fill="#b59bff"/>
+</g>
+<g class="n" data-id="k8s:k8s.argo.application:argocd/tenant-acme" transform="translate(872 1224)">
+<rect width="208" height="50" rx="14" fill="#0b1b30" stroke="#b59bff" stroke-width="1.5"/><rect width="208" height="50" rx="14" fill="url(#g-eks)"/>
+<rect x="12" y="10" width="30" height="30" rx="10" fill="#b59bff" fill-opacity=".16" stroke="#b59bff" stroke-opacity="0.55"/>
+<g transform="translate(18.666666666666664 16.666666666666664) scale(0.8333333333333334)" fill="none" stroke="#b59bff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2l7 4v8l-7 4-7-4V6zM6.5 10l2.5 2.5L14 7.5"/></g>
+<text x="54" y="22" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12.5" font-weight="700" fill="#d6e6ff">tenant-acme</text>
+<text x="54" y="37" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">argo.application</text>
+<circle cx="194" cy="14" r="3" fill="#b59bff"/>
+</g>
+<g class="n" data-id="k8s:k8s.argo.application:argocd/tenant-globex" transform="translate(1124 848)">
+<rect width="208" height="50" rx="14" fill="#0b1b30" stroke="#b59bff" stroke-width="1.5"/><rect width="208" height="50" rx="14" fill="url(#g-eks)"/>
+<rect x="12" y="10" width="30" height="30" rx="10" fill="#b59bff" fill-opacity=".16" stroke="#b59bff" stroke-opacity="0.55"/>
+<g transform="translate(18.666666666666664 16.666666666666664) scale(0.8333333333333334)" fill="none" stroke="#b59bff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2l7 4v8l-7 4-7-4V6zM6.5 10l2.5 2.5L14 7.5"/></g>
+<text x="54" y="22" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12.5" font-weight="700" fill="#d6e6ff">tenant-globex</text>
+<text x="54" y="37" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">argo.application</text>
+<circle cx="194" cy="14" r="3" fill="#b59bff"/>
+</g>
+<g class="n" data-id="k8s:k8s.argo.applicationset:argocd/preview-envs" transform="translate(620 848)">
+<rect width="208" height="50" rx="14" fill="#0b1b30" stroke="#b59bff" stroke-width="1.5"/><rect width="208" height="50" rx="14" fill="url(#g-eks)"/>
+<rect x="12" y="10" width="30" height="30" rx="10" fill="#b59bff" fill-opacity=".16" stroke="#b59bff" stroke-opacity="0.55"/>
+<g transform="translate(18.666666666666664 16.666666666666664) scale(0.8333333333333334)" fill="none" stroke="#b59bff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2l7 4v8l-7 4-7-4V6zM6.5 10l2.5 2.5L14 7.5"/></g>
+<text x="54" y="22" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="12.5" font-weight="700" fill="#d6e6ff">preview-envs</text>
+<text x="54" y="37" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">argo.applicationset</text>
+<circle cx="194" cy="14" r="3" fill="#b59bff"/>
+</g>
+</g>
+</svg>

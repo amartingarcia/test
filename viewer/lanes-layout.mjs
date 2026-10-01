@@ -15,11 +15,12 @@
 //   wrap?                       {min, aspect}: containers with >= min children wrap onto
 //                               further lines so they approach width:height = aspect
 //                               (off unless given: single line, as before)
+//   rootWrap?                   same, for the top level (static exports; the live viewer keeps one line)
 // }
 // nodes = [{ id, parent: id|null, kind }]
 
 export function layoutLanes(nodes, config) {
-  const { sizeOf, axisOf, orderOf, gap, pad, padTop, rootAxis = 'row', wrap = null } = config;
+  const { sizeOf, axisOf, orderOf, gap, pad, padTop, rootAxis = 'row', wrap = null, rootWrap = null } = config;
 
   const byId = new Map(nodes.map((n) => [n.id, n]));
   const children = new Map();
@@ -49,7 +50,7 @@ export function layoutLanes(nodes, config) {
   const boxes = {};
   const place = (list, axis, originX, originY) => {
     const ordered = sorted(list);
-    const layout = arrange(ordered.map((n) => size.get(n.id)), axis, gap, axis === rootAxis && list === roots ? null : wrap);
+    const layout = arrange(ordered.map((n) => size.get(n.id)), axis, gap, axis === rootAxis && list === roots ? rootWrap : wrap);
     let crossCursor = 0;
     layout.lines.forEach((line, li) => {
       let cursor = 0;

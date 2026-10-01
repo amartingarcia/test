@@ -5,6 +5,9 @@ on:
     branches: ["main"]
     paths:
       - "viewer/**"
+      - "scripts/export-html.mjs"
+      - "scripts/lib/standalone-*"
+      - "scripts/lib/build-standalone.mjs"
       - ".github/workflows/pages.yml"
   workflow_dispatch:
 
@@ -28,6 +31,12 @@ jobs:
         uses: actions/checkout@v4
       - name: Setup Pages
         uses: actions/configure-pages@v5
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Build the standalone single-file HTML (all sample environments, offline)
+        run: node scripts/export-html.mjs --out viewer/infra-diagram.html
       - name: Upload viewer/ as the Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:

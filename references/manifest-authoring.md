@@ -15,6 +15,7 @@ One manifest per repo: `{ "repoId": "...", "rules": [...] }`. Schema: `schemas/m
 - `entity`: `kind` (namespaced, `<provider>.<service>[.<variant>]`), `idFrom` = `name` | `address` | `literal` (+`id`), optional `boundary` (exact kind of the parent), optional `embed` (property of parent, not drawn).
 - `ignore: true` (exclusive with `entity`): helper resources (IAM attachments, subnet groups, route associations) that must not count as unmapped.
 - First match wins: put specific rules (variants, regexes) before generic ones.
+- Prefer evidence to names: a `nameRegex` such as `^private` only encodes a naming convention. For AWS subnet tiers map `aws_subnet` to `aws.subnet` and derive the tier from route tables (`refineKind` + `deriveSubnetTiers`, see SKILL.md).
 
 ## Checklist
 

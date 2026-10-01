@@ -1,0 +1,194 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1496" height="1192" viewBox="0 0 1496 1192" data-preset="blueprint" data-theme="dark" role="img"><title>oci_prod</title>
+<defs><linearGradient id="g-net" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6fb1ff" stop-opacity=".20"/><stop offset=".6" stop-color="#6fb1ff" stop-opacity="0"/></linearGradient><linearGradient id="g-eks" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#b59bff" stop-opacity=".20"/><stop offset=".6" stop-color="#b59bff" stop-opacity="0"/></linearGradient><linearGradient id="g-compute" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#52d1e6" stop-opacity=".20"/><stop offset=".6" stop-color="#52d1e6" stop-opacity="0"/></linearGradient><linearGradient id="g-edgeapp" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4fdcc2" stop-opacity=".20"/><stop offset=".6" stop-color="#4fdcc2" stop-opacity="0"/></linearGradient><linearGradient id="g-data" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff8fb3" stop-opacity=".20"/><stop offset=".6" stop-color="#ff8fb3" stop-opacity="0"/></linearGradient><linearGradient id="g-cfg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9db0c4" stop-opacity=".20"/><stop offset=".6" stop-color="#9db0c4" stop-opacity="0"/></linearGradient><linearGradient id="g-iam" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f2c14e" stop-opacity=".20"/><stop offset=".6" stop-color="#f2c14e" stop-opacity="0"/></linearGradient><marker id="ah-default" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0 0L10 5L0 10z" fill="#52d1e6"/></marker><marker id="ah-iam" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0 0L10 5L0 10z" fill="#f2c14e"/></marker></defs>
+<rect width="1496" height="1192" fill="#07111f"/>
+<g transform="translate(40 40)">
+<g class="c" data-id="group:storage" transform="translate(560 914)"><rect width="236" height="144" rx="18" fill="#9db0c4" fill-opacity=".07" stroke="#9db0c4" stroke-width="1.5" stroke-dasharray="8 6"/></g>
+<g class="c" data-id="group:secrets" transform="translate(280 914)"><rect width="236" height="144" rx="18" fill="#9db0c4" fill-opacity=".07" stroke="#9db0c4" stroke-width="1.5" stroke-dasharray="8 6"/></g>
+<g class="c" data-id="group:iam" transform="translate(0 860)"><rect width="236" height="252" rx="18" fill="#f2c14e" fill-opacity=".07" stroke="#f2c14e" stroke-width="1.5" stroke-dasharray="8 6"/></g>
+<g class="c" data-id="oci:oci.compartment:platform" transform="translate(0 0)"><rect width="1416" height="816" rx="18" fill="#52d1e6" fill-opacity=".07" stroke="#52d1e6" stroke-width="1.5" stroke-dasharray="8 6"/></g>
+<g class="c" data-id="oci:oci.vcn:main" transform="translate(30 50)"><rect width="856" height="736" rx="18" fill="#6fb1ff" fill-opacity=".07" stroke="#6fb1ff" stroke-width="1.5" stroke-dasharray="8 6"/></g>
+<g class="c" data-id="oci:oci.dns.zone:main" transform="translate(1150 346)"><rect width="236" height="144" rx="18" fill="#4fdcc2" fill-opacity=".07" stroke="#4fdcc2" stroke-width="1.5" stroke-dasharray="8 6"/></g>
+<g class="c" data-id="oci:oci.subnet:lb" transform="translate(620 208)"><rect width="236" height="144" rx="18" fill="#6fb1ff" fill-opacity=".07" stroke="#6fb1ff" stroke-width="1.5" stroke-dasharray="8 6"/></g>
+<g class="c" data-id="oci:oci.subnet:api" transform="translate(60 208)"><rect width="236" height="144" rx="18" fill="#6fb1ff" fill-opacity=".07" stroke="#6fb1ff" stroke-width="1.5" stroke-dasharray="8 6"/></g>
+<g class="c" data-id="oci:oci.subnet:db" transform="translate(340 208)"><rect width="236" height="144" rx="18" fill="#6fb1ff" fill-opacity=".07" stroke="#6fb1ff" stroke-width="1.5" stroke-dasharray="8 6"/></g>
+<g class="c" data-id="oci:oci.oke.cluster:oke" transform="translate(280 396)"><rect width="236" height="252" rx="18" fill="#b59bff" fill-opacity=".07" stroke="#b59bff" stroke-width="1.5" stroke-dasharray="8 6"/></g>
+<path class="e" data-from="oci:oci.route_table:public" data-to="oci:oci.internet_gateway:igw" d="M582 692L582 438Q582 428 572 428L158 428Q148 428 148 418L148 164" fill="none" stroke="#52d1e6" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-default)"></path>
+<path class="e" data-from="oci:oci.route_table:private" data-to="oci:oci.nat_gateway:nat" d="M350 692L350 437Q350 428 359 428L359 428Q368 428 368 419L368 164" fill="none" stroke="#52d1e6" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-default)"></path>
+<path class="e" data-from="oci:oci.subnet:lb" data-to="oci:oci.route_table:public" d="M738 352L738 512Q738 522 728 522L604 522Q594 522 594 532L594 692" fill="none" stroke="#52d1e6" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-default)"></path>
+<path class="e" data-from="oci:oci.subnet:api" data-to="oci:oci.route_table:private" d="M172 352L172 512Q172 522 182 522L352 522Q362 522 362 532L362 692" fill="none" stroke="#52d1e6" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-default)"></path>
+<path class="e" data-from="oci:oci.subnet:workers" data-to="oci:oci.route_table:private" d="M148 554L148 613Q148 623 158 623L364 623Q374 623 374 633L374 692" fill="none" stroke="#52d1e6" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-default)"></path>
+<path class="e" data-from="oci:oci.subnet:workers" data-to="oci:oci.security_list:workers" d="M236 510L392 510Q398 510 398 516L398 516Q398 522 404 522L560 522" fill="none" stroke="#52d1e6" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-default)"></path>
+<path class="e" data-from="oci:oci.subnet:db" data-to="oci:oci.route_table:private" d="M458 352L458 512Q458 522 448 522L396 522Q386 522 386 532L386 692" fill="none" stroke="#52d1e6" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-default)"></path>
+<path class="e" data-from="oci:oci.oke.cluster:oke" data-to="oci:oci.subnet:api" d="M398 396L398 384Q398 374 388 374L194 374Q184 374 184 364L184 352" fill="none" stroke="#52d1e6" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-default)"><title>API endpoint</title></path>
+<path class="e" data-from="oci:oci.oke.nodepool:general" data-to="oci:oci.subnet:workers" d="M310 586L283 586Q273 586 273 576L273 532Q273 522 263 522L236 522" fill="none" stroke="#52d1e6" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-default)"><title>worker nodes</title></path>
+<path class="e" data-from="oci:oci.oke.nodepool:batch" data-to="oci:oci.subnet:workers" d="M310 478L283 478Q273 478 273 488L273 524Q273 534 263 534L236 534" fill="none" stroke="#52d1e6" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-default)"><title>worker nodes</title></path>
+<path class="e" data-from="oci:oci.bucket:assets" data-to="oci:oci.compartment:platform" d="M678 964L678 896Q678 890 684 890L684 890Q690 890 690 884L690 816" fill="none" stroke="#52d1e6" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-default)"></path>
+<path class="e" data-from="oci:oci.vault:vault" data-to="oci:oci.compartment:platform" d="M398 964L398 900Q398 890 408 890L692 890Q702 890 702 880L702 816" fill="none" stroke="#52d1e6" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-default)"></path>
+<path class="e" data-from="oci:oci.dynamic_group:workers" data-to="oci:oci.compartment:platform" d="M118 910L118 873Q118 863 128 863L704 863Q714 863 714 853L714 816" fill="none" stroke="#52d1e6" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-default)"></path>
+<path class="e" data-from="oci:oci.policy:oke" data-to="oci:oci.compartment:platform" d="M112 1018L112 927Q112 917 122 917L716 917Q726 917 726 907L726 816" fill="none" stroke="#52d1e6" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-default)"></path>
+<path class="e" data-from="oci:oci.policy:oke" data-to="oci:oci.dynamic_group:workers" d="M124 1018L124 999Q124 996 121 996L121 996Q118 996 118 993L118 974" fill="none" stroke="#f2c14e" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-iam)"><title>grants to</title></path>
+<path class="e" data-from="oci:oci.dns.record:app" data-to="oci:oci.lb:lb" d="M1180 428L1013 428Q1003 428 1003 418L1003 300Q1003 290 993 290L826 290" fill="none" stroke="#52d1e6" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-default)"><title>points to</title></path>
+<g class="l" transform="translate(560 914)"><rect x="37" y="8" width="162" height="26" rx="6" fill="#07111f" fill-opacity=".92"/><text x="118" y="22" text-anchor="middle" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="12" font-weight="700" fill="#d6e6ff"><tspan x="118" dy="0">Storage &amp; registries</tspan></text></g>
+<g class="l" transform="translate(280 914)"><rect x="58.9" y="8" width="118.2" height="26" rx="6" fill="#07111f" fill-opacity=".92"/><text x="118" y="22" text-anchor="middle" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="12" font-weight="700" fill="#d6e6ff"><tspan x="118" dy="0">Secrets &amp; keys</tspan></text></g>
+<g class="l" transform="translate(0 860)"><rect x="18.8" y="8" width="198.5" height="26" rx="6" fill="#07111f" fill-opacity=".92"/><text x="118" y="22" text-anchor="middle" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="12" font-weight="700" fill="#d6e6ff"><tspan x="118" dy="0">IAM · identities &amp; access</tspan></text></g>
+<g class="l" transform="translate(0 0)"><rect x="619.7" y="8" width="176.6" height="26" rx="6" fill="#07111f" fill-opacity=".92"/><text x="708" y="22" text-anchor="middle" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="12" font-weight="700" fill="#d6e6ff"><tspan x="708" dy="0">compartment · platform</tspan></text></g>
+<g class="l" transform="translate(30 50)"><rect x="383.5" y="8" width="89" height="26" rx="6" fill="#07111f" fill-opacity=".92"/><text x="428" y="22" text-anchor="middle" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="12" font-weight="700" fill="#d6e6ff"><tspan x="428" dy="0">vcn · main</tspan></text></g>
+<g class="l" transform="translate(1150 346)"><rect x="55.3" y="8" width="125.5" height="26" rx="6" fill="#07111f" fill-opacity=".92"/><text x="118" y="22" text-anchor="middle" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="12" font-weight="700" fill="#d6e6ff"><tspan x="118" dy="0">dns.zone · main</tspan></text></g>
+<g class="l" transform="translate(620 208)"><rect x="69.9" y="8" width="96.3" height="26" rx="6" fill="#07111f" fill-opacity=".92"/><text x="118" y="22" text-anchor="middle" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="12" font-weight="700" fill="#d6e6ff"><tspan x="118" dy="0">subnet · lb</tspan></text></g>
+<g class="l" transform="translate(60 208)"><rect x="66.2" y="8" width="103.6" height="26" rx="6" fill="#07111f" fill-opacity=".92"/><text x="118" y="22" text-anchor="middle" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="12" font-weight="700" fill="#d6e6ff"><tspan x="118" dy="0">subnet · api</tspan></text></g>
+<g class="l" transform="translate(340 208)"><rect x="69.9" y="8" width="96.3" height="26" rx="6" fill="#07111f" fill-opacity=".92"/><text x="118" y="22" text-anchor="middle" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="12" font-weight="700" fill="#d6e6ff"><tspan x="118" dy="0">subnet · db</tspan></text></g>
+<g class="l" transform="translate(280 396)"><rect x="48" y="8" width="140.1" height="26" rx="6" fill="#07111f" fill-opacity=".92"/><text x="118" y="22" text-anchor="middle" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="12" font-weight="700" fill="#d6e6ff"><tspan x="118" dy="0">oke.cluster · oke</tspan></text></g>
+<g class="n" data-id="oci:oci.internet_gateway:igw" transform="translate(60 100)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#6fb1ff" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-net)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#6fb1ff" fill-opacity=".16" stroke="#6fb1ff" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#6fb1ff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10h14M10 3c3 3 3 11 0 14M10 3c-3 3-3 11 0 14M3 10a7 7 0 1 0 14 0a7 7 0 1 0-14 0"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">igw</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">internet_gateway</text>
+<circle cx="162" cy="14" r="3" fill="#6fb1ff"/>
+</g>
+<g class="n" data-id="oci:oci.nat_gateway:nat" transform="translate(280 100)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#6fb1ff" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-net)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#6fb1ff" fill-opacity=".16" stroke="#6fb1ff" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#6fb1ff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h12M12 6l4 4-4 4"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">nat</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">nat_gateway</text>
+<circle cx="162" cy="14" r="3" fill="#6fb1ff"/>
+</g>
+<g class="n" data-id="oci:oci.service_gateway:sgw" transform="translate(500 100)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#6fb1ff" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-net)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#6fb1ff" fill-opacity=".16" stroke="#6fb1ff" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#6fb1ff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 12l4-4M7 9L5 11a3 3 0 0 0 4 4l2-2M13 11l2-2a3 3 0 0 0-4-4L9 7"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">sgw</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">service_gateway</text>
+<circle cx="162" cy="14" r="3" fill="#6fb1ff"/>
+</g>
+<g class="n" data-id="oci:oci.route_table:public" transform="translate(500 692)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#6fb1ff" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-net)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#6fb1ff" fill-opacity=".16" stroke="#6fb1ff" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#6fb1ff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15l4-4 3 3 5-6"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">public</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">route_table</text>
+<circle cx="162" cy="14" r="3" fill="#6fb1ff"/>
+</g>
+<g class="n" data-id="oci:oci.route_table:private" transform="translate(280 692)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#6fb1ff" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-net)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#6fb1ff" fill-opacity=".16" stroke="#6fb1ff" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#6fb1ff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15l4-4 3 3 5-6"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">private</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">route_table</text>
+<circle cx="162" cy="14" r="3" fill="#6fb1ff"/>
+</g>
+<g class="n" data-id="oci:oci.security_list:workers" transform="translate(560 490)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#6fb1ff" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-net)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#6fb1ff" fill-opacity=".16" stroke="#6fb1ff" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#6fb1ff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3l6 2v5c0 4-3 6-6 7-3-1-6-3-6-7V5z"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">workers</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">security_list</text>
+<circle cx="162" cy="14" r="3" fill="#6fb1ff"/>
+</g>
+<g class="n" data-id="oci:oci.nsg:db" transform="translate(60 692)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#6fb1ff" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-net)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#6fb1ff" fill-opacity=".16" stroke="#6fb1ff" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#6fb1ff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3l6 2v5c0 4-3 6-6 7-3-1-6-3-6-7V5z"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">db</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">nsg</text>
+<circle cx="162" cy="14" r="3" fill="#6fb1ff"/>
+</g>
+<g class="n" data-id="oci:oci.subnet:workers" transform="translate(60 490)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#6fb1ff" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-net)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#6fb1ff" fill-opacity=".16" stroke="#6fb1ff" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#6fb1ff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h6v6H3zM11 3h6v6h-6zM3 11h6v6H3zM11 11h6v6h-6z"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">workers</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">subnet</text>
+<circle cx="162" cy="14" r="3" fill="#6fb1ff"/>
+</g>
+<g class="n" data-id="oci:oci.oke.nodepool:general" transform="translate(310 554)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#b59bff" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-eks)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#b59bff" fill-opacity=".16" stroke="#b59bff" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#b59bff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6l7-3 7 3-7 3zM3 10l7 3 7-3M3 14l7 3 7-3"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">general</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">oke.nodepool</text>
+<circle cx="162" cy="14" r="3" fill="#b59bff"/>
+</g>
+<g class="n" data-id="oci:oci.oke.nodepool:batch" transform="translate(310 446)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#b59bff" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-eks)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#b59bff" fill-opacity=".16" stroke="#b59bff" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#b59bff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6l7-3 7 3-7 3zM3 10l7 3 7-3M3 14l7 3 7-3"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">batch</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">oke.nodepool</text>
+<circle cx="162" cy="14" r="3" fill="#b59bff"/>
+</g>
+<g class="n" data-id="oci:oci.instance:bastion" transform="translate(90 258)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#52d1e6" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-compute)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#52d1e6" fill-opacity=".16" stroke="#52d1e6" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#52d1e6" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h14v5H3zM3 11h14v5H3zM6.5 6.5h.01M6.5 13.5h.01"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">bastion</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">instance</text>
+<circle cx="162" cy="14" r="3" fill="#52d1e6"/>
+</g>
+<g class="n" data-id="oci:oci.lb:lb" transform="translate(650 258)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#4fdcc2" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-edgeapp)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#4fdcc2" fill-opacity=".16" stroke="#4fdcc2" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#4fdcc2" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3v14M5 17h10M4 6l3 5H1zM16 6l3 5h-6z"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">lb</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">lb</text>
+<circle cx="162" cy="14" r="3" fill="#4fdcc2"/>
+</g>
+<g class="n" data-id="oci:oci.mysql:mysql" transform="translate(370 258)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#ff8fb3" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-data)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#ff8fb3" fill-opacity=".16" stroke="#ff8fb3" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#ff8fb3" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5c0-1.4 2.7-2.5 6-2.5s6 1.1 6 2.5-2.7 2.5-6 2.5S4 6.4 4 5zM4 5v10c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5V5M4 10c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">mysql</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">mysql</text>
+<circle cx="162" cy="14" r="3" fill="#ff8fb3"/>
+</g>
+<g class="n" data-id="oci:oci.adb:adw" transform="translate(930 386)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#ff8fb3" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-data)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#ff8fb3" fill-opacity=".16" stroke="#ff8fb3" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#ff8fb3" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5c0-1.4 2.7-2.5 6-2.5s6 1.1 6 2.5-2.7 2.5-6 2.5S4 6.4 4 5zM4 5v10c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5V5M4 10c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">adw</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">adb</text>
+<circle cx="162" cy="14" r="3" fill="#ff8fb3"/>
+</g>
+<g class="n" data-id="oci:oci.bucket:assets" transform="translate(590 964)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#9db0c4" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-cfg)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#9db0c4" fill-opacity=".16" stroke="#9db0c4" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#9db0c4" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 2.5h7l3 3v12H5zM12 2.5v3h3M7.5 10h5M7.5 13h5"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">assets</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">bucket</text>
+<circle cx="162" cy="14" r="3" fill="#9db0c4"/>
+</g>
+<g class="n" data-id="oci:oci.vault:vault" transform="translate(310 964)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#9db0c4" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-cfg)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#9db0c4" fill-opacity=".16" stroke="#9db0c4" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#9db0c4" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12.5 3a4.5 4.5 0 1 0 .8 8.9L14 13h2v2h2v-2.3l-4.8-4.8A4.5 4.5 0 0 0 12.5 3zM11 7.5a1 1 0 1 0 2 0 1 1 0 0 0-2 0"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">vault</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">vault</text>
+<circle cx="162" cy="14" r="3" fill="#9db0c4"/>
+</g>
+<g class="n" data-id="oci:oci.dynamic_group:workers" transform="translate(30 910)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#f2c14e" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-iam)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#f2c14e" fill-opacity=".16" stroke="#f2c14e" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#f2c14e" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12.5 3a4.5 4.5 0 1 0 .8 8.9L14 13h2v2h2v-2.3l-4.8-4.8A4.5 4.5 0 0 0 12.5 3zM11 7.5a1 1 0 1 0 2 0 1 1 0 0 0-2 0"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">workers</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">dynamic_group</text>
+<circle cx="162" cy="14" r="3" fill="#f2c14e"/>
+</g>
+<g class="n" data-id="oci:oci.policy:oke" transform="translate(30 1018)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#f2c14e" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-iam)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#f2c14e" fill-opacity=".16" stroke="#f2c14e" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#f2c14e" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12.5 3a4.5 4.5 0 1 0 .8 8.9L14 13h2v2h2v-2.3l-4.8-4.8A4.5 4.5 0 0 0 12.5 3zM11 7.5a1 1 0 1 0 2 0 1 1 0 0 0-2 0"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">oke</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">policy</text>
+<circle cx="162" cy="14" r="3" fill="#f2c14e"/>
+</g>
+<g class="n" data-id="oci:oci.dns.record:app" transform="translate(1180 396)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#4fdcc2" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-edgeapp)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#4fdcc2" fill-opacity=".16" stroke="#4fdcc2" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#4fdcc2" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h12v12H4zM7 8h6M7 12h4"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">app</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">dns.record</text>
+<circle cx="162" cy="14" r="3" fill="#4fdcc2"/>
+</g>
+</g>
+</svg>

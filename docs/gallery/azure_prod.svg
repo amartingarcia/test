@@ -1,0 +1,186 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1996" height="1136" viewBox="0 0 1996 1136" data-preset="blueprint" data-theme="dark" role="img"><title>azure_prod</title>
+<defs><linearGradient id="g-net" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6fb1ff" stop-opacity=".20"/><stop offset=".6" stop-color="#6fb1ff" stop-opacity="0"/></linearGradient><linearGradient id="g-edgeapp" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4fdcc2" stop-opacity=".20"/><stop offset=".6" stop-color="#4fdcc2" stop-opacity="0"/></linearGradient><linearGradient id="g-iam" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f2c14e" stop-opacity=".20"/><stop offset=".6" stop-color="#f2c14e" stop-opacity="0"/></linearGradient><linearGradient id="g-eks" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#b59bff" stop-opacity=".20"/><stop offset=".6" stop-color="#b59bff" stop-opacity="0"/></linearGradient><linearGradient id="g-cfg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9db0c4" stop-opacity=".20"/><stop offset=".6" stop-color="#9db0c4" stop-opacity="0"/></linearGradient><linearGradient id="g-data" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff8fb3" stop-opacity=".20"/><stop offset=".6" stop-color="#ff8fb3" stop-opacity="0"/></linearGradient><linearGradient id="g-compute" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#52d1e6" stop-opacity=".20"/><stop offset=".6" stop-color="#52d1e6" stop-opacity="0"/></linearGradient><marker id="ah-default" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0 0L10 5L0 10z" fill="#52d1e6"/></marker><marker id="ah-iam" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0 0L10 5L0 10z" fill="#f2c14e"/></marker></defs>
+<rect width="1996" height="1136" fill="#07111f"/>
+<g transform="translate(40 40)">
+<g class="c" data-id="group:iam" transform="translate(680 724)"><rect width="236" height="144" rx="18" fill="#f2c14e" fill-opacity=".07" stroke="#f2c14e" stroke-width="1.5" stroke-dasharray="8 6"/></g>
+<g class="c" data-id="group:storage" transform="translate(1240 670)"><rect width="236" height="252" rx="18" fill="#9db0c4" fill-opacity=".07" stroke="#9db0c4" stroke-width="1.5" stroke-dasharray="8 6"/></g>
+<g class="c" data-id="group:secrets" transform="translate(960 724)"><rect width="236" height="144" rx="18" fill="#9db0c4" fill-opacity=".07" stroke="#9db0c4" stroke-width="1.5" stroke-dasharray="8 6"/></g>
+<g class="c" data-id="azure:azure.resource_group:net" transform="translate(0 536)"><rect width="636" height="520" rx="18" fill="#52d1e6" fill-opacity=".07" stroke="#52d1e6" stroke-width="1.5" stroke-dasharray="8 6"/></g>
+<g class="c" data-id="azure:azure.resource_group:app" transform="translate(0 0)"><rect width="1916" height="492" rx="18" fill="#52d1e6" fill-opacity=".07" stroke="#52d1e6" stroke-width="1.5" stroke-dasharray="8 6"/></g>
+<g class="c" data-id="azure:azure.vnet:hub" transform="translate(30 802)"><rect width="296" height="224" rx="18" fill="#6fb1ff" fill-opacity=".07" stroke="#6fb1ff" stroke-width="1.5" stroke-dasharray="8 6"/></g>
+<g class="c" data-id="azure:azure.vnet:spoke" transform="translate(30 50)"><rect width="916" height="412" rx="18" fill="#6fb1ff" fill-opacity=".07" stroke="#6fb1ff" stroke-width="1.5" stroke-dasharray="8 6"/></g>
+<g class="c" data-id="azure:azure.sql.server:sql" transform="translate(1210 184)"><rect width="236" height="144" rx="18" fill="#ff8fb3" fill-opacity=".07" stroke="#ff8fb3" stroke-width="1.5" stroke-dasharray="8 6"/></g>
+<g class="c" data-id="azure:azure.dns.zone:main" transform="translate(370 842)"><rect width="236" height="144" rx="18" fill="#4fdcc2" fill-opacity=".07" stroke="#4fdcc2" stroke-width="1.5" stroke-dasharray="8 6"/></g>
+<g class="c" data-id="azure:azure.subnet:hub_mgmt" transform="translate(60 852)"><rect width="236" height="144" rx="18" fill="#6fb1ff" fill-opacity=".07" stroke="#6fb1ff" stroke-width="1.5" stroke-dasharray="8 6"/></g>
+<g class="c" data-id="azure:azure.subnet:spoke_aks" transform="translate(60 100)"><rect width="296" height="332" rx="18" fill="#6fb1ff" fill-opacity=".07" stroke="#6fb1ff" stroke-width="1.5" stroke-dasharray="8 6"/></g>
+<g class="c" data-id="azure:azure.subnet:spoke_data" transform="translate(400 194)"><rect width="236" height="144" rx="18" fill="#6fb1ff" fill-opacity=".07" stroke="#6fb1ff" stroke-width="1.5" stroke-dasharray="8 6"/></g>
+<g class="c" data-id="azure:azure.subnet:spoke_pe" transform="translate(680 194)"><rect width="236" height="144" rx="18" fill="#6fb1ff" fill-opacity=".07" stroke="#6fb1ff" stroke-width="1.5" stroke-dasharray="8 6"/></g>
+<g class="c" data-id="azure:azure.aks.cluster:main" transform="translate(90 150)"><rect width="236" height="252" rx="18" fill="#b59bff" fill-opacity=".07" stroke="#b59bff" stroke-width="1.5" stroke-dasharray="8 6"/></g>
+<path class="e" data-from="azure:azure.lb:ingress" data-to="azure:azure.public_ip:ingress" d="M250 726L238 726Q228 726 228 716L228 628Q228 618 218 618L206 618" fill="none" stroke="#52d1e6" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-default)"></path>
+<path class="e" data-from="azure:azure.identity:aks" data-to="azure:azure.resource_group:app" d="M798 774L798 643Q798 633 808 633L930 633Q940 633 940 623L940 492" fill="none" stroke="#52d1e6" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-default)"></path>
+<path class="e" data-from="azure:azure.aks.cluster:main" data-to="azure:azure.identity:aks" d="M326 276L508 276Q518 276 518 286L518 796Q518 806 528 806L710 806" fill="none" stroke="#f2c14e" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-iam)"><title>control-plane identity</title></path>
+<path class="e" data-from="azure:azure.acr:acr" data-to="azure:azure.resource_group:app" d="M1358 720L1358 616Q1358 606 1348 606L962 606Q952 606 952 596L952 492" fill="none" stroke="#52d1e6" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-default)"></path>
+<path class="e" data-from="azure:azure.keyvault:kv" data-to="azure:azure.resource_group:app" d="M1072 774L1072 643Q1072 633 1062 633L974 633Q964 633 964 623L964 492" fill="none" stroke="#52d1e6" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-default)"></path>
+<path class="e" data-from="azure:azure.private_endpoint:kv" data-to="azure:azure.keyvault:kv" d="M798 308L798 531Q798 541 808 541L1074 541Q1084 541 1084 551L1084 774" fill="none" stroke="#52d1e6" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-default)"><title>connects</title></path>
+<path class="e" data-from="azure:azure.storage:data" data-to="azure:azure.resource_group:app" d="M1358 828L1358 670Q1358 660 1348 660L986 660Q976 660 976 650L976 492" fill="none" stroke="#52d1e6" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-default)"></path>
+<path class="e" data-from="azure:azure.dns.record:app" data-to="azure:azure.public_ip:ingress" d="M488 892L488 781Q488 771 478 771L128 771Q118 771 118 761L118 650" fill="none" stroke="#52d1e6" stroke-width="2" stroke-opacity=".6" stroke-dasharray="8 6" marker-end="url(#ah-default)"><title>points to</title></path>
+<g class="l" transform="translate(680 724)"><rect x="18.8" y="8" width="198.5" height="26" rx="6" fill="#07111f" fill-opacity=".92"/><text x="118" y="22" text-anchor="middle" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="12" font-weight="700" fill="#d6e6ff"><tspan x="118" dy="0">IAM · identities &amp; access</tspan></text></g>
+<g class="l" transform="translate(1240 670)"><rect x="37" y="8" width="162" height="26" rx="6" fill="#07111f" fill-opacity=".92"/><text x="118" y="22" text-anchor="middle" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="12" font-weight="700" fill="#d6e6ff"><tspan x="118" dy="0">Storage &amp; registries</tspan></text></g>
+<g class="l" transform="translate(960 724)"><rect x="58.9" y="8" width="118.2" height="26" rx="6" fill="#07111f" fill-opacity=".92"/><text x="118" y="22" text-anchor="middle" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="12" font-weight="700" fill="#d6e6ff"><tspan x="118" dy="0">Secrets &amp; keys</tspan></text></g>
+<g class="l" transform="translate(0 536)"><rect x="237" y="8" width="162" height="26" rx="6" fill="#07111f" fill-opacity=".92"/><text x="318" y="22" text-anchor="middle" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="12" font-weight="700" fill="#d6e6ff"><tspan x="318" dy="0">resource_group · net</tspan></text></g>
+<g class="l" transform="translate(0 0)"><rect x="877" y="8" width="162" height="26" rx="6" fill="#07111f" fill-opacity=".92"/><text x="958" y="22" text-anchor="middle" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="12" font-weight="700" fill="#d6e6ff"><tspan x="958" dy="0">resource_group · app</tspan></text></g>
+<g class="l" transform="translate(30 802)"><rect x="103.5" y="8" width="89" height="26" rx="6" fill="#07111f" fill-opacity=".92"/><text x="148" y="22" text-anchor="middle" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="12" font-weight="700" fill="#d6e6ff"><tspan x="148" dy="0">vnet · hub</tspan></text></g>
+<g class="l" transform="translate(30 50)"><rect x="406.2" y="8" width="103.6" height="26" rx="6" fill="#07111f" fill-opacity=".92"/><text x="458" y="22" text-anchor="middle" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="12" font-weight="700" fill="#d6e6ff"><tspan x="458" dy="0">vnet · spoke</tspan></text></g>
+<g class="l" transform="translate(1210 184)"><rect x="51.6" y="8" width="132.8" height="26" rx="6" fill="#07111f" fill-opacity=".92"/><text x="118" y="22" text-anchor="middle" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="12" font-weight="700" fill="#d6e6ff"><tspan x="118" dy="0">sql.server · sql</tspan></text></g>
+<g class="l" transform="translate(370 842)"><rect x="55.3" y="8" width="125.5" height="26" rx="6" fill="#07111f" fill-opacity=".92"/><text x="118" y="22" text-anchor="middle" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="12" font-weight="700" fill="#d6e6ff"><tspan x="118" dy="0">dns.zone · main</tspan></text></g>
+<g class="l" transform="translate(60 852)"><rect x="48" y="8" width="140.1" height="26" rx="6" fill="#07111f" fill-opacity=".92"/><text x="118" y="22" text-anchor="middle" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="12" font-weight="700" fill="#d6e6ff"><tspan x="118" dy="0">subnet · hub_mgmt</tspan></text></g>
+<g class="l" transform="translate(60 100)"><rect x="74.3" y="8" width="147.4" height="26" rx="6" fill="#07111f" fill-opacity=".92"/><text x="148" y="22" text-anchor="middle" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="12" font-weight="700" fill="#d6e6ff"><tspan x="148" dy="0">subnet · spoke_aks</tspan></text></g>
+<g class="l" transform="translate(400 194)"><rect x="40.7" y="8" width="154.7" height="26" rx="6" fill="#07111f" fill-opacity=".92"/><text x="118" y="22" text-anchor="middle" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="12" font-weight="700" fill="#d6e6ff"><tspan x="118" dy="0">subnet · spoke_data</tspan></text></g>
+<g class="l" transform="translate(680 194)"><rect x="48" y="8" width="140.1" height="26" rx="6" fill="#07111f" fill-opacity=".92"/><text x="118" y="22" text-anchor="middle" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="12" font-weight="700" fill="#d6e6ff"><tspan x="118" dy="0">subnet · spoke_pe</tspan></text></g>
+<g class="l" transform="translate(90 150)"><rect x="44.3" y="8" width="147.4" height="26" rx="6" fill="#07111f" fill-opacity=".92"/><text x="118" y="22" text-anchor="middle" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="12" font-weight="700" fill="#d6e6ff"><tspan x="118" dy="0">aks.cluster · main</tspan></text></g>
+<g class="n" data-id="azure:azure.nsg:aks" transform="translate(990 224)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#6fb1ff" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-net)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#6fb1ff" fill-opacity=".16" stroke="#6fb1ff" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#6fb1ff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3l6 2v5c0 4-3 6-6 7-3-1-6-3-6-7V5z"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">aks</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">nsg</text>
+<circle cx="162" cy="14" r="3" fill="#6fb1ff"/>
+</g>
+<g class="n" data-id="azure:azure.public_ip:nat" transform="translate(250 586)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#6fb1ff" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-net)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#6fb1ff" fill-opacity=".16" stroke="#6fb1ff" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#6fb1ff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10h14M10 3c3 3 3 11 0 14M10 3c-3 3-3 11 0 14M3 10a7 7 0 1 0 14 0a7 7 0 1 0-14 0"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">nat</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">public_ip</text>
+<circle cx="162" cy="14" r="3" fill="#6fb1ff"/>
+</g>
+<g class="n" data-id="azure:azure.nat_gateway:hub" transform="translate(30 694)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#6fb1ff" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-net)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#6fb1ff" fill-opacity=".16" stroke="#6fb1ff" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#6fb1ff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h12M12 6l4 4-4 4"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">hub</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">nat_gateway</text>
+<circle cx="162" cy="14" r="3" fill="#6fb1ff"/>
+</g>
+<g class="n" data-id="azure:azure.public_ip:ingress" transform="translate(30 586)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#6fb1ff" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-net)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#6fb1ff" fill-opacity=".16" stroke="#6fb1ff" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#6fb1ff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10h14M10 3c3 3 3 11 0 14M10 3c-3 3-3 11 0 14M3 10a7 7 0 1 0 14 0a7 7 0 1 0-14 0"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">ingress</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">public_ip</text>
+<circle cx="162" cy="14" r="3" fill="#6fb1ff"/>
+</g>
+<g class="n" data-id="azure:azure.lb:ingress" transform="translate(250 694)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#4fdcc2" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-edgeapp)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#4fdcc2" fill-opacity=".16" stroke="#4fdcc2" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#4fdcc2" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3v14M5 17h10M4 6l3 5H1zM16 6l3 5h-6z"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">ingress</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">lb</text>
+<circle cx="162" cy="14" r="3" fill="#4fdcc2"/>
+</g>
+<g class="n" data-id="azure:azure.identity:aks" transform="translate(710 774)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#f2c14e" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-iam)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#f2c14e" fill-opacity=".16" stroke="#f2c14e" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#f2c14e" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12.5 3a4.5 4.5 0 1 0 .8 8.9L14 13h2v2h2v-2.3l-4.8-4.8A4.5 4.5 0 0 0 12.5 3zM11 7.5a1 1 0 1 0 2 0 1 1 0 0 0-2 0"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">aks</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">identity</text>
+<circle cx="162" cy="14" r="3" fill="#f2c14e"/>
+</g>
+<g class="n" data-id="azure:azure.aks.nodepool:user" transform="translate(120 308)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#b59bff" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-eks)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#b59bff" fill-opacity=".16" stroke="#b59bff" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#b59bff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6l7-3 7 3-7 3zM3 10l7 3 7-3M3 14l7 3 7-3"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">user</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">aks.nodepool</text>
+<circle cx="162" cy="14" r="3" fill="#b59bff"/>
+</g>
+<g class="n" data-id="azure:azure.aks.nodepool:batch" transform="translate(120 200)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#b59bff" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-eks)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#b59bff" fill-opacity=".16" stroke="#b59bff" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#b59bff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6l7-3 7 3-7 3zM3 10l7 3 7-3M3 14l7 3 7-3"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">batch</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">aks.nodepool</text>
+<circle cx="162" cy="14" r="3" fill="#b59bff"/>
+</g>
+<g class="n" data-id="azure:azure.acr:acr" transform="translate(1270 720)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#9db0c4" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-cfg)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#9db0c4" fill-opacity=".16" stroke="#9db0c4" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#9db0c4" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 2.5h7l3 3v12H5zM12 2.5v3h3M7.5 10h5M7.5 13h5"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">acr</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">acr</text>
+<circle cx="162" cy="14" r="3" fill="#9db0c4"/>
+</g>
+<g class="n" data-id="azure:azure.postgres:pg" transform="translate(430 244)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#ff8fb3" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-data)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#ff8fb3" fill-opacity=".16" stroke="#ff8fb3" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#ff8fb3" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5c0-1.4 2.7-2.5 6-2.5s6 1.1 6 2.5-2.7 2.5-6 2.5S4 6.4 4 5zM4 5v10c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5V5M4 10c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">pg</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">postgres</text>
+<circle cx="162" cy="14" r="3" fill="#ff8fb3"/>
+</g>
+<g class="n" data-id="azure:azure.sql.database:orders" transform="translate(1240 234)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#ff8fb3" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-data)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#ff8fb3" fill-opacity=".16" stroke="#ff8fb3" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#ff8fb3" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5c0-1.4 2.7-2.5 6-2.5s6 1.1 6 2.5-2.7 2.5-6 2.5S4 6.4 4 5zM4 5v10c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5V5M4 10c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">orders</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">sql.database</text>
+<circle cx="162" cy="14" r="3" fill="#ff8fb3"/>
+</g>
+<g class="n" data-id="azure:azure.redis:cache" transform="translate(1490 224)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#ff8fb3" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-data)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#ff8fb3" fill-opacity=".16" stroke="#ff8fb3" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#ff8fb3" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5c0-1.4 2.7-2.5 6-2.5s6 1.1 6 2.5-2.7 2.5-6 2.5S4 6.4 4 5zM4 5v10c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5V5M4 10c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">cache</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">redis</text>
+<circle cx="162" cy="14" r="3" fill="#ff8fb3"/>
+</g>
+<g class="n" data-id="azure:azure.cosmos:cosmos" transform="translate(1710 224)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#ff8fb3" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-data)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#ff8fb3" fill-opacity=".16" stroke="#ff8fb3" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#ff8fb3" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5c0-1.4 2.7-2.5 6-2.5s6 1.1 6 2.5-2.7 2.5-6 2.5S4 6.4 4 5zM4 5v10c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5V5M4 10c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">cosmos</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">cosmos</text>
+<circle cx="162" cy="14" r="3" fill="#ff8fb3"/>
+</g>
+<g class="n" data-id="azure:azure.keyvault:kv" transform="translate(990 774)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#9db0c4" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-cfg)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#9db0c4" fill-opacity=".16" stroke="#9db0c4" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#9db0c4" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12.5 3a4.5 4.5 0 1 0 .8 8.9L14 13h2v2h2v-2.3l-4.8-4.8A4.5 4.5 0 0 0 12.5 3zM11 7.5a1 1 0 1 0 2 0 1 1 0 0 0-2 0"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">kv</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">keyvault</text>
+<circle cx="162" cy="14" r="3" fill="#9db0c4"/>
+</g>
+<g class="n" data-id="azure:azure.private_endpoint:kv" transform="translate(710 244)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#4fdcc2" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-edgeapp)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#4fdcc2" fill-opacity=".16" stroke="#4fdcc2" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#4fdcc2" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 12l4-4M7 9L5 11a3 3 0 0 0 4 4l2-2M13 11l2-2a3 3 0 0 0-4-4L9 7"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">kv</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">private_endpoint</text>
+<circle cx="162" cy="14" r="3" fill="#4fdcc2"/>
+</g>
+<g class="n" data-id="azure:azure.storage:data" transform="translate(1270 828)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#9db0c4" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-cfg)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#9db0c4" fill-opacity=".16" stroke="#9db0c4" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#9db0c4" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 2.5h7l3 3v12H5zM12 2.5v3h3M7.5 10h5M7.5 13h5"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">data</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">storage</text>
+<circle cx="162" cy="14" r="3" fill="#9db0c4"/>
+</g>
+<g class="n" data-id="azure:azure.vm:bastion" transform="translate(90 902)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#52d1e6" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-compute)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#52d1e6" fill-opacity=".16" stroke="#52d1e6" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#52d1e6" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h14v5H3zM3 11h14v5H3zM6.5 6.5h.01M6.5 13.5h.01"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">bastion</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">vm</text>
+<circle cx="162" cy="14" r="3" fill="#52d1e6"/>
+</g>
+<g class="n" data-id="azure:azure.dns.record:app" transform="translate(400 892)">
+<rect width="176" height="64" rx="14" fill="#0b1b30" stroke="#4fdcc2" stroke-width="1.5"/><rect width="176" height="64" rx="14" fill="url(#g-edgeapp)"/>
+<rect x="12" y="14" width="36" height="36" rx="10" fill="#4fdcc2" fill-opacity=".16" stroke="#4fdcc2" stroke-opacity="0.55"/>
+<g transform="translate(20 22) scale(1)" fill="none" stroke="#4fdcc2" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h12v12H4zM7 8h6M7 12h4"/></g>
+<text x="60" y="30" font-family="system-ui, -apple-system, &apos;Segoe UI&apos;, sans-serif" font-size="14" font-weight="700" fill="#d6e6ff">app</text>
+<text x="60" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="#7e95b3">dns.record</text>
+<circle cx="162" cy="14" r="3" fill="#4fdcc2"/>
+</g>
+</g>
+</svg>

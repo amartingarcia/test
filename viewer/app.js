@@ -9,6 +9,8 @@
 // diagram reads like an architecture (edge -> public -> private -> data).
 //
 import { layoutLanes } from './lanes-layout.mjs';
+import { CLASSES, CLASS_NAMES, KIND_CLASS, CARD, specForKind, isGroupKind, groupOfKind, sizeOfKind, resolved, buildDiagram, layoutConfigFor } from './diagram-model.mjs';
+import { PRESETS, PRESET_IDS, GLYPHS, xmlEscape, renderSvg } from './render-svg.mjs';
 
 // Environment list comes from data/environments.json (one entry per tfvars file,
 // written by the build scripts). The fallback below only matters if that file
@@ -17,38 +19,6 @@ const FALLBACK_ENVIRONMENTS = [{ id: 'platform_prod', label: 'platform / prod' }
 
 // cytoscape-expand-collapse (UMD, v4.x) self-registers against the global
 // `cytoscape` once both scripts are loaded — no explicit cytoscape.use() call.
-
-const CLASSES = ['net', 'compute', 'eks', 'k8s', 'data', 'iam', 'cfg', 'edgeapp', 'default'];
-const CLASS_NAMES = { net: 'Network', compute: 'Compute', eks: 'EKS', k8s: 'Workloads', data: 'Data stores', iam: 'IAM', cfg: 'Config', edgeapp: 'DNS & LB', default: 'Other' };
-const KIND_CLASS = (kind) => {
-  if (kind.startsWith('aws.eks')) return 'eks';
-  if (kind.startsWith('aws.iam') || kind.startsWith('group.iam')) return 'iam';
-  if (kind.startsWith('aws.ec2')) return 'compute';
-  if (kind.startsWith('aws.ssm') || kind.startsWith('group.ssm') || kind.startsWith('group.secrets') || kind.startsWith('group.storage')) return 'cfg';
-  if (kind.startsWith('aws.route53') || kind.startsWith('aws.lb')) return 'edgeapp';
-  if (kind.startsWith('aws.rds') || kind.startsWith('aws.docdb') || kind.startsWith('aws.dynamodb') || kind.startsWith('aws.elasticache') || kind.startsWith('aws.opensearch')) return 'data';
-  const cloud = /^(azure|gcp|oci)\.(.+)$/.exec(kind);
-  if (cloud) {
-    const r = cloud[2];
-    if (/^(resource_group|compartment)$/.test(r)) return 'default';
-    if (/^(vnet|vpc|vcn|subnet|nat|nat_gateway|router|firewall|nsg|route_table|security_list|public_ip|internet_gateway|service_gateway)$/.test(r)) return 'net';
-    if (/^(aks|gke|oke)\./.test(r)) return 'eks';
-    if (/^(vm|instance)$/.test(r)) return 'compute';
-    if (/^(postgres|sql|redis|cosmos|mysql|adb)/.test(r)) return 'data';
-    if (/^(lb|appgw|dns|private_endpoint)/.test(r)) return 'edgeapp';
-    if (/^(identity|service_account|iam|policy|dynamic_group)/.test(r)) return 'iam';
-    return 'cfg';
-  }
-  if (kind === 'k8s.cluster') return 'default';
-  if (kind === 'k8s.namespace') return 'net';
-  if (/^k8s\.(nodepool|nodeclass|nodegroup)$/.test(kind)) return 'compute';
-  if (/^k8s\.(service|ingress)$/.test(kind)) return 'edgeapp';
-  if (/^k8s\.(configmap|secret|pvc)$/.test(kind)) return 'cfg';
-  if (kind.startsWith('k8s.argo')) return 'eks';
-  if (kind.startsWith('k8s.')) return 'k8s';
-  if (/^aws\.(vpc|subnet|nat|internet|route_table|security_group)/.test(kind)) return 'net';
-  return 'default';
-};
 
 const REDUCED_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const MIN_ZOOM = 0.15;
@@ -118,26 +88,14 @@ const envFromHash = () => new URLSearchParams(location.hash.slice(1)).get('env')
 let cy = null;
 let catalog = { kinds: {}, groups: {} };
 let flowOn = !REDUCED_MOTION;
+let currentGraph = null; // last compiled graph, for the vector (SVG) export
 let vertical = false; // false: tiers run left to right; true: top to bottom
 
 /* ---------------------------------------------------------------- catalog */
 
-/** Exact kind, then longest dotted prefix (mirror of lib/catalog/spec-for-kind.mjs). */
-function specFor(kind) {
-  const parts = kind.split('.');
-  for (let n = parts.length; n > 0; n--) {
-    const spec = catalog.kinds[parts.slice(0, n).join('.')];
-    if (spec) return spec;
-  }
-  return {};
-}
-
-const isGroupKind = (kind) => kind.startsWith('group.');
-const groupOfKind = (kind) => (isGroupKind(kind) ? catalog.groups[kind.slice('group.'.length)] : null);
-
-const CARD = { w: 176, h: 64 };
-const CHIP = { w: 208, h: 50 };
-const sizeOf = (kind) => (specFor(kind).size === 'chip' ? CHIP : CARD);
+const specFor = (kind) => specForKind(catalog, kind);
+const sizeOf = (kind) => sizeOfKind(catalog, kind);
+const groupOf_ = (kind) => groupOfKind(catalog, kind);
 
 /* ------------------------------------------------------------------ theme */
 
@@ -145,20 +103,6 @@ const cssVar = (name) => getComputedStyle(document.documentElement).getPropertyV
 const currentTheme = () => document.documentElement.getAttribute('data-theme');
 const CSS_NAME = { default: 'def', edgeapp: 'edgeapp' };
 
-/*
- * Style presets. Colours live in CSS (index.html); these are the shape/type
- * decisions that Cytoscape and the SVG cards need in JS.
- *  radius: node corner radius; chip: icon chip shape; fill: card fill style
- *  (gradient | flat | tint); border: node border width; group: container
- *  border style; edge: line style + curve; flow: default link animation.
- */
-const PRESETS = {
-  blueprint: { label: 'Blueprint', radius: 14, groupRadius: 18, chip: 10, fill: 'gradient', border: 1.5, group: 'dashed', edgeStyle: 'dashed', edgeWidth: 2, taxiRadius: 10, nameFont: "system-ui, -apple-system, 'Segoe UI', sans-serif", monoFont: "ui-monospace, Menlo, Consolas, monospace", flow: true },
-  draft:     { label: 'Draft', radius: 3, groupRadius: 3, chip: 0, fill: 'flat', border: 1.2, group: 'dotted', edgeStyle: 'solid', edgeWidth: 1.4, taxiRadius: 0, nameFont: "Georgia, 'Times New Roman', serif", monoFont: "ui-monospace, Menlo, Consolas, monospace", flow: false },
-  neon:      { label: 'Neon', radius: 20, groupRadius: 26, chip: 99, fill: 'gradient', border: 2, group: 'solid', edgeStyle: 'solid', edgeWidth: 2.4, taxiRadius: 14, nameFont: "'Arial Narrow', 'Helvetica Neue', Arial, sans-serif", monoFont: "ui-monospace, Menlo, Consolas, monospace", flow: true },
-  soft:      { label: 'Soft', radius: 16, groupRadius: 22, chip: 12, fill: 'tint', border: 1, group: 'solid', edgeStyle: 'solid', edgeWidth: 2, taxiRadius: 16, nameFont: "system-ui, -apple-system, 'Segoe UI', sans-serif", monoFont: "ui-monospace, Menlo, Consolas, monospace", flow: false },
-};
-const PRESET_IDS = Object.keys(PRESETS);
 const currentPreset = () => PRESETS[document.documentElement.getAttribute('data-preset')] ?? PRESETS.blueprint;
 
 function syncPresetPicker() {
@@ -200,35 +144,7 @@ function toggleTheme() {
 // (icon chip, name, kind) rendered to a data URI and used as the node's
 // background image. Regenerated on theme change. Fonts: an SVG used as an
 // <img> can't load web fonts, hence the system stacks.
-const GLYPHS = {
-  vpc: 'M6 15a3.5 3.5 0 0 1 .5-6.9A5 5 0 0 1 16 9a3 3 0 0 1 0 6H6z',
-  internet_gateway: 'M3 10h14M10 3c3 3 3 11 0 14M10 3c-3 3-3 11 0 14M3 10a7 7 0 1 0 14 0a7 7 0 1 0-14 0',
-  subnet: 'M3 3h6v6H3zM11 3h6v6h-6zM3 11h6v6H3zM11 11h6v6h-6z',
-  nat: 'M4 10h12M12 6l4 4-4 4',
-  route: 'M4 15l4-4 3 3 5-6',
-  security_group: 'M10 3l6 2v5c0 4-3 6-6 7-3-1-6-3-6-7V5z',
-  eks: 'M10 2l7 4v8l-7 4-7-4V6z',
-  nodegroup: 'M3 6l7-3 7 3-7 3zM3 10l7 3 7-3M3 14l7 3 7-3',
-  addon: 'M4 4h12v12H4zM10 7v6M7 10h6',
-  database: 'M4 5c0-1.4 2.7-2.5 6-2.5s6 1.1 6 2.5-2.7 2.5-6 2.5S4 6.4 4 5zM4 5v10c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5V5M4 10c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5',
-  document: 'M5 2.5h7l3 3v12H5zM12 2.5v3h3M7.5 10h5M7.5 13h5',
-  key: 'M12.5 3a4.5 4.5 0 1 0 .8 8.9L14 13h2v2h2v-2.3l-4.8-4.8A4.5 4.5 0 0 0 12.5 3zM11 7.5a1 1 0 1 0 2 0 1 1 0 0 0-2 0',
-  pod: 'M10 2l6.5 3.7v7.6L10 17l-6.5-3.7V5.7zM10 9.5l6.5-3.8M10 9.5L3.5 5.7M10 9.5V17',
-  server: 'M3 4h14v5H3zM3 11h14v5H3zM6.5 6.5h.01M6.5 13.5h.01',
-  bolt: 'M11 2L4 11h5l-1 7 7-9h-5z',
-  search: 'M9 3a6 6 0 1 0 .01 0zM14 14l4 4',
-  sliders: 'M4 6h12M4 10h12M4 14h12M7 4v4M13 8v4M9 12v4',
-  dns: 'M3 10h14M10 3c3 3 3 11 0 14M10 3c-3 3-3 11 0 14M3 10a7 7 0 1 0 14 0a7 7 0 1 0-14 0',
-  record: 'M4 4h12v12H4zM7 8h6M7 12h4',
-  balance: 'M10 3v14M5 17h10M4 6l3 5H1zM16 6l3 5h-6z',
-  link: 'M8 12l4-4M7 9L5 11a3 3 0 0 0 4 4l2-2M13 11l2-2a3 3 0 0 0-4-4L9 7',
-  clock: 'M10 3a7 7 0 1 0 .01 0zM10 6v4l3 2',
-  argo: 'M10 2l7 4v8l-7 4-7-4V6zM6.5 10l2.5 2.5L14 7.5',
-  box: 'M4 4h12v12H4z',
-};
-const xmlEscape = (t) => String(t).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;' }[c]));
 const clip = (t, n) => (t.length > n ? `${t.slice(0, n - 1)}…` : t);
-const resolved = (details, key) => (details?.[key]?.resolved ? details[key].value : undefined);
 
 function cardSvg({ name, kind, class: cls, details, parentKind }) {
   // (groups, e.g. IAM, only get a card while collapsed; their name arrives as the tab label)
@@ -236,7 +152,7 @@ function cardSvg({ name, kind, class: cls, details, parentKind }) {
   const nodeBg = cssVar('--node');
   const text = cssVar('--text');
   const muted = cssVar('--muted');
-  const group = groupOfKind(kind);
+  const group = groupOf_(kind);
   const spec = group ?? specFor(kind);
   const { w, h } = sizeOf(kind);
   const compact = h < 60;
@@ -362,12 +278,6 @@ async function loadEnvironment(env) {
   renderLegend(graph);
 }
 
-function entityName(entity) {
-  const rawName = entity.id.split(':').slice(2).join(':');
-  return rawName.includes('.') ? rawName.split('.').pop() : rawName;
-}
-
-const kindShort = (kind) => kind.split('.').slice(1).join('.');
 
 function renderCoverage(graph) {
   const parts = [];
@@ -402,84 +312,14 @@ function renderLegend(graph) {
     .join('');
 }
 
-/** Name shown on a container's tab; a cluster also shows its version and the addons it owns. */
-function groupLabel(entity, embeddedOf) {
-  const first = `${kindShort(entity.kind)} · ${entityName(entity)}`;
-  const owned = embeddedOf.get(entity.id);
-  if (!owned?.length) return first;
-  const version = resolved(entity.details, 'version');
-  const names = owned.map((o) => resolved(o.details, 'addon_name') ?? entityName(o));
-  return `${first}\n${version ? `v${version} · ` : ''}addons: ${names.join(', ')}`;
-}
-
-/** true when `maybeAncestor` contains `id` anywhere up its parent chain. */
-function isAncestor(byId, maybeAncestor, id) {
-  for (let cur = byId.get(id)?.parent, guard = 0; cur && guard < 20; cur = byId.get(cur)?.parent, guard++) {
-    if (cur === maybeAncestor) return true;
-  }
-  return false;
-}
-
 function renderGraph(graph) {
-  const elements = [];
-  const visible = graph.entities.filter((e) => !e.embedded);
-  const byId = new Map(graph.entities.map((e) => [e.id, e]));
-
-  // Embedded entities (e.g. EKS addons) are properties of their parent, not boxes.
-  const embeddedOf = new Map();
-  for (const e of graph.entities) {
-    if (!e.embedded || !e.parent) continue;
-    if (!embeddedOf.has(e.parent)) embeddedOf.set(e.parent, []);
-    embeddedOf.get(e.parent).push(e);
-  }
-
-  // Global groups from the catalog (IAM is account-wide, so it sits outside any VPC).
-  const groupIds = new Set();
-  const groupOf = (e) => {
-    const gid = specFor(e.kind).group;
-    return gid && !e.parent ? `group:${gid}` : null;
-  };
-  for (const e of visible) { const g = groupOf(e); if (g) groupIds.add(g); }
-  for (const gid of groupIds) {
-    const key = gid.slice('group:'.length);
-    elements.push({ data: { id: gid, kind: gid.replace(':', '.'), name: key, w: CARD.w, h: CARD.h, class: KIND_CLASS(`group.${key}`), groupLabel: catalog.groups[key]?.label ?? key } });
-  }
-
-  for (const entity of visible) {
-    const parentKind = byId.get(entity.parent)?.kind ?? '';
-    // Kubernetes ids are ns/name: the namespace is shown by the container (or the sub line), not in the title
-    const name = entity.kind.startsWith('k8s.') && entity.kind !== 'k8s.cluster' ? entityName(entity).split('/').pop() : entityName(entity);
-    const size = sizeOf(entity.kind);
-    elements.push({
-      data: {
-        id: entity.id,
-        name,
-        w: size.w,
-        h: size.h,
-        parentKind,
-        groupLabel: groupLabel(entity, embeddedOf),
-        kind: entity.kind,
-        parent: entity.parent ?? groupOf(entity) ?? undefined,
-        repoId: entity.repoId,
-        sourceAddress: entity.sourceAddress,
-        details: entity.details ?? null,
-        embedded: (embeddedOf.get(entity.id) ?? []).map((o) => ({ name: resolved(o.details, 'addon_name') ?? entityName(o), details: o.details ?? null })),
-        class: KIND_CLASS(entity.kind),
-      },
-    });
-  }
-
-  // Containment already says "child belongs to parent": an edge from a child
-  // to its own parent would just draw a loop on top of it. Edges touching an
-  // embedded entity have nothing to attach to.
-  const shown = new Set(visible.map((e) => e.id));
-  for (const [i, edge] of graph.edges.entries()) {
-    const from = byId.get(edge.from);
-    const to = byId.get(edge.to);
-    if (!shown.has(edge.from) || !shown.has(edge.to)) continue;
-    if (isAncestor(byId, edge.to, edge.from) || isAncestor(byId, edge.from, edge.to)) continue;
-    elements.push({ data: { id: `e${i}`, source: edge.from, target: edge.to, label: edge.label ?? '', cls: to ? KIND_CLASS(to.kind) : 'default' } });
-  }
+  currentGraph = graph;
+  // boxes and links come from the shared model (also used by the SVG export)
+  const { nodes, edges } = buildDiagram(graph, catalog);
+  const elements = [
+    ...nodes.map((data) => ({ data })),
+    ...edges.map((data) => ({ data })),
+  ];
 
   if (cy) { cy.destroy(); cy = null; }
   cy = cytoscape({
@@ -522,17 +362,7 @@ function renderGraph(graph) {
 
 /* ----------------------------------------------------------------- layout */
 
-const flip = (axis) => (vertical ? (axis === 'row' ? 'column' : 'row') : axis);
-const layoutConfig = () => ({
-  sizeOf,
-  rootAxis: flip('row'),
-  axisOf: (kind) => flip(groupOfKind(kind)?.axis ?? specFor(kind).axis ?? 'column'),
-  orderOf: (n) => groupOfKind(n.kind)?.order ?? specFor(n.kind).order ?? 50,
-  gap: 44,
-  pad: 30,
-  padTop: 50,
-  wrap: { min: 6, aspect: 1.5 }, // crowded containers (e.g. 10 namespaces) become a grid instead of one endless line
-});
+const layoutConfig = () => layoutConfigFor(catalog, vertical);
 
 /** Whichever orientation lets the diagram be drawn larger in the current container. */
 function pickOrientation() {
@@ -688,6 +518,16 @@ function exportPng() {
   if (cy) download(renderPng(), `${exportName()}.png`);
 }
 
+// Vector export: the whole diagram from the shared pure renderer (rects, paths, text; no raster).
+function exportSvg() {
+  if (!currentGraph) return;
+  const preset = document.documentElement.getAttribute('data-preset');
+  const { svg } = renderSvg(currentGraph, catalog, { preset, theme: currentTheme(), vertical, title: currentEnvId });
+  const url = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml;charset=utf-8' }));
+  download(url, `${exportName()}.svg`);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
 let jspdfLoading = null;
 function loadJsPdf() {
   if (window.jspdf) return Promise.resolve(window.jspdf);
@@ -716,6 +556,7 @@ async function exportPdf() {
 /* --------------------------------------------------------------- wiring */
 
 document.getElementById('export-png').addEventListener('click', exportPng);
+document.getElementById('export-svg').addEventListener('click', exportSvg);
 document.getElementById('export-pdf').addEventListener('click', () => exportPdf().catch((e) => { coverageEl.textContent = `⚠ PDF export failed: ${e.message}`; }));
 
 document.getElementById('fit-btn').addEventListener('click', fit);

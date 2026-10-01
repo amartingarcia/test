@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="generator" content="infra-diagram">
+<title>__TITLE__</title>
+<style>
+  :root { --bg:#07111f; --text:#d6e6ff; --muted:#7e95b3; --node:#0b1b30; --border:rgba(111,177,255,.26); --net:#6fb1ff; --compute:#52d1e6; --eks:#b59bff; --k8s:#5fdc9a; --data:#ff8fb3; --iam:#f2c14e; --cfg:#9db0c4; --edgeapp:#4fdcc2; --def:#52d1e6;
+          --ui: system-ui, -apple-system, 'Segoe UI', sans-serif; --mono: ui-monospace, Menlo, Consolas, monospace; }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body { background: var(--bg); color: var(--text); font: 13px/1.4 var(--ui); display: grid; grid-template-rows: auto auto 1fr; grid-template-columns: 1fr 340px; overflow: hidden; }
+  header { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 8px 14px; border-bottom: 1px solid var(--border); }
+  header h1 { font-size: 14px; margin: 0 10px 0 0; font-weight: 700; letter-spacing: .02em; }
+  select, button { font: inherit; color: var(--text); background: var(--node); border: 1px solid var(--border); border-radius: 8px; padding: 5px 10px; cursor: pointer; }
+  button[aria-pressed="true"] { border-color: var(--def); box-shadow: 0 0 0 1px var(--def) inset; }
+  button:hover, select:hover { border-color: var(--def); }
+  .grow { flex: 1; }
+  #meta { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 14px; padding: 6px 14px; color: var(--muted); font-size: 12px; border-bottom: 1px solid var(--border); min-height: 30px; align-items: center; }
+  #coverage { color: #f2c14e; cursor: help; }
+  .key { display: inline-flex; align-items: center; gap: 6px; margin-right: 10px; }
+  .key i { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+  #viewport { position: relative; overflow: hidden; cursor: grab; touch-action: none; }
+  #viewport:active { cursor: grabbing; }
+  #stage { position: absolute; left: 0; top: 0; transform-origin: 0 0; will-change: transform; }
+  #stage svg { display: block; }
+  #stage.focus g.n, #stage.focus g.c, #stage.focus path.e { opacity: .14; transition: opacity .15s; }
+  #stage.focus g.n.hot, #stage.focus path.e.hot { opacity: 1; }
+  #stage.focus path.e.hot { stroke-opacity: 1; stroke-width: 3.2; }
+  #stage g.n { cursor: pointer; }
+  aside { border-left: 1px solid var(--border); padding: 12px 14px; overflow: auto; background: color-mix(in srgb, var(--node) 70%, var(--bg)); }
+  aside h2 { font-size: 15px; margin: 0 0 2px; display: flex; gap: 8px; align-items: center; word-break: break-all; }
+  aside h2.sub { font-size: 13px; margin-top: 12px; }
+  aside h3 { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 14px 0 4px; }
+  .badge { font: 11px var(--mono); border: 1px solid currentColor; border-radius: 99px; padding: 0 7px; }
+  .kind { font: 12px var(--mono); color: var(--muted); margin-bottom: 8px; }
+  table { border-collapse: collapse; width: 100%; font: 12px var(--mono); }
+  td { padding: 3px 6px 3px 0; vertical-align: top; word-break: break-word; border-bottom: 1px solid var(--border); }
+  td.k { color: var(--muted); white-space: nowrap; width: 1%; padding-right: 10px; }
+  .unres { color: #f2c14e; }
+  .raw { color: var(--muted); font-size: 11px; }
+  .empty { color: var(--muted); }
+  #zoomctl { position: absolute; right: 12px; bottom: 12px; display: flex; gap: 6px; align-items: center; }
+  #zoom { font: 12px var(--mono); color: var(--muted); min-width: 44px; text-align: right; }
+  @media (max-width: 800px) { body { grid-template-columns: 1fr; grid-template-rows: auto auto 1fr 35vh; } aside { border-left: 0; border-top: 1px solid var(--border); } }
+  @media print {
+    @page { size: A3 landscape; margin: 8mm; }
+    html, body { height: auto; overflow: visible; display: block; background: #fff; }
+    header, #meta, aside, #zoomctl { display: none; }
+    #viewport { overflow: visible; }
+    #stage { position: static; transform: none !important; width: 100% !important; height: auto !important; }
+    #stage svg { width: 100%; height: auto; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>__TITLE__</h1>
+  <select id="env" aria-label="Environment"></select>
+  <span id="presets" role="group" aria-label="Style">
+    <button data-preset="blueprint" aria-pressed="true">Blueprint</button>
+    <button data-preset="draft" aria-pressed="false">Draft</button>
+    <button data-preset="neon" aria-pressed="false">Neon</button>
+    <button data-preset="soft" aria-pressed="false">Soft</button>
+  </span>
+  <button id="theme">Dark</button>
+  <span class="grow"></span>
+  <button id="svg" title="Download the current diagram as vector SVG">SVG</button>
+  <button id="print" title="Print or save as vector PDF">PDF</button>
+</header>
+<div id="meta"><span id="legend"></span><span id="coverage"></span></div>
+<div id="viewport"><div id="stage"></div>
+  <div id="zoomctl"><button id="zout" aria-label="Zoom out">&minus;</button><span id="zoom">100%</span><button id="zin" aria-label="Zoom in">+</button><button id="fit">Fit</button></div>
+</div>
+<aside id="panel"></aside>
+<script type="application/json" id="infra-data">__DATA__</script>
+<script>
+__BUNDLE__
+__PAGE__
+</script>
+</body>
+</html>
