@@ -13,6 +13,7 @@ import { parseDotGraph } from '../lib/parse/parse-dot-graph.mjs';
 import { compileEnvironmentGraph } from '../lib/compile/compile-environment-graph.mjs';
 import { extractResourceDetails } from '../lib/extract/extract-resource-details.mjs';
 import { parseResourceAddress } from '../lib/parse/parse-resource-address.mjs';
+import { inferPlacementFromReferences } from '../lib/compile/infer-placement.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -251,6 +252,25 @@ for (const entity of compiled.entities) {
   if (!parsed) continue;
   const details = extractResourceDetails(source[0], { blockType: 'resource', labels: [parsed.type, parsed.name] }, source[1]);
   if (details) entity.details = details.attributes;
+}
+
+// Placement from what the source itself references (same-repo only): narrows
+// what the catalog alone left ambiguous. Cross-repo cases, like this demo's,
+// are fully handled by the catalog (exactly one candidate per kind).
+{
+  const { placements, unresolved } = inferPlacementFromReferences({
+    entities: compiled.entities,
+    files: { infra: infraTfFiles, gitops: gitopsTfFiles },
+    vars: infraVars,
+    catalog,
+  });
+  const byId = new Map(compiled.entities.map((e) => [e.id, e]));
+  for (const { entityId, parent } of placements) byId.get(entityId).parent = parent;
+  const placed = new Set(placements.map((p) => p.entityId));
+  compiled.unresolvedPlacements = [
+    ...compiled.unresolvedPlacements.filter((u) => !placed.has(u.entityId)),
+    ...unresolved.filter((u) => !compiled.unresolvedPlacements.some((x) => x.entityId === u.entityId)),
+  ];
 }
 
 const outPath = path.join(__dirname, '..', 'viewer', 'data', 'data_dev.json');

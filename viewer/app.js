@@ -53,6 +53,7 @@ for (const env of ENVIRONMENTS) {
 let cy = null;
 let catalog = { kinds: {}, groups: {} };
 let flowOn = !REDUCED_MOTION;
+let vertical = false; // false: tiers run left to right; true: top to bottom
 
 /* ---------------------------------------------------------------- catalog */
 
@@ -198,7 +199,7 @@ function buildStyle() {
       'target-arrow-shape': 'triangle', 'arrow-scale': 1.1,
       'line-style': 'dashed', 'line-dash-pattern': [8, 6],
       'underlay-color': classColor('default'), 'underlay-opacity': glow * 0.7, 'underlay-padding': 3,
-      'label': 'data(label)', 'font-size': 10, 'font-family': mono, 'color': muted,
+      'label': '', 'opacity': 0.5, 'font-size': 10, 'font-family': mono, 'color': muted,
       'text-background-color': bg, 'text-background-opacity': 0.9, 'text-background-padding': '3px', 'text-background-shape': 'round-rectangle',
       'transition-property': 'opacity', 'transition-duration': '0.18s',
     }},
@@ -208,8 +209,8 @@ function buildStyle() {
       style: { 'line-color': classColor(cls), 'target-arrow-color': classColor(cls), 'underlay-color': classColor(cls) },
     })),
     { selector: 'node:selected', style: { 'border-width': 3, 'border-color': hit, 'underlay-opacity': Math.min(glow * 2, 0.6), 'underlay-padding': 10 } },
-    { selector: '.dim', style: { 'opacity': 0.16 } },
-    { selector: 'edge.hot', style: { 'width': 3.2, 'underlay-opacity': Math.min(glow * 1.6, 0.6) } },
+    { selector: '.dim', style: { 'opacity': 0.12 } },
+    { selector: 'edge.hot', style: { 'width': 3.2, 'opacity': 1, 'label': 'data(label)', 'underlay-opacity': Math.min(glow * 1.6, 0.6) } },
   ];
   return style;
 }
@@ -369,9 +370,11 @@ function renderGraph(graph) {
 
 /* ----------------------------------------------------------------- layout */
 
+const flip = (axis) => (vertical ? (axis === 'row' ? 'column' : 'row') : axis);
 const layoutConfig = () => ({
   sizeOf,
-  axisOf: (kind) => groupOfKind(kind)?.axis ?? specFor(kind).axis ?? 'column',
+  rootAxis: flip('row'),
+  axisOf: (kind) => flip(groupOfKind(kind)?.axis ?? specFor(kind).axis ?? 'column'),
   orderOf: (n) => groupOfKind(n.kind)?.order ?? specFor(n.kind).order ?? 50,
   gap: 44,
   pad: 30,
@@ -505,6 +508,7 @@ zoomLevelEl.addEventListener('click', () => zoomTo(1));
 document.getElementById('expand-all-btn').addEventListener('click', () => cy?.expandCollapse('get').expandAll());
 document.getElementById('collapse-all-btn').addEventListener('click', () => cy?.expandCollapse('get').collapseAll());
 document.getElementById('theme-btn').addEventListener('click', toggleTheme);
+document.getElementById('rotate-btn').addEventListener('click', () => { vertical = !vertical; applyLayout(true); setTimeout(fit, REDUCED_MOTION ? 0 : 280); });
 flowBtn.addEventListener('click', () => setFlow(!flowOn));
 envSelect.addEventListener('change', () => loadEnvironment(envSelect.value));
 
