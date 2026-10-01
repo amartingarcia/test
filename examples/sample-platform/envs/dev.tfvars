@@ -13,3 +13,5 @@ db_instance_class   = "db.t4g.medium"
 db_multi_az         = false
 db_storage_gb       = 20
 redis_nodes         = 1
+enable_system_nodegroup = false
+enable_workload_roles   = false

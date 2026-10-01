@@ -54,6 +54,31 @@ resource "aws_eks_node_group" "default" {
   }
 }
 
+resource "aws_eks_node_group" "system" {
+  count           = var.enable_system_nodegroup ? 1 : 0
+  cluster_name    = aws_eks_cluster.this.name
+  node_group_name = "system"
+  node_role_arn   = aws_iam_role.node.arn
+  subnet_ids      = [aws_subnet.prod_private.id]
+  instance_types  = ["m5.large"]
+  capacity_type   = "ON_DEMAND"
+
+  labels = {
+    node-role = "system"
+  }
+
+  taint {
+    key    = "CriticalAddonsOnly"
+    effect = "NO_SCHEDULE"
+  }
+
+  scaling_config {
+    min_size     = 2
+    max_size     = 3
+    desired_size = 2
+  }
+}
+
 resource "aws_eks_addon" "vpc_cni" {
   cluster_name  = aws_eks_cluster.this.name
   addon_name    = "vpc-cni"

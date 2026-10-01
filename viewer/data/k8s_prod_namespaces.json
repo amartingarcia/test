@@ -1,0 +1,3294 @@
+{
+  "environment": "k8s_prod_namespaces",
+  "entities": [
+    {
+      "id": "platform:aws.lb:public",
+      "kind": "aws.lb",
+      "repoId": "platform",
+      "sourceAddress": "aws_lb.public",
+      "parent": "platform:aws.subnet.public:prod_public",
+      "details": {
+        "name": {
+          "resolved": true,
+          "value": "edge-alb"
+        },
+        "load_balancer_type": {
+          "resolved": true,
+          "value": "application"
+        },
+        "subnets": {
+          "resolved": false,
+          "raw": "[aws_subnet.prod_public.id]"
+        },
+        "security_groups": {
+          "resolved": false,
+          "raw": "[aws_security_group.prod_default.id]"
+        }
+      }
+    },
+    {
+      "id": "platform:aws.ec2.instance:bastion",
+      "kind": "aws.ec2.instance",
+      "repoId": "platform",
+      "sourceAddress": "aws_instance.bastion",
+      "parent": "platform:aws.subnet.public:shared_public",
+      "details": {
+        "count": {
+          "resolved": true,
+          "value": 1
+        },
+        "ami": {
+          "resolved": true,
+          "value": "ami-0a1b2c3d4e5f67890"
+        },
+        "instance_type": {
+          "resolved": true,
+          "value": "t3.micro"
+        },
+        "subnet_id": {
+          "resolved": false,
+          "raw": "aws_subnet.shared_public[0].id"
+        },
+        "iam_instance_profile": {
+          "resolved": false,
+          "raw": "aws_iam_instance_profile.ec2[0].name"
+        }
+      }
+    },
+    {
+      "id": "platform:aws.ec2.instance:ci_runner",
+      "kind": "aws.ec2.instance",
+      "repoId": "platform",
+      "sourceAddress": "aws_instance.ci_runner",
+      "parent": "platform:aws.subnet.private:shared_private",
+      "details": {
+        "count": {
+          "resolved": true,
+          "value": 1
+        },
+        "ami": {
+          "resolved": true,
+          "value": "ami-0a1b2c3d4e5f67890"
+        },
+        "instance_type": {
+          "resolved": true,
+          "value": "t3.large"
+        },
+        "subnet_id": {
+          "resolved": false,
+          "raw": "aws_subnet.shared_private[0].id"
+        }
+      }
+    },
+    {
+      "id": "platform:aws.ec2.instance:legacy_api",
+      "kind": "aws.ec2.instance",
+      "repoId": "platform",
+      "sourceAddress": "aws_instance.legacy_api",
+      "parent": "platform:aws.subnet.private:prod_private",
+      "details": {
+        "count": {
+          "resolved": true,
+          "value": 1
+        },
+        "ami": {
+          "resolved": true,
+          "value": "ami-0a1b2c3d4e5f67890"
+        },
+        "instance_type": {
+          "resolved": true,
+          "value": "m5.large"
+        },
+        "subnet_id": {
+          "resolved": false,
+          "raw": "aws_subnet.prod_private.id"
+        }
+      }
+    },
+    {
+      "id": "platform:aws.eks.cluster:this",
+      "kind": "aws.eks.cluster",
+      "repoId": "platform",
+      "sourceAddress": "aws_eks_cluster.this",
+      "parent": "platform:aws.subnet.private:prod_private",
+      "details": {
+        "name": {
+          "resolved": true,
+          "value": "prod-cluster"
+        },
+        "version": {
+          "resolved": true,
+          "value": "1.29"
+        },
+        "role_arn": {
+          "resolved": false,
+          "raw": "aws_iam_role.cluster.arn"
+        },
+        "vpc_config.subnet_ids": {
+          "resolved": false,
+          "raw": "[aws_subnet.prod_private.id]"
+        },
+        "vpc_config.endpoint_private_access": {
+          "resolved": true,
+          "value": true
+        },
+        "vpc_config.endpoint_public_access": {
+          "resolved": true,
+          "value": false
+        }
+      }
+    },
+    {
+      "id": "platform:aws.eks.nodegroup:default",
+      "kind": "aws.eks.nodegroup",
+      "repoId": "platform",
+      "sourceAddress": "aws_eks_node_group.default",
+      "parent": "platform:aws.eks.cluster:this",
+      "details": {
+        "cluster_name": {
+          "resolved": false,
+          "raw": "aws_eks_cluster.this.name"
+        },
+        "node_group_name": {
+          "resolved": true,
+          "value": "default"
+        },
+        "node_role_arn": {
+          "resolved": false,
+          "raw": "aws_iam_role.node.arn"
+        },
+        "subnet_ids": {
+          "resolved": false,
+          "raw": "[aws_subnet.prod_private.id]"
+        },
+        "instance_types": {
+          "resolved": true,
+          "value": [
+            "m5.large",
+            "m5a.large"
+          ]
+        },
+        "capacity_type": {
+          "resolved": true,
+          "value": "ON_DEMAND"
+        },
+        "scaling_config.min_size": {
+          "resolved": true,
+          "value": 2
+        },
+        "scaling_config.max_size": {
+          "resolved": true,
+          "value": 6
+        },
+        "scaling_config.desired_size": {
+          "resolved": true,
+          "value": 3
+        }
+      }
+    },
+    {
+      "id": "platform:aws.eks.nodegroup:system",
+      "kind": "aws.eks.nodegroup",
+      "repoId": "platform",
+      "sourceAddress": "aws_eks_node_group.system",
+      "parent": "platform:aws.eks.cluster:this",
+      "details": {
+        "count": {
+          "resolved": true,
+          "value": 1
+        },
+        "cluster_name": {
+          "resolved": false,
+          "raw": "aws_eks_cluster.this.name"
+        },
+        "node_group_name": {
+          "resolved": true,
+          "value": "system"
+        },
+        "node_role_arn": {
+          "resolved": false,
+          "raw": "aws_iam_role.node.arn"
+        },
+        "subnet_ids": {
+          "resolved": false,
+          "raw": "[aws_subnet.prod_private.id]"
+        },
+        "instance_types": {
+          "resolved": true,
+          "value": [
+            "m5.large"
+          ]
+        },
+        "capacity_type": {
+          "resolved": true,
+          "value": "ON_DEMAND"
+        },
+        "labels": {
+          "resolved": true,
+          "value": {
+            "node-role": "system"
+          }
+        },
+        "taint.key": {
+          "resolved": true,
+          "value": "CriticalAddonsOnly"
+        },
+        "taint.effect": {
+          "resolved": true,
+          "value": "NO_SCHEDULE"
+        },
+        "scaling_config.min_size": {
+          "resolved": true,
+          "value": 2
+        },
+        "scaling_config.max_size": {
+          "resolved": true,
+          "value": 3
+        },
+        "scaling_config.desired_size": {
+          "resolved": true,
+          "value": 2
+        }
+      }
+    },
+    {
+      "id": "platform:aws.eks.addon:vpc_cni",
+      "kind": "aws.eks.addon",
+      "repoId": "platform",
+      "sourceAddress": "aws_eks_addon.vpc_cni",
+      "parent": "platform:aws.eks.cluster:this",
+      "embedded": true,
+      "details": {
+        "cluster_name": {
+          "resolved": false,
+          "raw": "aws_eks_cluster.this.name"
+        },
+        "addon_name": {
+          "resolved": true,
+          "value": "vpc-cni"
+        },
+        "addon_version": {
+          "resolved": true,
+          "value": "v1.18.1-eksbuild.1"
+        }
+      }
+    },
+    {
+      "id": "platform:aws.eks.addon:coredns",
+      "kind": "aws.eks.addon",
+      "repoId": "platform",
+      "sourceAddress": "aws_eks_addon.coredns",
+      "parent": "platform:aws.eks.cluster:this",
+      "embedded": true,
+      "details": {
+        "cluster_name": {
+          "resolved": false,
+          "raw": "aws_eks_cluster.this.name"
+        },
+        "addon_name": {
+          "resolved": true,
+          "value": "coredns"
+        },
+        "addon_version": {
+          "resolved": true,
+          "value": "v1.11.1-eksbuild.9"
+        }
+      }
+    },
+    {
+      "id": "platform:aws.eks.addon:kube_proxy",
+      "kind": "aws.eks.addon",
+      "repoId": "platform",
+      "sourceAddress": "aws_eks_addon.kube_proxy",
+      "parent": "platform:aws.eks.cluster:this",
+      "embedded": true,
+      "details": {
+        "cluster_name": {
+          "resolved": false,
+          "raw": "aws_eks_cluster.this.name"
+        },
+        "addon_name": {
+          "resolved": true,
+          "value": "kube-proxy"
+        },
+        "addon_version": {
+          "resolved": true,
+          "value": "v1.29.0-eksbuild.1"
+        }
+      }
+    },
+    {
+      "id": "platform:aws.ssm.parameter:db_endpoint",
+      "kind": "aws.ssm.parameter",
+      "repoId": "platform",
+      "sourceAddress": "aws_ssm_parameter.db_endpoint",
+      "parent": null,
+      "details": {
+        "name": {
+          "resolved": true,
+          "value": "/prod/orders/db/endpoint"
+        },
+        "type": {
+          "resolved": true,
+          "value": "String"
+        },
+        "value": {
+          "resolved": false,
+          "raw": "aws_db_instance.orders.endpoint"
+        }
+      }
+    },
+    {
+      "id": "platform:aws.ssm.parameter:docdb_endpoint",
+      "kind": "aws.ssm.parameter",
+      "repoId": "platform",
+      "sourceAddress": "aws_ssm_parameter.docdb_endpoint",
+      "parent": null,
+      "details": {
+        "count": {
+          "resolved": true,
+          "value": 1
+        },
+        "name": {
+          "resolved": true,
+          "value": "/prod/reports/docdb/endpoint"
+        },
+        "type": {
+          "resolved": true,
+          "value": "String"
+        },
+        "value": {
+          "resolved": false,
+          "raw": "aws_docdb_cluster.reports[0].endpoint"
+        }
+      }
+    },
+    {
+      "id": "platform:aws.ssm.parameter:redis_endpoint",
+      "kind": "aws.ssm.parameter",
+      "repoId": "platform",
+      "sourceAddress": "aws_ssm_parameter.redis_endpoint",
+      "parent": null,
+      "details": {
+        "name": {
+          "resolved": true,
+          "value": "/prod/sessions/redis/endpoint"
+        },
+        "type": {
+          "resolved": true,
+          "value": "String"
+        },
+        "value": {
+          "resolved": false,
+          "raw": "aws_elasticache_replication_group.sessions.primary_endpoint_address"
+        }
+      }
+    },
+    {
+      "id": "platform:aws.ssm.parameter:opensearch_endpoint",
+      "kind": "aws.ssm.parameter",
+      "repoId": "platform",
+      "sourceAddress": "aws_ssm_parameter.opensearch_endpoint",
+      "parent": null,
+      "details": {
+        "count": {
+          "resolved": true,
+          "value": 1
+        },
+        "name": {
+          "resolved": true,
+          "value": "/prod/logs/opensearch/endpoint"
+        },
+        "type": {
+          "resolved": true,
+          "value": "String"
+        },
+        "value": {
+          "resolved": false,
+          "raw": "aws_opensearch_domain.logs[0].endpoint"
+        }
+      }
+    },
+    {
+      "id": "platform:aws.route53.zone:main",
+      "kind": "aws.route53.zone",
+      "repoId": "platform",
+      "sourceAddress": "aws_route53_zone.main",
+      "parent": null,
+      "details": {
+        "name": {
+          "resolved": true,
+          "value": "example.com"
+        }
+      }
+    },
+    {
+      "id": "platform:aws.route53.record:api",
+      "kind": "aws.route53.record",
+      "repoId": "platform",
+      "sourceAddress": "aws_route53_record.api",
+      "parent": "platform:aws.route53.zone:main",
+      "details": {
+        "zone_id": {
+          "resolved": false,
+          "raw": "aws_route53_zone.main.zone_id"
+        },
+        "name": {
+          "resolved": true,
+          "value": "api.example.com"
+        },
+        "type": {
+          "resolved": true,
+          "value": "A"
+        },
+        "alias.name": {
+          "resolved": false,
+          "raw": "aws_lb.public.dns_name"
+        },
+        "alias.zone_id": {
+          "resolved": false,
+          "raw": "aws_lb.public.zone_id"
+        },
+        "alias.evaluate_target_health": {
+          "resolved": true,
+          "value": true
+        }
+      }
+    },
+    {
+      "id": "platform:aws.route53.record:www",
+      "kind": "aws.route53.record",
+      "repoId": "platform",
+      "sourceAddress": "aws_route53_record.www",
+      "parent": "platform:aws.route53.zone:main",
+      "details": {
+        "zone_id": {
+          "resolved": false,
+          "raw": "aws_route53_zone.main.zone_id"
+        },
+        "name": {
+          "resolved": true,
+          "value": "www.example.com"
+        },
+        "type": {
+          "resolved": true,
+          "value": "A"
+        },
+        "alias.name": {
+          "resolved": false,
+          "raw": "aws_lb.public.dns_name"
+        },
+        "alias.zone_id": {
+          "resolved": false,
+          "raw": "aws_lb.public.zone_id"
+        },
+        "alias.evaluate_target_health": {
+          "resolved": true,
+          "value": true
+        }
+      }
+    },
+    {
+      "id": "platform:aws.route53.record:bastion",
+      "kind": "aws.route53.record",
+      "repoId": "platform",
+      "sourceAddress": "aws_route53_record.bastion",
+      "parent": "platform:aws.route53.zone:main",
+      "details": {
+        "count": {
+          "resolved": true,
+          "value": 1
+        },
+        "zone_id": {
+          "resolved": false,
+          "raw": "aws_route53_zone.main.zone_id"
+        },
+        "name": {
+          "resolved": true,
+          "value": "bastion.example.com"
+        },
+        "type": {
+          "resolved": true,
+          "value": "A"
+        },
+        "ttl": {
+          "resolved": true,
+          "value": 300
+        },
+        "records": {
+          "resolved": false,
+          "raw": "[aws_instance.bastion[0].public_ip]"
+        }
+      }
+    },
+    {
+      "id": "platform:aws.rds.instance:orders",
+      "kind": "aws.rds.instance",
+      "repoId": "platform",
+      "sourceAddress": "aws_db_instance.orders",
+      "parent": "platform:aws.subnet.data:prod_data",
+      "details": {
+        "identifier": {
+          "resolved": true,
+          "value": "orders"
+        },
+        "engine": {
+          "resolved": true,
+          "value": "postgres"
+        },
+        "engine_version": {
+          "resolved": true,
+          "value": "16.3"
+        },
+        "instance_class": {
+          "resolved": true,
+          "value": "db.r6g.xlarge"
+        },
+        "allocated_storage": {
+          "resolved": true,
+          "value": 100
+        },
+        "multi_az": {
+          "resolved": true,
+          "value": true
+        },
+        "storage_encrypted": {
+          "resolved": true,
+          "value": true
+        },
+        "db_subnet_group_name": {
+          "resolved": false,
+          "raw": "aws_db_subnet_group.data.name"
+        },
+        "vpc_security_group_ids": {
+          "resolved": false,
+          "raw": "[aws_security_group.prod_default.id]"
+        }
+      }
+    },
+    {
+      "id": "platform:aws.docdb.cluster:reports",
+      "kind": "aws.docdb.cluster",
+      "repoId": "platform",
+      "sourceAddress": "aws_docdb_cluster.reports",
+      "parent": "platform:aws.subnet.data:prod_data",
+      "details": {
+        "count": {
+          "resolved": true,
+          "value": 1
+        },
+        "cluster_identifier": {
+          "resolved": true,
+          "value": "reports"
+        },
+        "engine_version": {
+          "resolved": true,
+          "value": "5.0.0"
+        },
+        "storage_encrypted": {
+          "resolved": true,
+          "value": true
+        },
+        "backup_retention_period": {
+          "resolved": true,
+          "value": 7
+        },
+        "db_subnet_group_name": {
+          "resolved": false,
+          "raw": "aws_docdb_subnet_group.data[0].name"
+        }
+      }
+    },
+    {
+      "id": "platform:aws.elasticache.redis:sessions",
+      "kind": "aws.elasticache.redis",
+      "repoId": "platform",
+      "sourceAddress": "aws_elasticache_replication_group.sessions",
+      "parent": "platform:aws.subnet.data:prod_data",
+      "details": {
+        "replication_group_id": {
+          "resolved": true,
+          "value": "sessions"
+        },
+        "description": {
+          "resolved": true,
+          "value": "Session cache"
+        },
+        "engine": {
+          "resolved": true,
+          "value": "redis"
+        },
+        "engine_version": {
+          "resolved": true,
+          "value": "7.1"
+        },
+        "node_type": {
+          "resolved": true,
+          "value": "cache.r6g.large"
+        },
+        "num_cache_clusters": {
+          "resolved": true,
+          "value": 2
+        },
+        "subnet_group_name": {
+          "resolved": false,
+          "raw": "aws_elasticache_subnet_group.data.name"
+        }
+      }
+    },
+    {
+      "id": "platform:aws.opensearch.domain:logs",
+      "kind": "aws.opensearch.domain",
+      "repoId": "platform",
+      "sourceAddress": "aws_opensearch_domain.logs",
+      "parent": "platform:aws.subnet.data:prod_data",
+      "details": {
+        "count": {
+          "resolved": true,
+          "value": 1
+        },
+        "domain_name": {
+          "resolved": true,
+          "value": "logs"
+        },
+        "engine_version": {
+          "resolved": true,
+          "value": "OpenSearch_2.13"
+        },
+        "cluster_config.instance_type": {
+          "resolved": true,
+          "value": "r6g.large.search"
+        },
+        "cluster_config.instance_count": {
+          "resolved": true,
+          "value": 3
+        },
+        "vpc_options.subnet_ids": {
+          "resolved": false,
+          "raw": "[aws_subnet.prod_data.id]"
+        }
+      }
+    },
+    {
+      "id": "platform:aws.iam.role.cluster:cluster",
+      "kind": "aws.iam.role.cluster",
+      "repoId": "platform",
+      "sourceAddress": "aws_iam_role.cluster",
+      "parent": null,
+      "details": {
+        "name": {
+          "resolved": true,
+          "value": "prod-eks-cluster"
+        },
+        "path": {
+          "resolved": true,
+          "value": "/"
+        }
+      }
+    },
+    {
+      "id": "platform:aws.iam.role.node:node",
+      "kind": "aws.iam.role.node",
+      "repoId": "platform",
+      "sourceAddress": "aws_iam_role.node",
+      "parent": null,
+      "details": {
+        "name": {
+          "resolved": true,
+          "value": "prod-eks-node"
+        },
+        "path": {
+          "resolved": true,
+          "value": "/"
+        }
+      }
+    },
+    {
+      "id": "platform:aws.iam.role.irsa:orders_api_irsa",
+      "kind": "aws.iam.role.irsa",
+      "repoId": "platform",
+      "sourceAddress": "aws_iam_role.orders_api_irsa",
+      "parent": null,
+      "details": {
+        "name": {
+          "resolved": true,
+          "value": "prod-orders-api-irsa"
+        },
+        "path": {
+          "resolved": true,
+          "value": "/service-role/"
+        }
+      }
+    },
+    {
+      "id": "platform:aws.iam.role.ec2:ec2_ssm",
+      "kind": "aws.iam.role.ec2",
+      "repoId": "platform",
+      "sourceAddress": "aws_iam_role.ec2_ssm",
+      "parent": null,
+      "details": {
+        "count": {
+          "resolved": true,
+          "value": 1
+        },
+        "name": {
+          "resolved": true,
+          "value": "shared-ec2-ssm"
+        },
+        "path": {
+          "resolved": true,
+          "value": "/"
+        }
+      }
+    },
+    {
+      "id": "platform:aws.iam.role.workload:wl_web",
+      "kind": "aws.iam.role.workload",
+      "repoId": "platform",
+      "sourceAddress": "aws_iam_role.wl_web",
+      "parent": null,
+      "details": {
+        "count": {
+          "resolved": true,
+          "value": 1
+        },
+        "name": {
+          "resolved": true,
+          "value": "shop-prod-web"
+        },
+        "path": {
+          "resolved": true,
+          "value": "/service-role/"
+        }
+      }
+    },
+    {
+      "id": "platform:aws.iam.role.workload:wl_api",
+      "kind": "aws.iam.role.workload",
+      "repoId": "platform",
+      "sourceAddress": "aws_iam_role.wl_api",
+      "parent": null,
+      "details": {
+        "count": {
+          "resolved": true,
+          "value": 1
+        },
+        "name": {
+          "resolved": true,
+          "value": "shop-prod-api"
+        },
+        "path": {
+          "resolved": true,
+          "value": "/service-role/"
+        }
+      }
+    },
+    {
+      "id": "platform:aws.iam.role.workload:wl_worker",
+      "kind": "aws.iam.role.workload",
+      "repoId": "platform",
+      "sourceAddress": "aws_iam_role.wl_worker",
+      "parent": null,
+      "details": {
+        "count": {
+          "resolved": true,
+          "value": 1
+        },
+        "name": {
+          "resolved": true,
+          "value": "shop-prod-worker"
+        },
+        "path": {
+          "resolved": true,
+          "value": "/service-role/"
+        }
+      }
+    },
+    {
+      "id": "platform:aws.iam.role.workload:wl_payments",
+      "kind": "aws.iam.role.workload",
+      "repoId": "platform",
+      "sourceAddress": "aws_iam_role.wl_payments",
+      "parent": null,
+      "details": {
+        "count": {
+          "resolved": true,
+          "value": 1
+        },
+        "name": {
+          "resolved": true,
+          "value": "shop-prod-payments"
+        },
+        "path": {
+          "resolved": true,
+          "value": "/service-role/"
+        }
+      }
+    },
+    {
+      "id": "platform:aws.iam.role.workload:wl_karpenter",
+      "kind": "aws.iam.role.workload",
+      "repoId": "platform",
+      "sourceAddress": "aws_iam_role.wl_karpenter",
+      "parent": null,
+      "details": {
+        "count": {
+          "resolved": true,
+          "value": 1
+        },
+        "name": {
+          "resolved": true,
+          "value": "shop-prod-karpenter"
+        },
+        "path": {
+          "resolved": true,
+          "value": "/service-role/"
+        }
+      }
+    },
+    {
+      "id": "platform:aws.iam.role.workload:wl_karpenter_node",
+      "kind": "aws.iam.role.workload",
+      "repoId": "platform",
+      "sourceAddress": "aws_iam_role.wl_karpenter_node",
+      "parent": null,
+      "details": {
+        "count": {
+          "resolved": true,
+          "value": 1
+        },
+        "name": {
+          "resolved": true,
+          "value": "KarpenterNodeRole-shop-prod"
+        },
+        "path": {
+          "resolved": true,
+          "value": "/"
+        }
+      }
+    },
+    {
+      "id": "platform:aws.vpc:prod",
+      "kind": "aws.vpc",
+      "repoId": "platform",
+      "sourceAddress": "aws_vpc.prod",
+      "parent": null,
+      "details": {
+        "cidr_block": {
+          "resolved": true,
+          "value": "10.10.0.0/16"
+        },
+        "enable_dns_hostnames": {
+          "resolved": true,
+          "value": true
+        }
+      }
+    },
+    {
+      "id": "platform:aws.vpc:shared",
+      "kind": "aws.vpc",
+      "repoId": "platform",
+      "sourceAddress": "aws_vpc.shared",
+      "parent": null,
+      "details": {
+        "count": {
+          "resolved": true,
+          "value": 1
+        },
+        "cidr_block": {
+          "resolved": true,
+          "value": "10.20.0.0/16"
+        }
+      }
+    },
+    {
+      "id": "platform:aws.vpc_peering:prod_shared",
+      "kind": "aws.vpc_peering",
+      "repoId": "platform",
+      "sourceAddress": "aws_vpc_peering_connection.prod_shared",
+      "parent": null,
+      "details": {
+        "count": {
+          "resolved": true,
+          "value": 1
+        },
+        "vpc_id": {
+          "resolved": false,
+          "raw": "aws_vpc.prod.id"
+        },
+        "peer_vpc_id": {
+          "resolved": false,
+          "raw": "aws_vpc.shared[0].id"
+        },
+        "auto_accept": {
+          "resolved": true,
+          "value": true
+        }
+      }
+    },
+    {
+      "id": "platform:aws.internet_gateway:prod",
+      "kind": "aws.internet_gateway",
+      "repoId": "platform",
+      "sourceAddress": "aws_internet_gateway.prod",
+      "parent": "platform:aws.vpc:prod",
+      "details": {
+        "vpc_id": {
+          "resolved": false,
+          "raw": "aws_vpc.prod.id"
+        }
+      }
+    },
+    {
+      "id": "platform:aws.internet_gateway:shared",
+      "kind": "aws.internet_gateway",
+      "repoId": "platform",
+      "sourceAddress": "aws_internet_gateway.shared",
+      "parent": "platform:aws.vpc:shared",
+      "details": {
+        "count": {
+          "resolved": true,
+          "value": 1
+        },
+        "vpc_id": {
+          "resolved": false,
+          "raw": "aws_vpc.shared[0].id"
+        }
+      }
+    },
+    {
+      "id": "platform:aws.subnet.public:prod_public",
+      "kind": "aws.subnet.public",
+      "repoId": "platform",
+      "sourceAddress": "aws_subnet.prod_public",
+      "parent": "platform:aws.vpc:prod",
+      "details": {
+        "vpc_id": {
+          "resolved": false,
+          "raw": "aws_vpc.prod.id"
+        },
+        "cidr_block": {
+          "resolved": true,
+          "value": "10.10.0.0/20"
+        }
+      }
+    },
+    {
+      "id": "platform:aws.subnet.private:prod_private",
+      "kind": "aws.subnet.private",
+      "repoId": "platform",
+      "sourceAddress": "aws_subnet.prod_private",
+      "parent": "platform:aws.vpc:prod",
+      "details": {
+        "vpc_id": {
+          "resolved": false,
+          "raw": "aws_vpc.prod.id"
+        },
+        "cidr_block": {
+          "resolved": true,
+          "value": "10.10.16.0/20"
+        }
+      }
+    },
+    {
+      "id": "platform:aws.subnet.data:prod_data",
+      "kind": "aws.subnet.data",
+      "repoId": "platform",
+      "sourceAddress": "aws_subnet.prod_data",
+      "parent": "platform:aws.vpc:prod",
+      "details": {
+        "vpc_id": {
+          "resolved": false,
+          "raw": "aws_vpc.prod.id"
+        },
+        "cidr_block": {
+          "resolved": true,
+          "value": "10.10.32.0/20"
+        }
+      }
+    },
+    {
+      "id": "platform:aws.subnet.public:shared_public",
+      "kind": "aws.subnet.public",
+      "repoId": "platform",
+      "sourceAddress": "aws_subnet.shared_public",
+      "parent": "platform:aws.vpc:shared",
+      "details": {
+        "count": {
+          "resolved": true,
+          "value": 1
+        },
+        "vpc_id": {
+          "resolved": false,
+          "raw": "aws_vpc.shared[0].id"
+        },
+        "cidr_block": {
+          "resolved": true,
+          "value": "10.20.0.0/20"
+        }
+      }
+    },
+    {
+      "id": "platform:aws.subnet.private:shared_private",
+      "kind": "aws.subnet.private",
+      "repoId": "platform",
+      "sourceAddress": "aws_subnet.shared_private",
+      "parent": "platform:aws.vpc:shared",
+      "details": {
+        "count": {
+          "resolved": true,
+          "value": 1
+        },
+        "vpc_id": {
+          "resolved": false,
+          "raw": "aws_vpc.shared[0].id"
+        },
+        "cidr_block": {
+          "resolved": true,
+          "value": "10.20.16.0/20"
+        }
+      }
+    },
+    {
+      "id": "platform:aws.nat_gateway:prod",
+      "kind": "aws.nat_gateway",
+      "repoId": "platform",
+      "sourceAddress": "aws_nat_gateway.prod",
+      "parent": "platform:aws.subnet.public:prod_public",
+      "details": {
+        "subnet_id": {
+          "resolved": false,
+          "raw": "aws_subnet.prod_public.id"
+        },
+        "allocation_id": {
+          "resolved": false,
+          "raw": "aws_eip.prod_nat.id"
+        }
+      }
+    },
+    {
+      "id": "platform:aws.nat_gateway:shared",
+      "kind": "aws.nat_gateway",
+      "repoId": "platform",
+      "sourceAddress": "aws_nat_gateway.shared",
+      "parent": "platform:aws.subnet.public:shared_public",
+      "details": {
+        "count": {
+          "resolved": true,
+          "value": 1
+        },
+        "subnet_id": {
+          "resolved": false,
+          "raw": "aws_subnet.shared_public[0].id"
+        },
+        "allocation_id": {
+          "resolved": false,
+          "raw": "aws_eip.shared_nat[0].id"
+        }
+      }
+    },
+    {
+      "id": "platform:aws.security_group:prod_default",
+      "kind": "aws.security_group",
+      "repoId": "platform",
+      "sourceAddress": "aws_security_group.prod_default",
+      "parent": "platform:aws.vpc:prod",
+      "details": {
+        "name": {
+          "resolved": true,
+          "value": "prod-default"
+        },
+        "vpc_id": {
+          "resolved": false,
+          "raw": "aws_vpc.prod.id"
+        }
+      }
+    },
+    {
+      "id": "platform:aws.security_group:shared_default",
+      "kind": "aws.security_group",
+      "repoId": "platform",
+      "sourceAddress": "aws_security_group.shared_default",
+      "parent": "platform:aws.vpc:shared",
+      "details": {
+        "count": {
+          "resolved": true,
+          "value": 1
+        },
+        "name": {
+          "resolved": true,
+          "value": "shared-default"
+        },
+        "vpc_id": {
+          "resolved": false,
+          "raw": "aws_vpc.shared[0].id"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.nodeclass:default",
+      "kind": "k8s.nodeclass",
+      "parent": "platform:aws.eks.cluster:this",
+      "repoId": "k8s",
+      "sourceAddress": "00-capacity.yaml",
+      "details": {
+        "ami": {
+          "resolved": true,
+          "value": "al2023@latest"
+        },
+        "role": {
+          "resolved": true,
+          "value": "KarpenterNodeRole-shop-prod"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.nodeclass:gpu",
+      "kind": "k8s.nodeclass",
+      "parent": "platform:aws.eks.cluster:this",
+      "repoId": "k8s",
+      "sourceAddress": "00-capacity.yaml",
+      "details": {
+        "ami": {
+          "resolved": true,
+          "value": "bottlerocket@latest"
+        },
+        "role": {
+          "resolved": true,
+          "value": "KarpenterNodeRole-shop-prod"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.nodepool:general",
+      "kind": "k8s.nodepool",
+      "parent": "platform:aws.eks.cluster:this",
+      "repoId": "k8s",
+      "sourceAddress": "00-capacity.yaml",
+      "details": {
+        "capacity": {
+          "resolved": true,
+          "value": "capacity-type = on-demand · arch = amd64"
+        },
+        "labels": {
+          "resolved": true,
+          "value": "workload=general"
+        },
+        "limits": {
+          "resolved": true,
+          "value": "cpu=200"
+        },
+        "consolidation": {
+          "resolved": true,
+          "value": "WhenEmptyOrUnderutilized"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.nodepool:spot-batch",
+      "kind": "k8s.nodepool",
+      "parent": "platform:aws.eks.cluster:this",
+      "repoId": "k8s",
+      "sourceAddress": "00-capacity.yaml",
+      "details": {
+        "capacity": {
+          "resolved": true,
+          "value": "capacity-type = spot"
+        },
+        "taints": {
+          "resolved": true,
+          "value": "batch=true:NoSchedule"
+        },
+        "labels": {
+          "resolved": true,
+          "value": "workload=batch"
+        },
+        "limits": {
+          "resolved": true,
+          "value": "cpu=400"
+        },
+        "consolidation": {
+          "resolved": true,
+          "value": "WhenEmpty"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.nodepool:gpu",
+      "kind": "k8s.nodepool",
+      "parent": "platform:aws.eks.cluster:this",
+      "repoId": "k8s",
+      "sourceAddress": "00-capacity.yaml",
+      "details": {
+        "capacity": {
+          "resolved": true,
+          "value": "instance-family = g5"
+        },
+        "taints": {
+          "resolved": true,
+          "value": "nvidia.com/gpu=true:NoSchedule"
+        },
+        "labels": {
+          "resolved": true,
+          "value": "workload=ml"
+        },
+        "limits": {
+          "resolved": true,
+          "value": "cpu=64"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.namespace:kube-system",
+      "kind": "k8s.namespace",
+      "parent": "platform:aws.eks.cluster:this",
+      "repoId": "k8s",
+      "sourceAddress": "kube-system",
+      "details": {
+        "declared": {
+          "resolved": true,
+          "value": true
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.namespace:karpenter",
+      "kind": "k8s.namespace",
+      "parent": "platform:aws.eks.cluster:this",
+      "repoId": "k8s",
+      "sourceAddress": "karpenter",
+      "details": {
+        "declared": {
+          "resolved": true,
+          "value": true
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.namespace:argocd",
+      "kind": "k8s.namespace",
+      "parent": "platform:aws.eks.cluster:this",
+      "repoId": "k8s",
+      "sourceAddress": "argocd",
+      "details": {
+        "declared": {
+          "resolved": true,
+          "value": true
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.namespace:ingress-nginx",
+      "kind": "k8s.namespace",
+      "parent": "platform:aws.eks.cluster:this",
+      "repoId": "k8s",
+      "sourceAddress": "ingress-nginx",
+      "details": {
+        "declared": {
+          "resolved": true,
+          "value": true
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.namespace:observability",
+      "kind": "k8s.namespace",
+      "parent": "platform:aws.eks.cluster:this",
+      "repoId": "k8s",
+      "sourceAddress": "observability",
+      "details": {
+        "declared": {
+          "resolved": true,
+          "value": true
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.namespace:shop",
+      "kind": "k8s.namespace",
+      "parent": "platform:aws.eks.cluster:this",
+      "repoId": "k8s",
+      "sourceAddress": "shop",
+      "details": {
+        "declared": {
+          "resolved": true,
+          "value": true
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.namespace:payments",
+      "kind": "k8s.namespace",
+      "parent": "platform:aws.eks.cluster:this",
+      "repoId": "k8s",
+      "sourceAddress": "payments",
+      "details": {
+        "declared": {
+          "resolved": true,
+          "value": true
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.namespace:ml",
+      "kind": "k8s.namespace",
+      "parent": "platform:aws.eks.cluster:this",
+      "repoId": "k8s",
+      "sourceAddress": "ml",
+      "details": {
+        "declared": {
+          "resolved": true,
+          "value": true
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.namespace:tenant-acme",
+      "kind": "k8s.namespace",
+      "parent": "platform:aws.eks.cluster:this",
+      "repoId": "k8s",
+      "sourceAddress": "tenant-acme",
+      "details": {
+        "declared": {
+          "resolved": true,
+          "value": true
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.namespace:tenant-globex",
+      "kind": "k8s.namespace",
+      "parent": "platform:aws.eks.cluster:this",
+      "repoId": "k8s",
+      "sourceAddress": "tenant-globex",
+      "details": {
+        "declared": {
+          "resolved": true,
+          "value": true
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.deployment:karpenter/karpenter",
+      "kind": "k8s.deployment",
+      "parent": "k8s:k8s.namespace:karpenter",
+      "repoId": "k8s",
+      "sourceAddress": "10-platform.yaml",
+      "details": {
+        "namespace": {
+          "resolved": true,
+          "value": "karpenter"
+        },
+        "replicas": {
+          "resolved": true,
+          "value": 2
+        },
+        "image": {
+          "resolved": true,
+          "value": "public.ecr.aws/karpenter/controller:1.0.0"
+        },
+        "requests": {
+          "resolved": true,
+          "value": "250m / 256Mi"
+        },
+        "ports": {
+          "resolved": true,
+          "value": "8080/TCP"
+        },
+        "serviceAccount": {
+          "resolved": true,
+          "value": "karpenter"
+        },
+        "iamRole": {
+          "resolved": true,
+          "value": "arn:aws:iam::111111111111:role/shop-prod-karpenter"
+        },
+        "nodeSelector": {
+          "resolved": true,
+          "value": "node-role=system"
+        },
+        "tolerations": {
+          "resolved": true,
+          "value": "CriticalAddonsOnly"
+        },
+        "runsOn": {
+          "resolved": true,
+          "value": "system"
+        },
+        "argoApp": {
+          "resolved": true,
+          "value": "karpenter"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.deployment:kube-system/coredns",
+      "kind": "k8s.deployment",
+      "parent": "k8s:k8s.namespace:kube-system",
+      "repoId": "k8s",
+      "sourceAddress": "10-platform.yaml",
+      "details": {
+        "namespace": {
+          "resolved": true,
+          "value": "kube-system"
+        },
+        "replicas": {
+          "resolved": true,
+          "value": 2
+        },
+        "image": {
+          "resolved": true,
+          "value": "registry.k8s.io/coredns/coredns:v1.11.1"
+        },
+        "requests": {
+          "resolved": true,
+          "value": "250m / 256Mi"
+        },
+        "ports": {
+          "resolved": true,
+          "value": "8080/TCP"
+        },
+        "nodeSelector": {
+          "resolved": true,
+          "value": "node-role=system"
+        },
+        "tolerations": {
+          "resolved": true,
+          "value": "CriticalAddonsOnly"
+        },
+        "runsOn": {
+          "resolved": true,
+          "value": "system"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.deployment:argocd/argocd-server",
+      "kind": "k8s.deployment",
+      "parent": "k8s:k8s.namespace:argocd",
+      "repoId": "k8s",
+      "sourceAddress": "10-platform.yaml",
+      "details": {
+        "namespace": {
+          "resolved": true,
+          "value": "argocd"
+        },
+        "replicas": {
+          "resolved": true,
+          "value": 2
+        },
+        "image": {
+          "resolved": true,
+          "value": "quay.io/argoproj/argocd:v2.12.0"
+        },
+        "requests": {
+          "resolved": true,
+          "value": "250m / 256Mi"
+        },
+        "ports": {
+          "resolved": true,
+          "value": "8080/TCP"
+        },
+        "nodeSelector": {
+          "resolved": true,
+          "value": "node-role=system"
+        },
+        "tolerations": {
+          "resolved": true,
+          "value": "CriticalAddonsOnly"
+        },
+        "runsOn": {
+          "resolved": true,
+          "value": "system"
+        },
+        "argoApp": {
+          "resolved": true,
+          "value": "argocd"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.deployment:argocd/argocd-repo-server",
+      "kind": "k8s.deployment",
+      "parent": "k8s:k8s.namespace:argocd",
+      "repoId": "k8s",
+      "sourceAddress": "10-platform.yaml",
+      "details": {
+        "namespace": {
+          "resolved": true,
+          "value": "argocd"
+        },
+        "replicas": {
+          "resolved": true,
+          "value": 2
+        },
+        "image": {
+          "resolved": true,
+          "value": "quay.io/argoproj/argocd:v2.12.0"
+        },
+        "requests": {
+          "resolved": true,
+          "value": "250m / 256Mi"
+        },
+        "ports": {
+          "resolved": true,
+          "value": "8080/TCP"
+        },
+        "nodeSelector": {
+          "resolved": true,
+          "value": "node-role=system"
+        },
+        "tolerations": {
+          "resolved": true,
+          "value": "CriticalAddonsOnly"
+        },
+        "runsOn": {
+          "resolved": true,
+          "value": "system"
+        },
+        "argoApp": {
+          "resolved": true,
+          "value": "argocd"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.deployment:argocd/argocd-applicationset-controller",
+      "kind": "k8s.deployment",
+      "parent": "k8s:k8s.namespace:argocd",
+      "repoId": "k8s",
+      "sourceAddress": "10-platform.yaml",
+      "details": {
+        "namespace": {
+          "resolved": true,
+          "value": "argocd"
+        },
+        "replicas": {
+          "resolved": true,
+          "value": 1
+        },
+        "image": {
+          "resolved": true,
+          "value": "quay.io/argoproj/argocd:v2.12.0"
+        },
+        "requests": {
+          "resolved": true,
+          "value": "250m / 256Mi"
+        },
+        "ports": {
+          "resolved": true,
+          "value": "8080/TCP"
+        },
+        "nodeSelector": {
+          "resolved": true,
+          "value": "node-role=system"
+        },
+        "tolerations": {
+          "resolved": true,
+          "value": "CriticalAddonsOnly"
+        },
+        "runsOn": {
+          "resolved": true,
+          "value": "system"
+        },
+        "argoApp": {
+          "resolved": true,
+          "value": "argocd"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.deployment:ingress-nginx/ingress-nginx-controller",
+      "kind": "k8s.deployment",
+      "parent": "k8s:k8s.namespace:ingress-nginx",
+      "repoId": "k8s",
+      "sourceAddress": "10-platform.yaml",
+      "details": {
+        "namespace": {
+          "resolved": true,
+          "value": "ingress-nginx"
+        },
+        "replicas": {
+          "resolved": true,
+          "value": 3
+        },
+        "image": {
+          "resolved": true,
+          "value": "registry.k8s.io/ingress-nginx/controller:v1.11.1"
+        },
+        "requests": {
+          "resolved": true,
+          "value": "250m / 256Mi"
+        },
+        "ports": {
+          "resolved": true,
+          "value": "8080/TCP"
+        },
+        "nodeSelector": {
+          "resolved": true,
+          "value": "workload=general"
+        },
+        "hpa": {
+          "resolved": true,
+          "value": "3-8"
+        },
+        "runsOn": {
+          "resolved": true,
+          "value": "general"
+        },
+        "argoApp": {
+          "resolved": true,
+          "value": "ingress-nginx"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.statefulset:observability/prometheus",
+      "kind": "k8s.statefulset",
+      "parent": "k8s:k8s.namespace:observability",
+      "repoId": "k8s",
+      "sourceAddress": "10-platform.yaml",
+      "details": {
+        "namespace": {
+          "resolved": true,
+          "value": "observability"
+        },
+        "image": {
+          "resolved": true,
+          "value": "quay.io/prometheus/prometheus:v2.53.0"
+        },
+        "requests": {
+          "resolved": true,
+          "value": "1 / 4Gi"
+        },
+        "ports": {
+          "resolved": true,
+          "value": "9090/TCP"
+        },
+        "nodeSelector": {
+          "resolved": true,
+          "value": "workload=general"
+        },
+        "runsOn": {
+          "resolved": true,
+          "value": "general"
+        },
+        "argoApp": {
+          "resolved": true,
+          "value": "observability"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.deployment:observability/grafana",
+      "kind": "k8s.deployment",
+      "parent": "k8s:k8s.namespace:observability",
+      "repoId": "k8s",
+      "sourceAddress": "10-platform.yaml",
+      "details": {
+        "namespace": {
+          "resolved": true,
+          "value": "observability"
+        },
+        "replicas": {
+          "resolved": true,
+          "value": 1
+        },
+        "image": {
+          "resolved": true,
+          "value": "grafana/grafana:11.1.0"
+        },
+        "requests": {
+          "resolved": true,
+          "value": "250m / 256Mi"
+        },
+        "ports": {
+          "resolved": true,
+          "value": "3000/TCP"
+        },
+        "nodeSelector": {
+          "resolved": true,
+          "value": "workload=general"
+        },
+        "runsOn": {
+          "resolved": true,
+          "value": "general"
+        },
+        "argoApp": {
+          "resolved": true,
+          "value": "observability"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.deployment:observability/loki",
+      "kind": "k8s.deployment",
+      "parent": "k8s:k8s.namespace:observability",
+      "repoId": "k8s",
+      "sourceAddress": "10-platform.yaml",
+      "details": {
+        "namespace": {
+          "resolved": true,
+          "value": "observability"
+        },
+        "replicas": {
+          "resolved": true,
+          "value": 1
+        },
+        "image": {
+          "resolved": true,
+          "value": "grafana/loki:3.1.0"
+        },
+        "requests": {
+          "resolved": true,
+          "value": "250m / 256Mi"
+        },
+        "ports": {
+          "resolved": true,
+          "value": "3100/TCP"
+        },
+        "tolerations": {
+          "resolved": true,
+          "value": "batch"
+        },
+        "runsOn": {
+          "resolved": false,
+          "raw": "general | spot-batch | default"
+        },
+        "argoApp": {
+          "resolved": true,
+          "value": "observability"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.daemonset:observability/node-exporter",
+      "kind": "k8s.daemonset",
+      "parent": "k8s:k8s.namespace:observability",
+      "repoId": "k8s",
+      "sourceAddress": "10-platform.yaml",
+      "details": {
+        "namespace": {
+          "resolved": true,
+          "value": "observability"
+        },
+        "image": {
+          "resolved": true,
+          "value": "quay.io/prometheus/node-exporter:v1.8.1"
+        },
+        "requests": {
+          "resolved": true,
+          "value": "250m / 256Mi"
+        },
+        "ports": {
+          "resolved": true,
+          "value": "9100/TCP"
+        },
+        "tolerations": {
+          "resolved": true,
+          "value": "*"
+        },
+        "runsOn": {
+          "resolved": true,
+          "value": "every node (general, spot-batch, gpu, default, system)"
+        },
+        "argoApp": {
+          "resolved": true,
+          "value": "observability"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.deployment:shop/web",
+      "kind": "k8s.deployment",
+      "parent": "k8s:k8s.namespace:shop",
+      "repoId": "k8s",
+      "sourceAddress": "20-apps.yaml",
+      "details": {
+        "namespace": {
+          "resolved": true,
+          "value": "shop"
+        },
+        "replicas": {
+          "resolved": true,
+          "value": 4
+        },
+        "image": {
+          "resolved": true,
+          "value": "registry.example.com/shop/web:2.4.1"
+        },
+        "requests": {
+          "resolved": true,
+          "value": "500m / 512Mi"
+        },
+        "ports": {
+          "resolved": true,
+          "value": "8080/TCP"
+        },
+        "serviceAccount": {
+          "resolved": true,
+          "value": "web"
+        },
+        "iamRole": {
+          "resolved": true,
+          "value": "arn:aws:iam::111111111111:role/shop-prod-web"
+        },
+        "nodeSelector": {
+          "resolved": true,
+          "value": "workload=general"
+        },
+        "hpa": {
+          "resolved": true,
+          "value": "4-20"
+        },
+        "runsOn": {
+          "resolved": true,
+          "value": "general"
+        },
+        "argoApp": {
+          "resolved": true,
+          "value": "shop"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.deployment:shop/api",
+      "kind": "k8s.deployment",
+      "parent": "k8s:k8s.namespace:shop",
+      "repoId": "k8s",
+      "sourceAddress": "20-apps.yaml",
+      "details": {
+        "namespace": {
+          "resolved": true,
+          "value": "shop"
+        },
+        "replicas": {
+          "resolved": true,
+          "value": 3
+        },
+        "image": {
+          "resolved": true,
+          "value": "registry.example.com/shop/api:2.4.1"
+        },
+        "requests": {
+          "resolved": true,
+          "value": "500m / 1Gi"
+        },
+        "ports": {
+          "resolved": true,
+          "value": "8080/TCP"
+        },
+        "serviceAccount": {
+          "resolved": true,
+          "value": "api"
+        },
+        "iamRole": {
+          "resolved": true,
+          "value": "arn:aws:iam::111111111111:role/shop-prod-api"
+        },
+        "nodeSelector": {
+          "resolved": true,
+          "value": "workload=general"
+        },
+        "runsOn": {
+          "resolved": true,
+          "value": "general"
+        },
+        "argoApp": {
+          "resolved": true,
+          "value": "shop"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.deployment:shop/worker",
+      "kind": "k8s.deployment",
+      "parent": "k8s:k8s.namespace:shop",
+      "repoId": "k8s",
+      "sourceAddress": "20-apps.yaml",
+      "details": {
+        "namespace": {
+          "resolved": true,
+          "value": "shop"
+        },
+        "replicas": {
+          "resolved": true,
+          "value": 6
+        },
+        "image": {
+          "resolved": true,
+          "value": "registry.example.com/shop/worker:2.4.1"
+        },
+        "requests": {
+          "resolved": true,
+          "value": "250m / 256Mi"
+        },
+        "ports": {
+          "resolved": true,
+          "value": "8080/TCP"
+        },
+        "serviceAccount": {
+          "resolved": true,
+          "value": "worker"
+        },
+        "iamRole": {
+          "resolved": true,
+          "value": "arn:aws:iam::111111111111:role/shop-prod-worker"
+        },
+        "nodeSelector": {
+          "resolved": true,
+          "value": "karpenter.sh/capacity-type=spot"
+        },
+        "tolerations": {
+          "resolved": true,
+          "value": "batch"
+        },
+        "runsOn": {
+          "resolved": false,
+          "raw": "spot-batch | default"
+        },
+        "argoApp": {
+          "resolved": true,
+          "value": "shop"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.statefulset:shop/redis",
+      "kind": "k8s.statefulset",
+      "parent": "k8s:k8s.namespace:shop",
+      "repoId": "k8s",
+      "sourceAddress": "20-apps.yaml",
+      "details": {
+        "namespace": {
+          "resolved": true,
+          "value": "shop"
+        },
+        "image": {
+          "resolved": true,
+          "value": "redis:7.2"
+        },
+        "requests": {
+          "resolved": true,
+          "value": "250m / 256Mi"
+        },
+        "ports": {
+          "resolved": true,
+          "value": "6379/TCP"
+        },
+        "nodeSelector": {
+          "resolved": true,
+          "value": "workload=general"
+        },
+        "runsOn": {
+          "resolved": true,
+          "value": "general"
+        },
+        "argoApp": {
+          "resolved": true,
+          "value": "shop"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.cronjob:shop/nightly-report",
+      "kind": "k8s.cronjob",
+      "parent": "k8s:k8s.namespace:shop",
+      "repoId": "k8s",
+      "sourceAddress": "20-apps.yaml",
+      "details": {
+        "namespace": {
+          "resolved": true,
+          "value": "shop"
+        },
+        "schedule": {
+          "resolved": true,
+          "value": "0 2 * * *"
+        },
+        "image": {
+          "resolved": true,
+          "value": "registry.example.com/shop/report:1.9.0"
+        },
+        "nodeSelector": {
+          "resolved": true,
+          "value": "workload=batch"
+        },
+        "tolerations": {
+          "resolved": true,
+          "value": "batch"
+        },
+        "runsOn": {
+          "resolved": true,
+          "value": "spot-batch"
+        },
+        "argoApp": {
+          "resolved": true,
+          "value": "shop"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.deployment:payments/payments-api",
+      "kind": "k8s.deployment",
+      "parent": "k8s:k8s.namespace:payments",
+      "repoId": "k8s",
+      "sourceAddress": "20-apps.yaml",
+      "details": {
+        "namespace": {
+          "resolved": true,
+          "value": "payments"
+        },
+        "replicas": {
+          "resolved": true,
+          "value": 3
+        },
+        "image": {
+          "resolved": true,
+          "value": "registry.example.com/payments/api:5.0.2"
+        },
+        "requests": {
+          "resolved": true,
+          "value": "1 / 1Gi"
+        },
+        "ports": {
+          "resolved": true,
+          "value": "8080/TCP"
+        },
+        "serviceAccount": {
+          "resolved": true,
+          "value": "payments"
+        },
+        "iamRole": {
+          "resolved": true,
+          "value": "arn:aws:iam::111111111111:role/shop-prod-payments"
+        },
+        "nodeSelector": {
+          "resolved": true,
+          "value": "workload=general"
+        },
+        "runsOn": {
+          "resolved": true,
+          "value": "general"
+        },
+        "argoApp": {
+          "resolved": true,
+          "value": "payments"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.deployment:ml/recommender",
+      "kind": "k8s.deployment",
+      "parent": "k8s:k8s.namespace:ml",
+      "repoId": "k8s",
+      "sourceAddress": "20-apps.yaml",
+      "details": {
+        "namespace": {
+          "resolved": true,
+          "value": "ml"
+        },
+        "replicas": {
+          "resolved": true,
+          "value": 2
+        },
+        "image": {
+          "resolved": true,
+          "value": "registry.example.com/ml/recommender:0.7.0"
+        },
+        "requests": {
+          "resolved": true,
+          "value": "4 / 16Gi"
+        },
+        "ports": {
+          "resolved": true,
+          "value": "8000/TCP"
+        },
+        "nodeSelector": {
+          "resolved": true,
+          "value": "workload=ml"
+        },
+        "tolerations": {
+          "resolved": true,
+          "value": "nvidia.com/gpu"
+        },
+        "runsOn": {
+          "resolved": true,
+          "value": "gpu"
+        },
+        "argoApp": {
+          "resolved": true,
+          "value": "ml"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.deployment:ml/trainer",
+      "kind": "k8s.deployment",
+      "parent": "k8s:k8s.namespace:ml",
+      "repoId": "k8s",
+      "sourceAddress": "20-apps.yaml",
+      "details": {
+        "namespace": {
+          "resolved": true,
+          "value": "ml"
+        },
+        "replicas": {
+          "resolved": true,
+          "value": 1
+        },
+        "image": {
+          "resolved": true,
+          "value": "registry.example.com/ml/trainer:0.7.0"
+        },
+        "requests": {
+          "resolved": true,
+          "value": "8 / 32Gi"
+        },
+        "ports": {
+          "resolved": true,
+          "value": "8000/TCP"
+        },
+        "nodeSelector": {
+          "resolved": true,
+          "value": "workload=ml-xl"
+        },
+        "tolerations": {
+          "resolved": true,
+          "value": "nvidia.com/gpu"
+        },
+        "runsOn": {
+          "resolved": false,
+          "raw": "no compatible pool"
+        },
+        "argoApp": {
+          "resolved": true,
+          "value": "ml"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.deployment:tenant-acme/app",
+      "kind": "k8s.deployment",
+      "parent": "k8s:k8s.namespace:tenant-acme",
+      "repoId": "k8s",
+      "sourceAddress": "30-argocd.yaml",
+      "details": {
+        "namespace": {
+          "resolved": true,
+          "value": "tenant-acme"
+        },
+        "replicas": {
+          "resolved": true,
+          "value": 1
+        },
+        "image": {
+          "resolved": true,
+          "value": "registry.example.com/tenant/app:1.0.0"
+        },
+        "requests": {
+          "resolved": true,
+          "value": "250m / 256Mi"
+        },
+        "ports": {
+          "resolved": true,
+          "value": "8080/TCP"
+        },
+        "nodeSelector": {
+          "resolved": true,
+          "value": "workload=general"
+        },
+        "runsOn": {
+          "resolved": true,
+          "value": "general"
+        },
+        "argoApp": {
+          "resolved": true,
+          "value": "tenant-acme"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.deployment:tenant-globex/app",
+      "kind": "k8s.deployment",
+      "parent": "k8s:k8s.namespace:tenant-globex",
+      "repoId": "k8s",
+      "sourceAddress": "30-argocd.yaml",
+      "details": {
+        "namespace": {
+          "resolved": true,
+          "value": "tenant-globex"
+        },
+        "replicas": {
+          "resolved": true,
+          "value": 1
+        },
+        "image": {
+          "resolved": true,
+          "value": "registry.example.com/tenant/app:1.0.0"
+        },
+        "requests": {
+          "resolved": true,
+          "value": "250m / 256Mi"
+        },
+        "ports": {
+          "resolved": true,
+          "value": "8080/TCP"
+        },
+        "nodeSelector": {
+          "resolved": true,
+          "value": "workload=general"
+        },
+        "runsOn": {
+          "resolved": true,
+          "value": "general"
+        },
+        "argoApp": {
+          "resolved": true,
+          "value": "tenant-globex"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.service:argocd/argocd-server",
+      "kind": "k8s.service",
+      "parent": "k8s:k8s.namespace:argocd",
+      "repoId": "k8s",
+      "sourceAddress": "10-platform.yaml",
+      "details": {
+        "type": {
+          "resolved": true,
+          "value": "ClusterIP"
+        },
+        "ports": {
+          "resolved": true,
+          "value": "80→8080/TCP"
+        },
+        "selector": {
+          "resolved": true,
+          "value": "app=argocd-server"
+        },
+        "argoApp": {
+          "resolved": true,
+          "value": "argocd"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.service:ingress-nginx/ingress-nginx-controller",
+      "kind": "k8s.service",
+      "parent": "k8s:k8s.namespace:ingress-nginx",
+      "repoId": "k8s",
+      "sourceAddress": "10-platform.yaml",
+      "details": {
+        "type": {
+          "resolved": true,
+          "value": "LoadBalancer"
+        },
+        "ports": {
+          "resolved": true,
+          "value": "80→8080/TCP"
+        },
+        "selector": {
+          "resolved": true,
+          "value": "app=ingress-nginx-controller"
+        },
+        "argoApp": {
+          "resolved": true,
+          "value": "ingress-nginx"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.service:observability/prometheus",
+      "kind": "k8s.service",
+      "parent": "k8s:k8s.namespace:observability",
+      "repoId": "k8s",
+      "sourceAddress": "10-platform.yaml",
+      "details": {
+        "type": {
+          "resolved": true,
+          "value": "ClusterIP"
+        },
+        "ports": {
+          "resolved": true,
+          "value": "9090→9090/TCP"
+        },
+        "selector": {
+          "resolved": true,
+          "value": "app=prometheus"
+        },
+        "argoApp": {
+          "resolved": true,
+          "value": "observability"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.service:observability/grafana",
+      "kind": "k8s.service",
+      "parent": "k8s:k8s.namespace:observability",
+      "repoId": "k8s",
+      "sourceAddress": "10-platform.yaml",
+      "details": {
+        "type": {
+          "resolved": true,
+          "value": "ClusterIP"
+        },
+        "ports": {
+          "resolved": true,
+          "value": "80→3000/TCP"
+        },
+        "selector": {
+          "resolved": true,
+          "value": "app=grafana"
+        },
+        "argoApp": {
+          "resolved": true,
+          "value": "observability"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.ingress:observability/grafana",
+      "kind": "k8s.ingress",
+      "parent": "k8s:k8s.namespace:observability",
+      "repoId": "k8s",
+      "sourceAddress": "10-platform.yaml",
+      "details": {
+        "class": {
+          "resolved": true,
+          "value": "nginx"
+        },
+        "hosts": {
+          "resolved": true,
+          "value": "grafana.example.com"
+        },
+        "argoApp": {
+          "resolved": true,
+          "value": "observability"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.configmap:observability/grafana-cfg",
+      "kind": "k8s.configmap",
+      "parent": "k8s:k8s.namespace:observability",
+      "repoId": "k8s",
+      "sourceAddress": "10-platform.yaml",
+      "details": {
+        "argoApp": {
+          "resolved": true,
+          "value": "observability"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.secret:observability/grafana-admin",
+      "kind": "k8s.secret",
+      "parent": "k8s:k8s.namespace:observability",
+      "repoId": "k8s",
+      "sourceAddress": "10-platform.yaml",
+      "details": {
+        "argoApp": {
+          "resolved": true,
+          "value": "observability"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.service:shop/web",
+      "kind": "k8s.service",
+      "parent": "k8s:k8s.namespace:shop",
+      "repoId": "k8s",
+      "sourceAddress": "20-apps.yaml",
+      "details": {
+        "type": {
+          "resolved": true,
+          "value": "ClusterIP"
+        },
+        "ports": {
+          "resolved": true,
+          "value": "80→8080/TCP"
+        },
+        "selector": {
+          "resolved": true,
+          "value": "app=web"
+        },
+        "argoApp": {
+          "resolved": true,
+          "value": "shop"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.ingress:shop/shop",
+      "kind": "k8s.ingress",
+      "parent": "k8s:k8s.namespace:shop",
+      "repoId": "k8s",
+      "sourceAddress": "20-apps.yaml",
+      "details": {
+        "class": {
+          "resolved": true,
+          "value": "nginx"
+        },
+        "hosts": {
+          "resolved": true,
+          "value": "shop.example.com"
+        },
+        "argoApp": {
+          "resolved": true,
+          "value": "shop"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.service:shop/api",
+      "kind": "k8s.service",
+      "parent": "k8s:k8s.namespace:shop",
+      "repoId": "k8s",
+      "sourceAddress": "20-apps.yaml",
+      "details": {
+        "type": {
+          "resolved": true,
+          "value": "ClusterIP"
+        },
+        "ports": {
+          "resolved": true,
+          "value": "80→8080/TCP"
+        },
+        "selector": {
+          "resolved": true,
+          "value": "app=api"
+        },
+        "argoApp": {
+          "resolved": true,
+          "value": "shop"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.service:shop/redis",
+      "kind": "k8s.service",
+      "parent": "k8s:k8s.namespace:shop",
+      "repoId": "k8s",
+      "sourceAddress": "20-apps.yaml",
+      "details": {
+        "type": {
+          "resolved": true,
+          "value": "ClusterIP"
+        },
+        "ports": {
+          "resolved": true,
+          "value": "6379→6379/TCP"
+        },
+        "selector": {
+          "resolved": true,
+          "value": "app=redis"
+        },
+        "argoApp": {
+          "resolved": true,
+          "value": "shop"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.configmap:shop/web-cfg",
+      "kind": "k8s.configmap",
+      "parent": "k8s:k8s.namespace:shop",
+      "repoId": "k8s",
+      "sourceAddress": "20-apps.yaml",
+      "details": {
+        "argoApp": {
+          "resolved": true,
+          "value": "shop"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.secret:shop/db-credentials",
+      "kind": "k8s.secret",
+      "parent": "k8s:k8s.namespace:shop",
+      "repoId": "k8s",
+      "sourceAddress": "20-apps.yaml",
+      "details": {
+        "argoApp": {
+          "resolved": true,
+          "value": "shop"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.service:payments/payments-api",
+      "kind": "k8s.service",
+      "parent": "k8s:k8s.namespace:payments",
+      "repoId": "k8s",
+      "sourceAddress": "20-apps.yaml",
+      "details": {
+        "type": {
+          "resolved": true,
+          "value": "ClusterIP"
+        },
+        "ports": {
+          "resolved": true,
+          "value": "80→8080/TCP"
+        },
+        "selector": {
+          "resolved": true,
+          "value": "app=payments-api"
+        },
+        "argoApp": {
+          "resolved": true,
+          "value": "payments"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.secret:payments/psp-credentials",
+      "kind": "k8s.secret",
+      "parent": "k8s:k8s.namespace:payments",
+      "repoId": "k8s",
+      "sourceAddress": "20-apps.yaml",
+      "details": {
+        "argoApp": {
+          "resolved": true,
+          "value": "payments"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.ingress:payments/payments",
+      "kind": "k8s.ingress",
+      "parent": "k8s:k8s.namespace:payments",
+      "repoId": "k8s",
+      "sourceAddress": "20-apps.yaml",
+      "details": {
+        "class": {
+          "resolved": true,
+          "value": "nginx"
+        },
+        "hosts": {
+          "resolved": true,
+          "value": "pay.example.com"
+        },
+        "argoApp": {
+          "resolved": true,
+          "value": "payments"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.argo.application:argocd/shop",
+      "kind": "k8s.argo.application",
+      "parent": "k8s:k8s.namespace:argocd",
+      "repoId": "k8s",
+      "sourceAddress": "30-argocd.yaml",
+      "details": {
+        "source": {
+          "resolved": true,
+          "value": "https://git.example.com/shop/deploy.git · overlays/prod@main"
+        },
+        "destination": {
+          "resolved": true,
+          "value": "shop @ https://kubernetes.default.svc"
+        },
+        "sync": {
+          "resolved": true,
+          "value": "automated · prune · selfHeal"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.argo.application:argocd/payments",
+      "kind": "k8s.argo.application",
+      "parent": "k8s:k8s.namespace:argocd",
+      "repoId": "k8s",
+      "sourceAddress": "30-argocd.yaml",
+      "details": {
+        "source": {
+          "resolved": true,
+          "value": "https://git.example.com/payments/deploy.git · prod@v5.0.2"
+        },
+        "destination": {
+          "resolved": true,
+          "value": "payments @ https://kubernetes.default.svc"
+        },
+        "sync": {
+          "resolved": true,
+          "value": "manual"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.argo.application:argocd/observability",
+      "kind": "k8s.argo.application",
+      "parent": "k8s:k8s.namespace:argocd",
+      "repoId": "k8s",
+      "sourceAddress": "30-argocd.yaml",
+      "details": {
+        "source": {
+          "resolved": true,
+          "value": "https://prometheus-community.github.io/helm-charts · kube-prometheus-stack@61.3.0"
+        },
+        "destination": {
+          "resolved": true,
+          "value": "observability @ https://kubernetes.default.svc"
+        },
+        "sync": {
+          "resolved": true,
+          "value": "automated · prune"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.argo.application:argocd/ingress-nginx",
+      "kind": "k8s.argo.application",
+      "parent": "k8s:k8s.namespace:argocd",
+      "repoId": "k8s",
+      "sourceAddress": "30-argocd.yaml",
+      "details": {
+        "source": {
+          "resolved": true,
+          "value": "https://kubernetes.github.io/ingress-nginx · ingress-nginx@4.11.1"
+        },
+        "destination": {
+          "resolved": true,
+          "value": "ingress-nginx @ https://kubernetes.default.svc"
+        },
+        "sync": {
+          "resolved": true,
+          "value": "automated · selfHeal"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.argo.application:argocd/karpenter",
+      "kind": "k8s.argo.application",
+      "parent": "k8s:k8s.namespace:argocd",
+      "repoId": "k8s",
+      "sourceAddress": "30-argocd.yaml",
+      "details": {
+        "source": {
+          "resolved": true,
+          "value": "public.ecr.aws/karpenter · karpenter@1.0.0"
+        },
+        "destination": {
+          "resolved": true,
+          "value": "karpenter @ https://kubernetes.default.svc"
+        },
+        "sync": {
+          "resolved": true,
+          "value": "manual"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.argo.application:argocd/argocd",
+      "kind": "k8s.argo.application",
+      "parent": "k8s:k8s.namespace:argocd",
+      "repoId": "k8s",
+      "sourceAddress": "30-argocd.yaml",
+      "details": {
+        "source": {
+          "resolved": true,
+          "value": "https://git.example.com/platform/argocd.git · bootstrap@main"
+        },
+        "destination": {
+          "resolved": true,
+          "value": "argocd @ https://kubernetes.default.svc"
+        },
+        "sync": {
+          "resolved": true,
+          "value": "manual"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.argo.application:argocd/ml",
+      "kind": "k8s.argo.application",
+      "parent": "k8s:k8s.namespace:argocd",
+      "repoId": "k8s",
+      "sourceAddress": "30-argocd.yaml",
+      "details": {
+        "source": {
+          "resolved": true,
+          "value": "https://git.example.com/ml/deploy.git · prod@main"
+        },
+        "destination": {
+          "resolved": true,
+          "value": "ml @ https://kubernetes.default.svc"
+        },
+        "sync": {
+          "resolved": true,
+          "value": "manual"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.argo.applicationset:argocd/tenants",
+      "kind": "k8s.argo.applicationset",
+      "parent": "k8s:k8s.namespace:argocd",
+      "repoId": "k8s",
+      "sourceAddress": "30-argocd.yaml",
+      "details": {
+        "generates": {
+          "resolved": true,
+          "value": "2 application(s)"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.argo.application:argocd/tenant-acme",
+      "kind": "k8s.argo.application",
+      "parent": "k8s:k8s.namespace:argocd",
+      "repoId": "k8s",
+      "sourceAddress": "appset:tenants",
+      "details": {
+        "source": {
+          "resolved": true,
+          "value": "https://git.example.com/tenants.git · acme@main"
+        },
+        "destination": {
+          "resolved": true,
+          "value": "tenant-acme @ https://kubernetes.default.svc"
+        },
+        "sync": {
+          "resolved": true,
+          "value": "manual"
+        },
+        "generatedBy": {
+          "resolved": true,
+          "value": "tenants"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.argo.application:argocd/tenant-globex",
+      "kind": "k8s.argo.application",
+      "parent": "k8s:k8s.namespace:argocd",
+      "repoId": "k8s",
+      "sourceAddress": "appset:tenants",
+      "details": {
+        "source": {
+          "resolved": true,
+          "value": "https://git.example.com/tenants.git · globex@main"
+        },
+        "destination": {
+          "resolved": true,
+          "value": "tenant-globex @ https://kubernetes.default.svc"
+        },
+        "sync": {
+          "resolved": true,
+          "value": "manual"
+        },
+        "generatedBy": {
+          "resolved": true,
+          "value": "tenants"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.argo.applicationset:argocd/preview-envs",
+      "kind": "k8s.argo.applicationset",
+      "parent": "k8s:k8s.namespace:argocd",
+      "repoId": "k8s",
+      "sourceAddress": "30-argocd.yaml",
+      "details": {
+        "generates": {
+          "resolved": false,
+          "raw": "pullRequest generator (not expanded offline)"
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "from": "platform:aws.lb:public",
+      "to": "platform:aws.subnet.public:prod_public"
+    },
+    {
+      "from": "platform:aws.lb:public",
+      "to": "platform:aws.security_group:prod_default",
+      "label": "protected by"
+    },
+    {
+      "from": "platform:aws.ec2.instance:bastion",
+      "to": "platform:aws.subnet.public:shared_public"
+    },
+    {
+      "from": "platform:aws.ec2.instance:ci_runner",
+      "to": "platform:aws.subnet.private:shared_private"
+    },
+    {
+      "from": "platform:aws.ec2.instance:legacy_api",
+      "to": "platform:aws.subnet.private:prod_private"
+    },
+    {
+      "from": "platform:aws.eks.cluster:this",
+      "to": "platform:aws.iam.role.cluster:cluster",
+      "label": "assumes"
+    },
+    {
+      "from": "platform:aws.eks.cluster:this",
+      "to": "platform:aws.subnet.private:prod_private"
+    },
+    {
+      "from": "platform:aws.eks.nodegroup:default",
+      "to": "platform:aws.eks.cluster:this"
+    },
+    {
+      "from": "platform:aws.eks.nodegroup:default",
+      "to": "platform:aws.iam.role.node:node",
+      "label": "assumes"
+    },
+    {
+      "from": "platform:aws.eks.nodegroup:default",
+      "to": "platform:aws.subnet.private:prod_private"
+    },
+    {
+      "from": "platform:aws.eks.nodegroup:system",
+      "to": "platform:aws.eks.cluster:this"
+    },
+    {
+      "from": "platform:aws.eks.nodegroup:system",
+      "to": "platform:aws.iam.role.node:node",
+      "label": "assumes"
+    },
+    {
+      "from": "platform:aws.eks.nodegroup:system",
+      "to": "platform:aws.subnet.private:prod_private"
+    },
+    {
+      "from": "platform:aws.eks.addon:vpc_cni",
+      "to": "platform:aws.eks.cluster:this"
+    },
+    {
+      "from": "platform:aws.eks.addon:coredns",
+      "to": "platform:aws.eks.cluster:this"
+    },
+    {
+      "from": "platform:aws.eks.addon:kube_proxy",
+      "to": "platform:aws.eks.cluster:this"
+    },
+    {
+      "from": "platform:aws.ssm.parameter:db_endpoint",
+      "to": "platform:aws.rds.instance:orders",
+      "label": "stores endpoint"
+    },
+    {
+      "from": "platform:aws.ssm.parameter:docdb_endpoint",
+      "to": "platform:aws.docdb.cluster:reports",
+      "label": "stores endpoint"
+    },
+    {
+      "from": "platform:aws.ssm.parameter:redis_endpoint",
+      "to": "platform:aws.elasticache.redis:sessions",
+      "label": "stores endpoint"
+    },
+    {
+      "from": "platform:aws.ssm.parameter:opensearch_endpoint",
+      "to": "platform:aws.opensearch.domain:logs",
+      "label": "stores endpoint"
+    },
+    {
+      "from": "platform:aws.route53.record:api",
+      "to": "platform:aws.route53.zone:main"
+    },
+    {
+      "from": "platform:aws.route53.record:api",
+      "to": "platform:aws.lb:public",
+      "label": "alias"
+    },
+    {
+      "from": "platform:aws.route53.record:www",
+      "to": "platform:aws.route53.zone:main"
+    },
+    {
+      "from": "platform:aws.route53.record:www",
+      "to": "platform:aws.lb:public",
+      "label": "alias"
+    },
+    {
+      "from": "platform:aws.route53.record:bastion",
+      "to": "platform:aws.route53.zone:main"
+    },
+    {
+      "from": "platform:aws.route53.record:bastion",
+      "to": "platform:aws.ec2.instance:bastion",
+      "label": "points to"
+    },
+    {
+      "from": "platform:aws.rds.instance:orders",
+      "to": "platform:aws.security_group:prod_default",
+      "label": "protected by"
+    },
+    {
+      "from": "platform:aws.opensearch.domain:logs",
+      "to": "platform:aws.subnet.data:prod_data"
+    },
+    {
+      "from": "platform:aws.vpc_peering:prod_shared",
+      "to": "platform:aws.vpc:prod",
+      "label": "peers"
+    },
+    {
+      "from": "platform:aws.vpc_peering:prod_shared",
+      "to": "platform:aws.vpc:shared",
+      "label": "peers"
+    },
+    {
+      "from": "platform:aws.internet_gateway:prod",
+      "to": "platform:aws.vpc:prod"
+    },
+    {
+      "from": "platform:aws.internet_gateway:shared",
+      "to": "platform:aws.vpc:shared"
+    },
+    {
+      "from": "platform:aws.subnet.public:prod_public",
+      "to": "platform:aws.vpc:prod"
+    },
+    {
+      "from": "platform:aws.subnet.private:prod_private",
+      "to": "platform:aws.vpc:prod"
+    },
+    {
+      "from": "platform:aws.subnet.data:prod_data",
+      "to": "platform:aws.vpc:prod"
+    },
+    {
+      "from": "platform:aws.subnet.public:shared_public",
+      "to": "platform:aws.vpc:shared"
+    },
+    {
+      "from": "platform:aws.subnet.private:shared_private",
+      "to": "platform:aws.vpc:shared"
+    },
+    {
+      "from": "platform:aws.nat_gateway:prod",
+      "to": "platform:aws.subnet.public:prod_public"
+    },
+    {
+      "from": "platform:aws.nat_gateway:shared",
+      "to": "platform:aws.subnet.public:shared_public"
+    },
+    {
+      "from": "platform:aws.security_group:prod_default",
+      "to": "platform:aws.vpc:prod"
+    },
+    {
+      "from": "platform:aws.security_group:shared_default",
+      "to": "platform:aws.vpc:shared"
+    },
+    {
+      "from": "k8s:k8s.nodepool:general",
+      "to": "k8s:k8s.nodeclass:default",
+      "label": "uses"
+    },
+    {
+      "from": "k8s:k8s.nodepool:spot-batch",
+      "to": "k8s:k8s.nodeclass:default",
+      "label": "uses"
+    },
+    {
+      "from": "k8s:k8s.nodepool:gpu",
+      "to": "k8s:k8s.nodeclass:gpu",
+      "label": "uses"
+    },
+    {
+      "from": "k8s:k8s.service:argocd/argocd-server",
+      "to": "k8s:k8s.deployment:argocd/argocd-server"
+    },
+    {
+      "from": "k8s:k8s.service:ingress-nginx/ingress-nginx-controller",
+      "to": "k8s:k8s.deployment:ingress-nginx/ingress-nginx-controller"
+    },
+    {
+      "from": "k8s:k8s.service:observability/prometheus",
+      "to": "k8s:k8s.statefulset:observability/prometheus"
+    },
+    {
+      "from": "k8s:k8s.service:observability/grafana",
+      "to": "k8s:k8s.deployment:observability/grafana"
+    },
+    {
+      "from": "k8s:k8s.service:shop/web",
+      "to": "k8s:k8s.deployment:shop/web"
+    },
+    {
+      "from": "k8s:k8s.service:shop/api",
+      "to": "k8s:k8s.deployment:shop/api"
+    },
+    {
+      "from": "k8s:k8s.service:shop/redis",
+      "to": "k8s:k8s.statefulset:shop/redis"
+    },
+    {
+      "from": "k8s:k8s.service:payments/payments-api",
+      "to": "k8s:k8s.deployment:payments/payments-api"
+    },
+    {
+      "from": "k8s:k8s.ingress:observability/grafana",
+      "to": "k8s:k8s.service:observability/grafana",
+      "label": "grafana.example.com/"
+    },
+    {
+      "from": "k8s:k8s.ingress:shop/shop",
+      "to": "k8s:k8s.service:shop/web",
+      "label": "shop.example.com/"
+    },
+    {
+      "from": "k8s:k8s.ingress:shop/shop",
+      "to": "k8s:k8s.service:shop/api",
+      "label": "shop.example.com/api"
+    },
+    {
+      "from": "k8s:k8s.ingress:payments/payments",
+      "to": "k8s:k8s.service:payments/payments-api",
+      "label": "pay.example.com/"
+    },
+    {
+      "from": "k8s:k8s.deployment:observability/grafana",
+      "to": "k8s:k8s.configmap:observability/grafana-cfg"
+    },
+    {
+      "from": "k8s:k8s.deployment:observability/grafana",
+      "to": "k8s:k8s.secret:observability/grafana-admin"
+    },
+    {
+      "from": "k8s:k8s.deployment:shop/web",
+      "to": "k8s:k8s.configmap:shop/web-cfg"
+    },
+    {
+      "from": "k8s:k8s.deployment:shop/api",
+      "to": "k8s:k8s.configmap:shop/web-cfg"
+    },
+    {
+      "from": "k8s:k8s.deployment:shop/api",
+      "to": "k8s:k8s.secret:shop/db-credentials"
+    },
+    {
+      "from": "k8s:k8s.deployment:shop/worker",
+      "to": "k8s:k8s.configmap:shop/web-cfg"
+    },
+    {
+      "from": "k8s:k8s.deployment:payments/payments-api",
+      "to": "k8s:k8s.secret:payments/psp-credentials"
+    },
+    {
+      "from": "k8s:k8s.argo.application:argocd/shop",
+      "to": "k8s:k8s.namespace:shop",
+      "label": "deploys to"
+    },
+    {
+      "from": "k8s:k8s.argo.application:argocd/payments",
+      "to": "k8s:k8s.namespace:payments",
+      "label": "deploys to"
+    },
+    {
+      "from": "k8s:k8s.argo.application:argocd/observability",
+      "to": "k8s:k8s.namespace:observability",
+      "label": "deploys to"
+    },
+    {
+      "from": "k8s:k8s.argo.application:argocd/ingress-nginx",
+      "to": "k8s:k8s.namespace:ingress-nginx",
+      "label": "deploys to"
+    },
+    {
+      "from": "k8s:k8s.argo.application:argocd/karpenter",
+      "to": "k8s:k8s.namespace:karpenter",
+      "label": "deploys to"
+    },
+    {
+      "from": "k8s:k8s.argo.application:argocd/argocd",
+      "to": "k8s:k8s.namespace:argocd",
+      "label": "deploys to"
+    },
+    {
+      "from": "k8s:k8s.argo.application:argocd/ml",
+      "to": "k8s:k8s.namespace:ml",
+      "label": "deploys to"
+    },
+    {
+      "from": "k8s:k8s.argo.application:argocd/tenant-acme",
+      "to": "k8s:k8s.namespace:tenant-acme",
+      "label": "deploys to"
+    },
+    {
+      "from": "k8s:k8s.argo.applicationset:argocd/tenants",
+      "to": "k8s:k8s.argo.application:argocd/tenant-acme",
+      "label": "generates"
+    },
+    {
+      "from": "k8s:k8s.argo.application:argocd/tenant-globex",
+      "to": "k8s:k8s.namespace:tenant-globex",
+      "label": "deploys to"
+    },
+    {
+      "from": "k8s:k8s.argo.applicationset:argocd/tenants",
+      "to": "k8s:k8s.argo.application:argocd/tenant-globex",
+      "label": "generates"
+    },
+    {
+      "from": "k8s:k8s.argo.application:argocd/karpenter",
+      "to": "k8s:k8s.deployment:karpenter/karpenter",
+      "label": "manages"
+    },
+    {
+      "from": "k8s:k8s.argo.application:argocd/argocd",
+      "to": "k8s:k8s.deployment:argocd/argocd-server",
+      "label": "manages"
+    },
+    {
+      "from": "k8s:k8s.argo.application:argocd/argocd",
+      "to": "k8s:k8s.deployment:argocd/argocd-repo-server",
+      "label": "manages"
+    },
+    {
+      "from": "k8s:k8s.argo.application:argocd/argocd",
+      "to": "k8s:k8s.deployment:argocd/argocd-applicationset-controller",
+      "label": "manages"
+    },
+    {
+      "from": "k8s:k8s.argo.application:argocd/ingress-nginx",
+      "to": "k8s:k8s.deployment:ingress-nginx/ingress-nginx-controller",
+      "label": "manages"
+    },
+    {
+      "from": "k8s:k8s.argo.application:argocd/observability",
+      "to": "k8s:k8s.statefulset:observability/prometheus",
+      "label": "manages"
+    },
+    {
+      "from": "k8s:k8s.argo.application:argocd/observability",
+      "to": "k8s:k8s.deployment:observability/grafana",
+      "label": "manages"
+    },
+    {
+      "from": "k8s:k8s.argo.application:argocd/observability",
+      "to": "k8s:k8s.deployment:observability/loki",
+      "label": "manages"
+    },
+    {
+      "from": "k8s:k8s.argo.application:argocd/observability",
+      "to": "k8s:k8s.daemonset:observability/node-exporter",
+      "label": "manages"
+    },
+    {
+      "from": "k8s:k8s.argo.application:argocd/shop",
+      "to": "k8s:k8s.deployment:shop/web",
+      "label": "manages"
+    },
+    {
+      "from": "k8s:k8s.argo.application:argocd/shop",
+      "to": "k8s:k8s.deployment:shop/api",
+      "label": "manages"
+    },
+    {
+      "from": "k8s:k8s.argo.application:argocd/shop",
+      "to": "k8s:k8s.deployment:shop/worker",
+      "label": "manages"
+    },
+    {
+      "from": "k8s:k8s.argo.application:argocd/shop",
+      "to": "k8s:k8s.statefulset:shop/redis",
+      "label": "manages"
+    },
+    {
+      "from": "k8s:k8s.argo.application:argocd/shop",
+      "to": "k8s:k8s.cronjob:shop/nightly-report",
+      "label": "manages"
+    },
+    {
+      "from": "k8s:k8s.argo.application:argocd/payments",
+      "to": "k8s:k8s.deployment:payments/payments-api",
+      "label": "manages"
+    },
+    {
+      "from": "k8s:k8s.argo.application:argocd/ml",
+      "to": "k8s:k8s.deployment:ml/recommender",
+      "label": "manages"
+    },
+    {
+      "from": "k8s:k8s.argo.application:argocd/ml",
+      "to": "k8s:k8s.deployment:ml/trainer",
+      "label": "manages"
+    },
+    {
+      "from": "k8s:k8s.argo.application:argocd/tenant-acme",
+      "to": "k8s:k8s.deployment:tenant-acme/app",
+      "label": "manages"
+    },
+    {
+      "from": "k8s:k8s.argo.application:argocd/tenant-globex",
+      "to": "k8s:k8s.deployment:tenant-globex/app",
+      "label": "manages"
+    },
+    {
+      "from": "k8s:k8s.nodeclass:default",
+      "to": "platform:aws.iam.role.workload:wl_karpenter_node",
+      "label": "node role"
+    },
+    {
+      "from": "k8s:k8s.nodeclass:gpu",
+      "to": "platform:aws.iam.role.workload:wl_karpenter_node",
+      "label": "node role"
+    },
+    {
+      "from": "k8s:k8s.deployment:karpenter/karpenter",
+      "to": "platform:aws.iam.role.workload:wl_karpenter",
+      "label": "assumes (IRSA)"
+    },
+    {
+      "from": "k8s:k8s.deployment:shop/web",
+      "to": "platform:aws.iam.role.workload:wl_web",
+      "label": "assumes (IRSA)"
+    },
+    {
+      "from": "k8s:k8s.deployment:shop/api",
+      "to": "platform:aws.iam.role.workload:wl_api",
+      "label": "assumes (IRSA)"
+    },
+    {
+      "from": "k8s:k8s.deployment:shop/worker",
+      "to": "platform:aws.iam.role.workload:wl_worker",
+      "label": "assumes (IRSA)"
+    },
+    {
+      "from": "k8s:k8s.deployment:payments/payments-api",
+      "to": "platform:aws.iam.role.workload:wl_payments",
+      "label": "assumes (IRSA)"
+    }
+  ],
+  "coverage": {
+    "platform": {
+      "unmapped": [],
+      "unresolvedBoundaries": []
+    },
+    "gitops": {
+      "unmapped": [],
+      "unresolvedBoundaries": []
+    },
+    "k8s": {
+      "unmapped": [],
+      "unresolvedBoundaries": []
+    }
+  },
+  "unresolvedCrossRepoLinks": [],
+  "unresolvedPlacements": [],
+  "findings": [
+    {
+      "type": "applicationset-not-expanded",
+      "entityId": "k8s:k8s.argo.applicationset:argocd/preview-envs",
+      "message": "ApplicationSet preview-envs uses generator(s) pullRequest: the applications it produces are unknown offline"
+    }
+  ],
+  "legend": {
+    "net": "Network / namespaces",
+    "compute": "Compute / capacity",
+    "eks": "EKS / ArgoCD",
+    "k8s": "Workloads",
+    "edgeapp": "DNS, LB & services",
+    "cfg": "Config & storage"
+  }
+}

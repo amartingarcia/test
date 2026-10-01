@@ -8,6 +8,7 @@
     "node": ">=18"
   },
   "scripts": {
-    "test": "node --test \"test/**/*.test.mjs\""
+    "test": "node --test \"test/**/*.test.mjs\"",
+    "build:samples": "node scripts/build-platform-sample.mjs && node scripts/build-k8s-sample.mjs && node scripts/build-combined-sample.mjs"
   }
 }

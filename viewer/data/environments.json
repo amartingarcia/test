@@ -29,6 +29,16 @@
       "id": "k8s_nodes",
       "label": "k8s / by node pool",
       "source": "examples/sample-k8s"
+    },
+    {
+      "id": "k8s_prod_namespaces",
+      "label": "platform / prod + k8s by namespace",
+      "source": "examples/sample-platform + examples/sample-k8s"
+    },
+    {
+      "id": "k8s_prod_nodes",
+      "label": "platform / prod + k8s by node pool",
+      "source": "examples/sample-platform + examples/sample-k8s"
     }
   ]
 }

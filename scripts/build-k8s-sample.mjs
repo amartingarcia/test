@@ -37,6 +37,6 @@ for (const v of views) {
 }
 
 const envPath = path.join(outDir, 'environments.json');
-const existing = JSON.parse(await fs.readFile(envPath, 'utf8')).environments.filter((e) => !e.id.startsWith('k8s_'));
+const existing = JSON.parse(await fs.readFile(envPath, 'utf8')).environments.filter((e) => !views.some((v) => v.id === e.id));
 await fs.writeFile(envPath, JSON.stringify({ environments: [...existing, ...environments] }, null, 2) + '\n', 'utf8');
 await fs.copyFile(path.join(root, 'catalog', 'kinds.json'), path.join(outDir, 'catalog.json'));

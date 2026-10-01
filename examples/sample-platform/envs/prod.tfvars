@@ -13,3 +13,5 @@ db_instance_class   = "db.r6g.xlarge"
 db_multi_az         = true
 db_storage_gb       = 100
 redis_nodes         = 2
+enable_system_nodegroup = true
+enable_workload_roles   = true

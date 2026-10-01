@@ -60,6 +60,7 @@ const platformManifest = {
     ent('aws_iam_role', 'aws.iam.role.node', {}, '^node'),
     ent('aws_iam_role', 'aws.iam.role.irsa', {}, 'irsa$'),
     ent('aws_iam_role', 'aws.iam.role.ec2', {}, '^ec2'),
+    ent('aws_iam_role', 'aws.iam.role.workload', {}, '^wl_'),
     ent('aws_db_instance', 'aws.rds.instance'),
     ent('aws_docdb_cluster', 'aws.docdb.cluster'),
     ent('aws_elasticache_replication_group', 'aws.elasticache.redis'),
