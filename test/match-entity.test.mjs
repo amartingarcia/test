@@ -15,7 +15,7 @@ test('matches a node by exact resource type', () => {
   };
 
   const entity = matchEntity(vpcNode, manifest);
-  assert.deepEqual(entity, { kind: 'aws.vpc', id: 'main', boundary: null, sourceAddress: vpcNode.address });
+  assert.deepEqual(entity, { kind: 'aws.vpc', id: 'main', boundary: null, embed: false, sourceAddress: vpcNode.address });
 });
 
 test('first matching rule wins when multiple rules could apply', () => {

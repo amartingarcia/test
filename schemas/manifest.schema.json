@@ -75,6 +75,10 @@
           "minLength": 1,
           "description": "Required when idFrom is \"literal\"; ignored otherwise."
         },
+        "embed": {
+          "type": "boolean",
+          "description": "When true the entity is a property of its boundary parent (e.g. an EKS addon of its cluster), not a box of its own: Layer C flags it `embedded: true` and the viewer lists it on the parent instead of drawing it. Default false."
+        },
         "boundary": {
           "type": ["string", "null"],
           "description": "Optional containment parent, given as the exact `kind` of the entity this one nests under (e.g. \"aws.vpc\", not a free-text label like \"vpc\"). Layer C resolves it by finding the one matched entity of that kind in the same repo+environment; zero or multiple candidates leaves the entity un-nested and is reported, never guessed."

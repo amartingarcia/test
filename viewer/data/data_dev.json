@@ -23,11 +23,18 @@
       "parent": "network:aws.vpc:main"
     },
     {
+      "id": "network:aws.subnet.data:aws_subnet.data",
+      "kind": "aws.subnet.data",
+      "repoId": "network",
+      "sourceAddress": "aws_subnet.data",
+      "parent": "network:aws.vpc:main"
+    },
+    {
       "id": "network:aws.nat_gateway:main",
       "kind": "aws.nat_gateway",
       "repoId": "network",
       "sourceAddress": "aws_nat_gateway.main",
-      "parent": "network:aws.vpc:main"
+      "parent": "network:aws.subnet.public:aws_subnet.public"
     },
     {
       "id": "network:aws.internet_gateway:main",
@@ -48,7 +55,7 @@
       "kind": "aws.eks.cluster",
       "repoId": "infra",
       "sourceAddress": "aws_eks_cluster.this",
-      "parent": null,
+      "parent": "network:aws.subnet.private:aws_subnet.private",
       "details": {
         "name": {
           "resolved": true,
@@ -102,6 +109,7 @@
       "repoId": "infra",
       "sourceAddress": "aws_eks_addon.vpc_cni",
       "parent": "infra:aws.eks.cluster:this",
+      "embedded": true,
       "details": {
         "cluster_name": {
           "resolved": false,
@@ -123,6 +131,7 @@
       "repoId": "infra",
       "sourceAddress": "aws_eks_addon.coredns",
       "parent": "infra:aws.eks.cluster:this",
+      "embedded": true,
       "details": {
         "cluster_name": {
           "resolved": false,
@@ -137,6 +146,173 @@
           "value": "v1.11.1-eksbuild.9"
         }
       }
+    },
+    {
+      "id": "infra:aws.iam.role.cluster:cluster",
+      "kind": "aws.iam.role.cluster",
+      "repoId": "infra",
+      "sourceAddress": "aws_iam_role.cluster",
+      "parent": null,
+      "details": {
+        "name": {
+          "resolved": true,
+          "value": "prod-eks-cluster"
+        },
+        "path": {
+          "resolved": true,
+          "value": "/"
+        }
+      }
+    },
+    {
+      "id": "infra:aws.iam.role.node:node",
+      "kind": "aws.iam.role.node",
+      "repoId": "infra",
+      "sourceAddress": "aws_iam_role.node",
+      "parent": null,
+      "details": {
+        "name": {
+          "resolved": true,
+          "value": "prod-eks-node"
+        },
+        "path": {
+          "resolved": true,
+          "value": "/"
+        }
+      }
+    },
+    {
+      "id": "infra:aws.iam.role.irsa:orders_api_irsa",
+      "kind": "aws.iam.role.irsa",
+      "repoId": "infra",
+      "sourceAddress": "aws_iam_role.orders_api_irsa",
+      "parent": null,
+      "details": {
+        "name": {
+          "resolved": true,
+          "value": "prod-orders-api-irsa"
+        },
+        "path": {
+          "resolved": true,
+          "value": "/service-role/"
+        }
+      }
+    },
+    {
+      "id": "infra:aws.rds.instance:orders",
+      "kind": "aws.rds.instance",
+      "repoId": "infra",
+      "sourceAddress": "aws_db_instance.orders",
+      "parent": "network:aws.subnet.data:aws_subnet.data",
+      "details": {
+        "identifier": {
+          "resolved": true,
+          "value": "orders"
+        },
+        "engine": {
+          "resolved": true,
+          "value": "postgres"
+        },
+        "engine_version": {
+          "resolved": true,
+          "value": "16.3"
+        },
+        "instance_class": {
+          "resolved": true,
+          "value": "db.r6g.large"
+        },
+        "allocated_storage": {
+          "resolved": true,
+          "value": 100
+        },
+        "multi_az": {
+          "resolved": true,
+          "value": true
+        },
+        "storage_encrypted": {
+          "resolved": true,
+          "value": true
+        },
+        "db_subnet_group_name": {
+          "resolved": false,
+          "raw": "aws_db_subnet_group.data.name"
+        }
+      }
+    },
+    {
+      "id": "infra:aws.docdb.cluster:reports",
+      "kind": "aws.docdb.cluster",
+      "repoId": "infra",
+      "sourceAddress": "aws_docdb_cluster.reports",
+      "parent": "network:aws.subnet.data:aws_subnet.data",
+      "details": {
+        "cluster_identifier": {
+          "resolved": true,
+          "value": "reports"
+        },
+        "engine_version": {
+          "resolved": true,
+          "value": "5.0.0"
+        },
+        "storage_encrypted": {
+          "resolved": true,
+          "value": true
+        },
+        "backup_retention_period": {
+          "resolved": true,
+          "value": 7
+        }
+      }
+    },
+    {
+      "id": "gitops:k8s.release.service:orders_api",
+      "kind": "k8s.release.service",
+      "repoId": "gitops",
+      "sourceAddress": "helm_release.orders_api",
+      "parent": "infra:aws.eks.nodegroup:default",
+      "details": {
+        "name": {
+          "resolved": true,
+          "value": "orders-api"
+        },
+        "chart": {
+          "resolved": true,
+          "value": "orders-api"
+        },
+        "version": {
+          "resolved": true,
+          "value": "1.8.2"
+        },
+        "namespace": {
+          "resolved": true,
+          "value": "orders"
+        }
+      }
+    },
+    {
+      "id": "gitops:k8s.release.batch:report_job",
+      "kind": "k8s.release.batch",
+      "repoId": "gitops",
+      "sourceAddress": "helm_release.report_job",
+      "parent": "infra:aws.eks.nodegroup:default",
+      "details": {
+        "name": {
+          "resolved": true,
+          "value": "report-job"
+        },
+        "chart": {
+          "resolved": true,
+          "value": "batch-job"
+        },
+        "version": {
+          "resolved": true,
+          "value": "0.4.0"
+        },
+        "namespace": {
+          "resolved": true,
+          "value": "reports"
+        }
+      }
     }
   ],
   "edges": [
@@ -146,6 +322,10 @@
     },
     {
       "from": "network:aws.subnet.private:aws_subnet.private",
+      "to": "network:aws.vpc:main"
+    },
+    {
+      "from": "network:aws.subnet.data:aws_subnet.data",
       "to": "network:aws.vpc:main"
     },
     {
@@ -174,8 +354,28 @@
     },
     {
       "from": "infra:aws.eks.cluster:this",
-      "to": "network:aws.vpc:main",
-      "label": "runs in"
+      "to": "infra:aws.iam.role.cluster:cluster",
+      "label": "assumes"
+    },
+    {
+      "from": "infra:aws.eks.nodegroup:default",
+      "to": "infra:aws.iam.role.node:node",
+      "label": "assumes"
+    },
+    {
+      "from": "gitops:k8s.release.service:orders_api",
+      "to": "infra:aws.iam.role.irsa:orders_api_irsa",
+      "label": "assumes (IRSA)"
+    },
+    {
+      "from": "gitops:k8s.release.service:orders_api",
+      "to": "infra:aws.rds.instance:orders",
+      "label": "SQL"
+    },
+    {
+      "from": "gitops:k8s.release.batch:report_job",
+      "to": "infra:aws.docdb.cluster:reports",
+      "label": "writes"
     }
   ],
   "coverage": {
@@ -186,7 +386,12 @@
     "infra": {
       "unmapped": [],
       "unresolvedBoundaries": []
+    },
+    "gitops": {
+      "unmapped": [],
+      "unresolvedBoundaries": []
     }
   },
-  "unresolvedCrossRepoLinks": []
+  "unresolvedCrossRepoLinks": [],
+  "unresolvedPlacements": []
 }
