@@ -5,7 +5,8 @@
     "iam": {
       "label": "IAM · account-wide",
       "axis": "column",
-      "order": 100
+      "order": 100,
+      "glyph": "key"
     }
   },
   "kinds": {

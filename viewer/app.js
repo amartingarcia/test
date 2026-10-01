@@ -119,14 +119,17 @@ const clip = (t, n) => (t.length > n ? `${t.slice(0, n - 1)}…` : t);
 const resolved = (details, key) => (details?.[key]?.resolved ? details[key].value : undefined);
 
 function cardSvg({ name, kind, class: cls, details }) {
+  // (groups, e.g. IAM, only get a card while collapsed; their name arrives as the tab label)
   const accent = classColor(cls);
   const nodeBg = cssVar('--node');
   const text = cssVar('--text');
   const muted = cssVar('--muted');
-  const spec = specFor(kind);
+  const group = groupOfKind(kind);
+  const spec = group ?? specFor(kind);
   const { w, h } = sizeOf(kind);
   const compact = h < 60;
-  const kindShort = kind.split('.').slice(1).join('.');
+  let kindShort = kind.split('.').slice(1).join('.');
+  if (group) { const [head, ...rest] = (name ?? '').split(' · '); name = head; kindShort = rest.join(' · ') || 'group'; }
 
   // chips (workloads): "chart vX.Y" is more useful than the kind
   let sub = kindShort;
@@ -156,7 +159,7 @@ function cardSvg({ name, kind, class: cls, details }) {
 }
 
 function paintCards() {
-  cy?.batch(() => cy.nodes().forEach((n) => { if (!isGroupKind(n.data('kind'))) n.data('card', cardSvg(n.data())); }));
+  cy?.batch(() => cy.nodes().forEach((n) => n.data('card', cardSvg(isGroupKind(n.data('kind')) ? { ...n.data(), name: n.data('groupLabel') } : n.data()))));
 }
 
 /* ----------------------------------------------------------------- styles */
@@ -507,8 +510,8 @@ document.getElementById('fit-btn').addEventListener('click', fit);
 document.getElementById('zoom-in').addEventListener('click', () => zoomBy(ZOOM_STEP));
 document.getElementById('zoom-out').addEventListener('click', () => zoomBy(1 / ZOOM_STEP));
 zoomLevelEl.addEventListener('click', () => zoomTo(1));
-document.getElementById('expand-all-btn').addEventListener('click', () => cy?.expandCollapse('get').expandAll());
-document.getElementById('collapse-all-btn').addEventListener('click', () => cy?.expandCollapse('get').collapseAll());
+document.getElementById('expand-all-btn').addEventListener('click', () => { cy?.expandCollapse('get').expandAll(); setTimeout(fit, REDUCED_MOTION ? 0 : 320); });
+document.getElementById('collapse-all-btn').addEventListener('click', () => { cy?.expandCollapse('get').collapseAll(); setTimeout(fit, REDUCED_MOTION ? 0 : 320); });
 document.getElementById('theme-btn').addEventListener('click', toggleTheme);
 document.getElementById('rotate-btn').addEventListener('click', () => { vertical = !vertical; applyLayout(true, fit); });
 flowBtn.addEventListener('click', () => setFlow(!flowOn));
