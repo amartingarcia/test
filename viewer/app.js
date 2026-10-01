@@ -34,7 +34,9 @@ for (const env of ENVIRONMENTS) {
 let cy = null;
 
 async function loadEnvironment(env) {
-  const res = await fetch(`data/${env}.json`);
+  // `no-cache` = always revalidate (cheap, ETag-based): GitHub Pages serves
+  // max-age=600, so without this a fresh deploy's data can look stale for 10 min.
+  const res = await fetch(`data/${env}.json`, { cache: 'no-cache' });
   if (!res.ok) {
     sidebar.innerHTML = `<div class="empty">Could not load data/${env}.json (${res.status})</div>`;
     return;
