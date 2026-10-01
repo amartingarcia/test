@@ -1,0 +1,37 @@
+{
+  "repoId": "network",
+  "rules": [
+    {
+      "match": { "type": "aws_vpc" },
+      "entity": { "kind": "aws.vpc", "idFrom": "name" }
+    },
+    {
+      "match": { "type": "aws_subnet", "nameRegex": "^public" },
+      "entity": { "kind": "aws.subnet.public", "idFrom": "address", "boundary": "vpc" }
+    },
+    {
+      "match": { "type": "aws_subnet", "nameRegex": "^private" },
+      "entity": { "kind": "aws.subnet.private", "idFrom": "address", "boundary": "vpc" }
+    },
+    {
+      "match": { "type": "aws_security_group" },
+      "entity": { "kind": "aws.security_group", "idFrom": "name", "boundary": "vpc" }
+    },
+    {
+      "match": { "type": "aws_nat_gateway" },
+      "entity": { "kind": "aws.nat_gateway", "idFrom": "name", "boundary": "vpc" }
+    },
+    {
+      "match": { "type": "aws_internet_gateway" },
+      "entity": { "kind": "aws.internet_gateway", "idFrom": "name", "boundary": "vpc" }
+    },
+    {
+      "match": { "type": "aws_route_table" },
+      "entity": { "kind": "aws.route_table", "idFrom": "name", "boundary": "vpc" }
+    },
+    {
+      "match": { "isData": true, "type": "aws_availability_zones" },
+      "entity": { "kind": "aws.availability_zones.lookup", "idFrom": "name" }
+    }
+  ]
+}

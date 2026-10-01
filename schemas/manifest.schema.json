@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/amartingarcia/test/schemas/manifest.schema.json",
+  "title": "Layer B manifest",
+  "description": "Maps Terraform resource/data-source addresses (as emitted by lib/parse/parse-dot-graph.mjs) to friendly entities for the compiled diagram. Enforced at runtime by lib/manifest/validate-manifest.mjs (hand-rolled, no ajv dependency) — this file is the human-readable reference, kept in sync by hand.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["repoId", "rules"],
+  "properties": {
+    "repoId": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Identifies which source repo this manifest belongs to (e.g. \"network\", \"infra\"). Used by Layer C to know which manifest applies to which extracted graph."
+    },
+    "rules": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/rule" },
+      "description": "Evaluated in order; the first rule whose `match` matches a node wins. A node matching no rule is left unmapped (surfaced in the compiler's coverage report, not silently dropped)."
+    }
+  },
+  "$defs": {
+    "rule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["match", "entity"],
+      "properties": {
+        "match": { "$ref": "#/$defs/match" },
+        "entity": { "$ref": "#/$defs/entity" }
+      }
+    },
+    "match": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "description": "Resource/data-source type to match (e.g. \"aws_vpc\"), or an array of types.",
+          "anyOf": [
+            { "type": "string" },
+            { "type": "array", "items": { "type": "string" }, "minItems": 1 }
+          ]
+        },
+        "isData": {
+          "type": "boolean",
+          "description": "When set, only matches data sources (true) or managed resources (false)."
+        },
+        "modulePathPrefix": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Node's modulePath must start with this sequence (e.g. [\"eks\"] matches module.eks.* and module.eks.module.nodegroup.*)."
+        },
+        "nameRegex": {
+          "type": "string",
+          "description": "JS RegExp source tested against the resource's local name (not its full address)."
+        }
+      }
+    },
+    "entity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "idFrom"],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Namespaced entity kind for the compiled diagram, e.g. \"aws.vpc\", \"aws.eks.cluster\". See the infra-diagram IR (not yet written) for the registered kind catalog."
+        },
+        "idFrom": {
+          "type": "string",
+          "enum": ["name", "address", "literal"],
+          "description": "How to derive the entity's stable id: the resource's local name, its full Terraform address, or a literal string (requires `id`)."
+        },
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Required when idFrom is \"literal\"; ignored otherwise."
+        },
+        "boundary": {
+          "type": ["string", "null"],
+          "description": "Optional containment boundary id this entity belongs to (e.g. \"vpc\"), resolved by Layer C against other matched entities."
+        }
+      }
+    }
+  }
+}
