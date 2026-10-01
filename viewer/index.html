@@ -5,84 +5,45 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>infra-diagram viewer</title>
 <script>
-  // Resolve the theme before first paint (no flash). Storage can throw
-  // (private mode, blocked site data), so every access is guarded.
+  // Resolve theme (light/dark) and style preset before first paint (no flash).
+  // Storage can throw (private mode, blocked site data), so every access is guarded.
   (function () {
-    var t = null;
-    try { t = localStorage.getItem('infra-theme'); } catch (e) {}
+    var PRESETS = ['blueprint', 'draft', 'neon', 'soft'];
+    var h = new URLSearchParams(location.hash.slice(1));
+    var t = null, p = null;
+    try { t = localStorage.getItem('infra-theme'); p = localStorage.getItem('infra-preset'); } catch (e) {}
     if (t !== 'light' && t !== 'dark') {
       t = window.matchMedia && matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
     }
+    var fromHash = h.get('style');
+    if (PRESETS.indexOf(fromHash) >= 0) p = fromHash;
+    if (PRESETS.indexOf(p) < 0) p = 'blueprint';
     document.documentElement.setAttribute('data-theme', t);
+    document.documentElement.setAttribute('data-preset', p);
   })();
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;700&family=DM+Mono:wght@400;500&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;600&family=JetBrains+Mono:wght@400;600&family=Plus+Jakarta+Sans:wght@500;700&family=Share+Tech+Mono&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
 <script src="https://unpkg.com/cytoscape@3.30.1/dist/cytoscape.min.js"></script>
 <script src="https://unpkg.com/cytoscape-expand-collapse@4.1.1/cytoscape-expand-collapse.js"></script>
 <style>
-  :root, :root[data-theme="dark"] {
-    --bg: #060a14;
-    --grid: rgba(56, 189, 248, .07);
-    --grid-major: rgba(56, 189, 248, .14);
-    --panel: rgba(10, 18, 34, .82);
-    --panel-solid: #0a1222;
-    --border: rgba(94, 234, 212, .22);
-    --text: #dbeafe;
-    --muted: #7f93b2;
-    --node: #0c1730;
-    --net: #ff9a3c;
-    --eks: #b794ff;
-    --def: #2de2e6;
-    --iam: #ffd23f;
-    --data: #ff5ea8;
-    --k8s: #4ade80;
-    --compute: #38bdf8;
-    --edgeapp: #a3e635;
-    --cfg: #94a3b8;
-    --edge: #2de2e6;
-    --edge-alt: #ff4fd8;
-    --glow: .38;
-    --shadow: 0 10px 40px rgba(0, 0, 0, .55);
-    --hit: #ffffff;
-    --warn: #ffb454;
-  }
-  :root[data-theme="light"] {
-    --bg: #f3f7fc;
-    --grid: rgba(14, 90, 150, .07);
-    --grid-major: rgba(14, 90, 150, .14);
-    --panel: rgba(255, 255, 255, .86);
-    --panel-solid: #ffffff;
-    --border: rgba(14, 90, 150, .25);
-    --text: #0f2744;
-    --muted: #5a7090;
-    --node: #ffffff;
-    --net: #d9560b;
-    --eks: #6d3fd6;
-    --def: #0a7f92;
-    --iam: #a16207;
-    --data: #be185d;
-    --k8s: #15803d;
-    --compute: #0369a1;
-    --edgeapp: #4d7c0f;
-    --cfg: #475569;
-    --edge: #0a7f92;
-    --edge-alt: #c2188f;
-    --glow: .16;
-    --shadow: 0 10px 30px rgba(20, 60, 110, .16);
-    --hit: #0f2744;
-    --warn: #b45309;
-  }
-  * { box-sizing: border-box; }
-  html, body { height: 100%; margin: 0; background: var(--bg); color: var(--text); font-family: 'Space Grotesk', system-ui, sans-serif; }
-  .mono, td.key, .kind, .raw, #env-select { font-family: 'JetBrains Mono', ui-monospace, monospace; }
-  #app { display: flex; height: 100vh; }
+  /*
+   * Four looks (data-preset) x light/dark (data-theme).
+   * Harmony rule: the eight category hues are the same family in every
+   * preset (blue, cyan, violet, green, pink, amber, teal, slate) and only
+   * their chroma/lightness change with the preset; neutrals and shapes
+   * carry the personality. Shape/type tokens that JS needs live in
+   * app.js (PRESETS); everything CSS can do lives here.
+   */
 
-  /* Blueprint field: minor + major grid, with a soft colored bloom behind it. */
-  #graph {
-    flex: 1; min-width: 0; position: relative; overflow: hidden;
-    background:
+  /* ---------- preset: shape + type ---------- */
+  :root, :root[data-preset="blueprint"] {
+    --font-ui: 'Space Grotesk', system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+    --ui-radius: 14px;
+    --marks: .8;
+    --field:
       radial-gradient(900px 500px at 15% 10%, color-mix(in srgb, var(--def) 14%, transparent), transparent 70%),
       radial-gradient(800px 500px at 90% 95%, color-mix(in srgb, var(--eks) 14%, transparent), transparent 70%),
       linear-gradient(var(--grid-major) 1px, transparent 1px) 0 0 / 120px 120px,
@@ -91,10 +52,116 @@
       linear-gradient(90deg, var(--grid) 1px, transparent 1px) 0 0 / 24px 24px,
       var(--bg);
   }
+  :root[data-preset="draft"] {
+    --font-ui: 'IBM Plex Sans', system-ui, sans-serif;
+    --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+    --ui-radius: 3px;
+    --marks: 1;
+    --field:
+      radial-gradient(var(--grid-major) 1px, transparent 1.3px) 0 0 / 22px 22px,
+      var(--bg);
+  }
+  :root[data-preset="neon"] {
+    --font-ui: 'Chakra Petch', system-ui, sans-serif;
+    --font-mono: 'Share Tech Mono', ui-monospace, monospace;
+    --ui-radius: 20px;
+    --marks: .9;
+    --field:
+      radial-gradient(700px 420px at 8% 0%, color-mix(in srgb, var(--data) 20%, transparent), transparent 70%),
+      radial-gradient(700px 460px at 100% 100%, color-mix(in srgb, var(--compute) 18%, transparent), transparent 70%),
+      linear-gradient(var(--grid) 1px, transparent 1px) 0 0 / 32px 32px,
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px) 0 0 / 32px 32px,
+      var(--bg);
+  }
+  :root[data-preset="soft"] {
+    --font-ui: 'Plus Jakarta Sans', system-ui, sans-serif;
+    --font-mono: 'DM Mono', ui-monospace, monospace;
+    --ui-radius: 16px;
+    --marks: 0;
+    --field:
+      radial-gradient(1000px 600px at 50% -10%, color-mix(in srgb, var(--net) 10%, transparent), transparent 70%),
+      var(--bg);
+  }
+
+  /* ---------- preset x mode: colour ---------- */
+  :root[data-preset="blueprint"][data-theme="dark"], :root:not([data-preset])[data-theme="dark"] {
+    --bg: #07111f; --grid: rgba(111,177,255,.07); --grid-major: rgba(111,177,255,.14);
+    --panel: rgba(9,22,40,.84); --panel-solid: #0a1a30; --border: rgba(111,177,255,.26);
+    --text: #d6e6ff; --muted: #7e95b3; --node: #0b1b30; --glow: .34;
+    --shadow: 0 10px 40px rgba(0,0,0,.55); --hit: #ffffff; --warn: #f2c14e;
+    --net: #6fb1ff; --compute: #52d1e6; --eks: #b59bff; --k8s: #5fdc9a;
+    --data: #ff8fb3; --iam: #f2c14e; --cfg: #9db0c4; --edgeapp: #4fdcc2; --def: #52d1e6;
+  }
+  :root[data-preset="blueprint"][data-theme="light"] {
+    --bg: #eef4fb; --grid: rgba(31,111,209,.07); --grid-major: rgba(31,111,209,.14);
+    --panel: rgba(255,255,255,.88); --panel-solid: #ffffff; --border: rgba(31,111,209,.26);
+    --text: #10304f; --muted: #5a7089; --node: #ffffff; --glow: .12;
+    --shadow: 0 10px 30px rgba(20,60,110,.16); --hit: #10304f; --warn: #9a6a00;
+    --net: #1f6fd1; --compute: #0a7f96; --eks: #6b4bd6; --k8s: #178a56;
+    --data: #c2336b; --iam: #9a6a00; --cfg: #52667c; --edgeapp: #0a8573; --def: #0a7f96;
+  }
+
+  :root[data-preset="draft"][data-theme="light"] {
+    --bg: #f1f3f4; --grid: rgba(27,39,51,.10); --grid-major: rgba(27,39,51,.22);
+    --panel: rgba(250,251,251,.95); --panel-solid: #fbfcfc; --border: rgba(27,39,51,.5);
+    --text: #1b2733; --muted: #5b6773; --node: #fbfcfc; --glow: 0;
+    --shadow: 3px 3px 0 rgba(27,39,51,.12); --hit: #1b2733; --warn: #8a6414;
+    --net: #2f4f8f; --compute: #1d6b78; --eks: #5b4a8a; --k8s: #2f6b4a;
+    --data: #8f3a55; --iam: #8a6414; --cfg: #55606c; --edgeapp: #1f6a60; --def: #1d6b78;
+  }
+  :root[data-preset="draft"][data-theme="dark"] {
+    --bg: #17201c; --grid: rgba(232,239,230,.06); --grid-major: rgba(232,239,230,.16);
+    --panel: rgba(26,36,31,.95); --panel-solid: #1a241f; --border: rgba(232,239,230,.4);
+    --text: #e8efe6; --muted: #9fb0a3; --node: #202b26; --glow: 0;
+    --shadow: 3px 3px 0 rgba(0,0,0,.35); --hit: #ffffff; --warn: #e0c27a;
+    --net: #9db8e8; --compute: #8fd0d8; --eks: #c0b4ec; --k8s: #9fd3b4;
+    --data: #e3a3b6; --iam: #e0c27a; --cfg: #b4bcc6; --edgeapp: #96d6cc; --def: #8fd0d8;
+  }
+
+  :root[data-preset="neon"][data-theme="dark"] {
+    --bg: #05060d; --grid: rgba(120,140,255,.05); --grid-major: rgba(120,140,255,.1);
+    --panel: rgba(11,13,26,.8); --panel-solid: #0b0d1a; --border: rgba(255,255,255,.16);
+    --text: #eaf0ff; --muted: #7a86a8; --node: #0a0c1a; --glow: .6;
+    --shadow: 0 12px 50px rgba(0,0,0,.7); --hit: #ffffff; --warn: #ffd400;
+    --net: #3b9eff; --compute: #00e5ff; --eks: #b26bff; --k8s: #39ff88;
+    --data: #ff4fa3; --iam: #ffd400; --cfg: #8aa0b8; --edgeapp: #1de9b6; --def: #00e5ff;
+  }
+  :root[data-preset="neon"][data-theme="light"] {
+    --bg: #f7f5ff; --grid: rgba(90,60,200,.06); --grid-major: rgba(90,60,200,.12);
+    --panel: rgba(255,255,255,.9); --panel-solid: #ffffff; --border: rgba(90,60,200,.28);
+    --text: #1a1740; --muted: #62608a; --node: #ffffff; --glow: .22;
+    --shadow: 0 10px 30px rgba(70,40,160,.18); --hit: #1a1740; --warn: #b45309;
+    --net: #1b6fe0; --compute: #0097b2; --eks: #8a3ff0; --k8s: #0f9d58;
+    --data: #e0287f; --iam: #b88a00; --cfg: #5b6b82; --edgeapp: #0a9e82; --def: #0097b2;
+  }
+
+  :root[data-preset="soft"][data-theme="light"] {
+    --bg: #f6f7fb; --grid: transparent; --grid-major: transparent;
+    --panel: rgba(255,255,255,.9); --panel-solid: #ffffff; --border: rgba(31,42,68,.1);
+    --text: #1f2a44; --muted: #6b778f; --node: #ffffff; --glow: .08;
+    --shadow: 0 8px 30px rgba(31,42,68,.1); --hit: #1f2a44; --warn: #c77700;
+    --net: #4f8df7; --compute: #22b8cf; --eks: #8b6cf0; --k8s: #34b37e;
+    --data: #f0629a; --iam: #f2a93b; --cfg: #7b8aa0; --edgeapp: #2ec4a6; --def: #22b8cf;
+  }
+  :root[data-preset="soft"][data-theme="dark"] {
+    --bg: #12141c; --grid: transparent; --grid-major: transparent;
+    --panel: rgba(27,31,43,.9); --panel-solid: #1b1f2b; --border: rgba(255,255,255,.1);
+    --text: #e7eaf3; --muted: #8c96ad; --node: #1b1f2b; --glow: .08;
+    --shadow: 0 10px 36px rgba(0,0,0,.45); --hit: #ffffff; --warn: #f2a93b;
+    --net: #6ba2ff; --compute: #3cc9de; --eks: #a089f5; --k8s: #4cc795;
+    --data: #f57fae; --iam: #f5b95a; --cfg: #93a1b6; --edgeapp: #44d1b4; --def: #3cc9de;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-ui); }
+  .mono, td.key, .kind, .raw, #env-select, td.val { font-family: var(--font-mono); }
+  #app { display: flex; height: 100vh; }
+
+  #graph { flex: 1; min-width: 0; position: relative; overflow: hidden; background: var(--field); }
   /* Registration marks in the corners of the drawing area. */
   #graph::before, #graph::after, #frame-b::before, #frame-b::after {
     content: ''; position: absolute; width: 28px; height: 28px; z-index: 5; pointer-events: none;
-    border: 2px solid var(--def); opacity: .8;
+    border: 2px solid var(--def); opacity: var(--marks);
   }
   #graph::before { top: 10px; left: 10px; border-right: 0; border-bottom: 0; }
   #graph::after { top: 10px; right: 10px; border-left: 0; border-bottom: 0; }
@@ -124,32 +191,41 @@
   .hud {
     display: flex; gap: 4px; align-items: center; padding: 5px;
     background: var(--panel); backdrop-filter: blur(14px);
-    border: 1px solid var(--border); border-radius: 14px; box-shadow: var(--shadow);
+    border: 1px solid var(--border); border-radius: var(--ui-radius); box-shadow: var(--shadow);
   }
   #hud-top { position: absolute; top: 18px; left: 18px; z-index: 10; flex-wrap: wrap; max-width: calc(100% - 36px); }
   #hud-zoom { position: absolute; right: 22px; bottom: 22px; z-index: 10; }
   .sep { width: 1px; align-self: stretch; margin: 4px 4px; background: var(--border); }
   button, select {
-    background: transparent; color: var(--text); border: 0; border-radius: 9px;
-    padding: 7px 11px; font: 500 13px 'Space Grotesk', system-ui, sans-serif; cursor: pointer;
+    background: transparent; color: var(--text); border: 0; border-radius: max(2px, calc(var(--ui-radius) - 5px));
+    padding: 7px 11px; font: 500 13px var(--font-ui); cursor: pointer;
     display: inline-flex; align-items: center; gap: 6px; transition: background .15s, color .15s, box-shadow .15s;
   }
   button:hover, select:hover { background: color-mix(in srgb, var(--def) 16%, transparent); }
-  button[aria-pressed="true"] { color: var(--def); box-shadow: inset 0 0 0 1px var(--def); }
+  button[aria-pressed="true"], button[aria-checked="true"] { color: var(--def); box-shadow: inset 0 0 0 1px var(--def); }
   button:focus-visible, select:focus-visible { outline: 2px solid var(--def); outline-offset: 1px; }
   #env-select { font-size: 12px; padding-right: 4px; }
   #env-select option { background: var(--panel-solid); color: var(--text); }
   .icon { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-  #zoom-level { min-width: 56px; justify-content: center; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--muted); }
+  #zoom-level { min-width: 56px; justify-content: center; font-family: var(--font-mono); font-size: 12px; color: var(--muted); }
   #theme-btn .sun { display: none; }
   :root[data-theme="light"] #theme-btn .sun { display: block; }
   :root[data-theme="light"] #theme-btn .moon { display: none; }
 
+  /* Style picker: one swatch per preset, drawn in that preset's own shape. */
+  #style-pick { display: inline-flex; gap: 2px; }
+  #style-pick button { padding: 6px 8px; }
+  .sw { width: 16px; height: 16px; display: inline-block; border: 1.5px solid; }
+  .sw[data-p="blueprint"] { border-radius: 5px; border-color: #6fb1ff; background: linear-gradient(135deg, #07111f 55%, #6fb1ff 55%); }
+  .sw[data-p="draft"] { border-radius: 1px; border-color: #1b2733; background: linear-gradient(135deg, #f1f3f4 55%, #2f4f8f 55%); }
+  .sw[data-p="neon"] { border-radius: 50%; border-color: #00e5ff; background: linear-gradient(135deg, #05060d 50%, #ff4fa3 50%); box-shadow: 0 0 8px #00e5ff88; }
+  .sw[data-p="soft"] { border-radius: 8px; border-color: #c9d3ea; background: linear-gradient(135deg, #ffffff 50%, #8b6cf0 50%); }
+
   /* Legend + coverage, bottom-left. */
-  #legend { position: absolute; left: 22px; bottom: 22px; z-index: 10; max-width: min(420px, calc(100% - 200px)); font-size: 12px; }
+  #legend { position: absolute; left: 22px; bottom: 22px; z-index: 10; max-width: min(520px, calc(100% - 200px)); font-size: 12px; }
   #legend .row { display: flex; gap: 14px; flex-wrap: wrap; padding: 8px 12px; }
   .key-dot { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); }
-  .key-dot i { width: 10px; height: 10px; border-radius: 3px; border: 1.5px solid currentColor; box-shadow: 0 0 8px currentColor; }
+  .key-dot i { width: 10px; height: 10px; border-radius: 3px; border: 1.5px solid currentColor; box-shadow: 0 0 calc(var(--glow) * 20px) currentColor; }
   .key-dot.net { color: var(--net); } .key-dot.eks { color: var(--eks); } .key-dot.def { color: var(--def); }
   .key-dot.compute { color: var(--compute); } .key-dot.edgeapp { color: var(--edgeapp); } .key-dot.cfg { color: var(--cfg); }
   .key-dot.iam { color: var(--iam); } .key-dot.data { color: var(--data); } .key-dot.k8s { color: var(--k8s); }
@@ -157,17 +233,17 @@
   #coverage { margin-top: 6px; padding: 0 4px; color: var(--warn); }
   #coverage:empty { display: none; }
 
-  h2 { font: 700 20px 'Space Grotesk', sans-serif; margin: 0 0 4px; letter-spacing: -.01em; }
-  h3 { font: 600 12px 'Space Grotesk', sans-serif; color: var(--muted); margin: 18px 0 6px; }
+  h2 { font: 700 20px var(--font-ui); margin: 0 0 4px; letter-spacing: -.01em; }
+  h3 { font: 600 12px var(--font-ui); color: var(--muted); margin: 18px 0 6px; }
   .kind { font-size: 11px; color: var(--def); }
   .empty { color: var(--muted); font-size: 13px; margin-top: 40px; text-align: center; line-height: 1.5; }
   table { width: 100%; border-collapse: collapse; font-size: 12px; }
   td { padding: 6px 0; vertical-align: top; border-bottom: 1px solid var(--border); }
   td.key { color: var(--muted); width: 42%; padding-right: 8px; }
-  td.val { word-break: break-word; font-family: 'JetBrains Mono', monospace; }
+  td.val { word-break: break-word; }
   .unresolved { color: var(--warn); font-style: italic; }
   .raw { white-space: pre-wrap; font-size: 11px; color: var(--muted); }
-  .badge { display: inline-block; font: 600 10px 'Space Grotesk', sans-serif; padding: 2px 8px; border-radius: 10px; margin-left: 8px; vertical-align: middle; border: 1px solid currentColor; }
+  .badge { display: inline-block; font: 600 10px var(--font-ui); padding: 2px 8px; border-radius: 10px; margin-left: 8px; vertical-align: middle; border: 1px solid currentColor; }
   .badge.net { color: var(--net); } .badge.eks { color: var(--eks); } .badge.default { color: var(--def); }
   .badge.compute { color: var(--compute); } .badge.edgeapp { color: var(--edgeapp); } .badge.cfg { color: var(--cfg); }
   .badge.iam { color: var(--iam); } .badge.data { color: var(--data); } .badge.k8s { color: var(--k8s); }
@@ -197,6 +273,13 @@
       <button id="flow-btn" aria-pressed="true" title="Animate traffic along the links">
         <svg class="icon" viewBox="0 0 24 24"><path d="M3 12h4M10 12h4M17 12h4"/></svg><span class="wide">Flow</span>
       </button>
+      <span class="sep"></span>
+      <div id="style-pick" role="radiogroup" aria-label="Visual style">
+        <button role="radio" data-preset="blueprint" title="Blueprint" aria-label="Blueprint style"><i class="sw" data-p="blueprint"></i></button>
+        <button role="radio" data-preset="draft" title="Draft" aria-label="Draft style"><i class="sw" data-p="draft"></i></button>
+        <button role="radio" data-preset="neon" title="Neon" aria-label="Neon style"><i class="sw" data-p="neon"></i></button>
+        <button role="radio" data-preset="soft" title="Soft" aria-label="Soft style"><i class="sw" data-p="soft"></i></button>
+      </div>
       <button id="theme-btn" title="Switch light / dark theme" aria-label="Switch light or dark theme">
         <svg class="icon moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg>
         <svg class="icon sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>

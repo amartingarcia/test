@@ -93,6 +93,42 @@ const sizeOf = (kind) => (specFor(kind).size === 'chip' ? CHIP : CARD);
 const cssVar = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 const currentTheme = () => document.documentElement.getAttribute('data-theme');
 const CSS_NAME = { default: 'def', edgeapp: 'edgeapp' };
+
+/*
+ * Style presets. Colours live in CSS (index.html); these are the shape/type
+ * decisions that Cytoscape and the SVG cards need in JS.
+ *  radius: node corner radius; chip: icon chip shape; fill: card fill style
+ *  (gradient | flat | tint); border: node border width; group: container
+ *  border style; edge: line style + curve; flow: default link animation.
+ */
+const PRESETS = {
+  blueprint: { label: 'Blueprint', radius: 14, groupRadius: 18, chip: 10, fill: 'gradient', border: 1.5, group: 'dashed', edgeStyle: 'dashed', edgeWidth: 2, taxiRadius: 10, nameFont: "system-ui, -apple-system, 'Segoe UI', sans-serif", monoFont: "ui-monospace, Menlo, Consolas, monospace", flow: true },
+  draft:     { label: 'Draft', radius: 3, groupRadius: 3, chip: 0, fill: 'flat', border: 1.2, group: 'dotted', edgeStyle: 'solid', edgeWidth: 1.4, taxiRadius: 0, nameFont: "Georgia, 'Times New Roman', serif", monoFont: "ui-monospace, Menlo, Consolas, monospace", flow: false },
+  neon:      { label: 'Neon', radius: 20, groupRadius: 26, chip: 99, fill: 'gradient', border: 2, group: 'solid', edgeStyle: 'solid', edgeWidth: 2.4, taxiRadius: 14, nameFont: "'Arial Narrow', 'Helvetica Neue', Arial, sans-serif", monoFont: "ui-monospace, Menlo, Consolas, monospace", flow: true },
+  soft:      { label: 'Soft', radius: 16, groupRadius: 22, chip: 12, fill: 'tint', border: 1, group: 'solid', edgeStyle: 'solid', edgeWidth: 2, taxiRadius: 16, nameFont: "system-ui, -apple-system, 'Segoe UI', sans-serif", monoFont: "ui-monospace, Menlo, Consolas, monospace", flow: false },
+};
+const PRESET_IDS = Object.keys(PRESETS);
+const currentPreset = () => PRESETS[document.documentElement.getAttribute('data-preset')] ?? PRESETS.blueprint;
+
+function syncPresetPicker() {
+  const id = document.documentElement.getAttribute('data-preset');
+  document.querySelectorAll('#style-pick button').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.preset === id)));
+}
+
+function setPreset(id, { persist = true } = {}) {
+  if (!PRESETS[id]) return;
+  document.documentElement.setAttribute('data-preset', id);
+  if (persist) {
+    try { localStorage.setItem('infra-preset', id); } catch { /* storage blocked */ }
+    const h = new URLSearchParams(location.hash.slice(1));
+    h.set('style', id);
+    history.replaceState(null, '', `#${h.toString()}`);
+  }
+  syncPresetPicker();
+  // a preset has a preferred link animation; the Flow button can still override it
+  if (!REDUCED_MOTION) setFlow(PRESETS[id].flow);
+  if (cy) { cy.style(buildStyle()); paintCards(); }
+}
 const classColor = (cls) => cssVar(`--${CSS_NAME[cls] ?? cls}`);
 
 function syncThemeLabel() {
@@ -162,20 +198,26 @@ function cardSvg({ name, kind, class: cls, details }) {
     sub = chart ? `${chart}${version ? ` v${version}` : ''}` : kindShort;
   }
 
+  const P = currentPreset();
   const chip = compact ? 30 : 36;
   const cy0 = (h - chip) / 2;
   const glyphScale = chip / 36;
   const tx = chip + 24;
+  const chipRx = Math.min(P.chip, chip / 2);
+  const fillLayer = P.fill === 'gradient'
+    ? `<rect width="${w}" height="${h}" fill="url(#g)"/>`
+    : P.fill === 'tint' ? `<rect width="${w}" height="${h}" fill="${accent}" fill-opacity=".07"/>` : '';
+  const chipFill = P.fill === 'flat' ? 'none' : accent;
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">
   <defs>
     <linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${accent}" stop-opacity=".20"/><stop offset=".6" stop-color="${accent}" stop-opacity="0"/></linearGradient>
   </defs>
   <rect width="${w}" height="${h}" fill="${nodeBg}"/>
-  <rect width="${w}" height="${h}" fill="url(#g)"/>
-  <rect x="12" y="${cy0}" width="${chip}" height="${chip}" rx="${compact ? 9 : 10}" fill="${accent}" fill-opacity=".16" stroke="${accent}" stroke-opacity=".55"/>
+  ${fillLayer}
+  <rect x="12" y="${cy0}" width="${chip}" height="${chip}" rx="${chipRx}" fill="${chipFill}" fill-opacity=".16" stroke="${accent}" stroke-opacity="${P.fill === 'flat' ? 0.9 : 0.55}"/>
   <g transform="translate(${12 + (chip - 20 * glyphScale) / 2} ${cy0 + (chip - 20 * glyphScale) / 2}) scale(${glyphScale})" fill="none" stroke="${accent}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="${GLYPHS[spec.glyph] ?? GLYPHS.box}"/></g>
-  <text x="${tx}" y="${compact ? 22 : 30}" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="${compact ? 13 : 14}" font-weight="700" fill="${text}">${xmlEscape(clip(name, compact ? 16 : 15))}</text>
-  <text x="${tx}" y="${compact ? 37 : 46}" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="${muted}">${xmlEscape(clip(sub, compact ? 20 : 21))}</text>
+  <text x="${tx}" y="${compact ? 22 : 30}" font-family="${P.nameFont}" font-size="${compact ? 13 : 14}" font-weight="700" fill="${text}">${xmlEscape(clip(name, compact ? 16 : 15))}</text>
+  <text x="${tx}" y="${compact ? 37 : 46}" font-family="${P.monoFont}" font-size="10" fill="${muted}">${xmlEscape(clip(sub, compact ? 20 : 21))}</text>
   <circle cx="${w - 14}" cy="14" r="3" fill="${accent}"/>
 </svg>`;
   return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
@@ -194,23 +236,24 @@ function buildStyle() {
   const bg = cssVar('--bg');
   const glow = Number(cssVar('--glow')) || 0.3;
   const hit = cssVar('--hit');
-  const mono = 'JetBrains Mono, ui-monospace, monospace';
+  const P = currentPreset();
+  const mono = `${cssVar('--font-mono')}, ui-monospace, monospace`;
 
   const style = [
     { selector: 'node', style: {
-      'label': '', 'shape': 'round-rectangle', 'corner-radius': 14, 'width': CARD.w, 'height': CARD.h,
+      'label': '', 'shape': 'round-rectangle', 'corner-radius': P.radius, 'width': CARD.w, 'height': CARD.h,
       'background-color': nodeBg, 'background-image': 'data(card)', 'background-fit': 'cover', 'background-clip': 'node',
-      'border-width': 1.5, 'border-color': classColor('default'),
+      'border-width': P.border, 'border-color': classColor('default'),
       'underlay-color': classColor('default'), 'underlay-opacity': glow, 'underlay-padding': 7, 'underlay-shape': 'round-rectangle',
       'transition-property': 'opacity, border-width, underlay-opacity', 'transition-duration': '0.18s',
     }},
-    { selector: 'node[kind ^= "k8s."]', style: { 'width': CHIP.w, 'height': CHIP.h, 'corner-radius': 12 } },
+    { selector: 'node[kind ^= "k8s."]', style: { 'width': CHIP.w, 'height': CHIP.h, 'corner-radius': Math.min(P.radius, 12) } },
     { selector: ':parent', style: {
-      'background-image': 'none', 'background-opacity': 0.07, 'background-color': classColor('default'), 'border-width': 1.5, 'border-style': 'dashed',
+      'background-image': 'none', 'background-opacity': 0.07, 'background-color': classColor('default'), 'border-width': P.border, 'border-style': P.group,
       'label': 'data(groupLabel)', 'color': text, 'font-family': mono, 'font-size': 12, 'font-weight': 'bold', 'text-wrap': 'wrap', 'line-height': 1.35,
-      'text-valign': 'top', 'text-halign': 'center', 'text-margin-y': -2, 'padding': '30px', 'corner-radius': 18,
+      'text-valign': 'top', 'text-halign': 'center', 'text-margin-y': -2, 'padding': '30px', 'corner-radius': P.groupRadius,
       'text-background-color': bg, 'text-background-opacity': 1, 'text-background-padding': '5px', 'text-background-shape': 'round-rectangle',
-      'underlay-opacity': glow * 0.35,
+      'underlay-opacity': glow * 0.35, 'underlay-shape': 'round-rectangle',
     }},
     ...CLASSES.filter((c) => c !== 'default').flatMap((cls) => {
       const c = classColor(cls);
@@ -220,10 +263,10 @@ function buildStyle() {
       ];
     }),
     { selector: 'edge', style: {
-      'width': 2, 'curve-style': 'taxi', 'taxi-direction': 'auto', 'taxi-turn': '50%', 'taxi-radius': 10,
+      'width': P.edgeWidth, 'curve-style': 'taxi', 'taxi-direction': 'auto', 'taxi-turn': '50%', 'taxi-radius': P.taxiRadius,
       'line-color': classColor('default'), 'target-arrow-color': classColor('default'),
       'target-arrow-shape': 'triangle', 'arrow-scale': 1.1,
-      'line-style': 'dashed', 'line-dash-pattern': [8, 6],
+      'line-style': P.edgeStyle, 'line-dash-pattern': [8, 6],
       'underlay-color': classColor('default'), 'underlay-opacity': glow * 0.7, 'underlay-padding': 3,
       'label': '', 'opacity': 0.5, 'font-size': 10, 'font-family': mono, 'color': muted,
       'text-background-color': bg, 'text-background-opacity': 0.9, 'text-background-padding': '3px', 'text-background-shape': 'round-rectangle',
@@ -563,10 +606,15 @@ zoomLevelEl.addEventListener('click', () => zoomTo(1));
 document.getElementById('expand-all-btn').addEventListener('click', () => { cy?.expandCollapse('get').expandAll(); setTimeout(fit, REDUCED_MOTION ? 0 : 320); });
 document.getElementById('collapse-all-btn').addEventListener('click', () => { cy?.expandCollapse('get').collapseAll(); setTimeout(fit, REDUCED_MOTION ? 0 : 320); });
 document.getElementById('theme-btn').addEventListener('click', toggleTheme);
+document.querySelectorAll('#style-pick button').forEach((b) => b.addEventListener('click', () => setPreset(b.dataset.preset)));
 document.getElementById('rotate-btn').addEventListener('click', () => { vertical = !vertical; applyLayout(true, fit); });
 flowBtn.addEventListener('click', () => setFlow(!flowOn));
 envSelect.addEventListener('change', () => {
-  history.replaceState(null, '', `#env=${encodeURIComponent(envSelect.value)}`);
+  {
+    const h = new URLSearchParams(location.hash.slice(1));
+    h.set('env', envSelect.value);
+    history.replaceState(null, '', `#${h.toString()}`);
+  }
   loadEnvironment(envSelect.value);
 });
 window.addEventListener('hashchange', () => {
@@ -587,6 +635,11 @@ document.addEventListener('keydown', (e) => {
 
 flowBtn.setAttribute('aria-pressed', String(flowOn));
 syncThemeLabel();
+syncPresetPicker();
+if (!REDUCED_MOTION) flowOn = currentPreset().flow;
+flowBtn.setAttribute('aria-pressed', String(flowOn));
+// web fonts (labels, UI) arrive after first paint: restyle once they are in
+document.fonts?.ready.then(() => { if (cy) cy.style(buildStyle()); });
 requestAnimationFrame(flowTick);
 loadEnvironmentList().then((list) => {
   const wanted = envFromHash();
