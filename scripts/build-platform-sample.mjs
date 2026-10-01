@@ -190,10 +190,10 @@ for (const file of envFiles) {
 
 // the older hand-written demo stays selectable
 environments.push({ id: 'data_dev', label: 'minimal demo (hand-written DOT)', source: 'scripts/build-sample-data.mjs' });
-// keep the Kubernetes views owned by scripts/build-k8s-sample.mjs
+// keep entries owned by the other build scripts (k8s, clouds)
 try {
   const existing = JSON.parse(await fs.readFile(path.join(outDir, 'environments.json'), 'utf8'));
-  environments.push(...existing.environments.filter((e) => e.id.startsWith('k8s_')));
+  environments.push(...existing.environments.filter((e) => !e.id.startsWith('platform_') && e.id !== 'data_dev'));
 } catch { /* first run */ }
 await fs.writeFile(path.join(outDir, 'environments.json'), JSON.stringify({ environments }, null, 2) + '\n', 'utf8');
 await fs.writeFile(path.join(outDir, 'catalog.json'), JSON.stringify(catalog, null, 2) + '\n', 'utf8');
