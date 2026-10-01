@@ -24,8 +24,16 @@
   * { box-sizing: border-box; }
   html, body { height: 100%; margin: 0; background: var(--bg); color: var(--text); font-family: -apple-system, system-ui, sans-serif; }
   #app { display: flex; height: 100vh; }
-  #graph { flex: 1; min-width: 0; }
+  #graph { flex: 1; min-width: 0; position: relative; }
   #sidebar { width: 340px; flex-shrink: 0; background: var(--panel); border-left: 1px solid var(--border); padding: 16px; overflow-y: auto; }
+  /* Narrow viewports (found while testing in a ~563px pane: the fixed 340px
+     sidebar squeezed the graph to 223px): stack the detail panel under the
+     graph instead of beside it. */
+  @media (max-width: 760px) {
+    #app { flex-direction: column; }
+    #graph { flex: 1 1 60%; min-height: 0; }
+    #sidebar { width: 100%; flex: 0 0 40%; border-left: 0; border-top: 1px solid var(--border); }
+  }
   #topbar { position: absolute; top: 12px; left: 12px; z-index: 10; display: flex; gap: 8px; align-items: center; }
   select, button {
     background: var(--panel); color: var(--text); border: 1px solid var(--border);
