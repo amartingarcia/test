@@ -87,3 +87,26 @@ test('returns the center of every box, for use as Cytoscape positions', () => {
   const { centers } = layoutLanes([{ id: 'a', parent: null, kind: 'x' }], config());
   assert.deepEqual(centers.a, { x: 50, y: 20 });
 });
+
+test('wrap: crowded containers wrap onto several lines, off by default', () => {
+  const nodes = [{ id: 'p', parent: null, kind: 'box' }, ...Array.from({ length: 8 }, (_, i) => ({ id: `c${i}`, parent: 'p', kind: 'leaf' }))];
+  const cfg = { sizeOf: () => ({ w: 100, h: 50 }), axisOf: () => 'row', orderOf: () => 0, gap: 10, pad: 10, padTop: 20 };
+  const flat = layoutLanes(nodes, cfg).boxes;
+  assert.equal(flat.p.h, 50 + 20 + 10); // single line
+  const wrapped = layoutLanes(nodes, { ...cfg, wrap: { min: 5, aspect: 1.6 } }).boxes;
+  assert.ok(wrapped.p.h > flat.p.h, 'taller after wrapping');
+  assert.ok(wrapped.p.w < flat.p.w, 'narrower after wrapping');
+  // children stay inside the container and keep their order (reading order)
+  for (let i = 0; i < 8; i++) {
+    const c = wrapped[`c${i}`];
+    assert.ok(c.x >= wrapped.p.x && c.x + c.w <= wrapped.p.x + wrapped.p.w);
+    assert.ok(c.y >= wrapped.p.y && c.y + c.h <= wrapped.p.y + wrapped.p.h);
+  }
+  assert.ok(wrapped.c4.y > wrapped.c0.y || wrapped.c4.x > wrapped.c0.x);
+});
+
+test('wrap does not trigger below the minimum child count', () => {
+  const nodes = [{ id: 'p', parent: null, kind: 'box' }, ...Array.from({ length: 3 }, (_, i) => ({ id: `c${i}`, parent: 'p', kind: 'leaf' }))];
+  const cfg = { sizeOf: () => ({ w: 100, h: 50 }), axisOf: () => 'row', orderOf: () => 0, gap: 10, pad: 10, padTop: 20 };
+  assert.deepEqual(layoutLanes(nodes, { ...cfg, wrap: { min: 5, aspect: 1.6 } }).boxes, layoutLanes(nodes, cfg).boxes);
+});

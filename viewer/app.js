@@ -486,6 +486,7 @@ const layoutConfig = () => ({
   gap: 44,
   pad: 30,
   padTop: 50,
+  wrap: { min: 6, aspect: 1.5 }, // crowded containers (e.g. 10 namespaces) become a grid instead of one endless line
 });
 
 /** Whichever orientation lets the diagram be drawn larger in the current container. */
@@ -710,6 +711,11 @@ flowBtn.setAttribute('aria-pressed', String(flowOn));
 syncThemeLabel();
 syncPresetPicker();
 if (!REDUCED_MOTION) flowOn = currentPreset().flow;
+// the pane can change size after first paint (side panel, window): keep canvas and view in sync
+if (window.ResizeObserver) {
+  let first = true;
+  new ResizeObserver(() => { if (!cy) return; cy.resize(); if (first) { first = false; return; } }).observe(document.getElementById('cy'));
+}
 flowBtn.setAttribute('aria-pressed', String(flowOn));
 // web fonts (labels, UI) arrive after first paint: restyle once they are in
 document.fonts?.ready.then(() => { if (cy) cy.style(buildStyle()); });

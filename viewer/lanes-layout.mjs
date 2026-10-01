@@ -12,11 +12,14 @@
 //   orderOf(node) -> number     lower = earlier (left / top); ties broken by id
 //   gap, pad, padTop            spacing between siblings / inside a container
 //   rootAxis?                   defaults to 'row'
+//   wrap?                       {min, aspect}: containers with >= min children wrap onto
+//                               further lines so they approach width:height = aspect
+//                               (off unless given: single line, as before)
 // }
 // nodes = [{ id, parent: id|null, kind }]
 
 export function layoutLanes(nodes, config) {
-  const { sizeOf, axisOf, orderOf, gap, pad, padTop, rootAxis = 'row' } = config;
+  const { sizeOf, axisOf, orderOf, gap, pad, padTop, rootAxis = 'row', wrap = null } = config;
 
   const byId = new Map(nodes.map((n) => [n.id, n]));
   const children = new Map();
@@ -37,40 +40,65 @@ export function layoutLanes(nodes, config) {
     const kids = children.get(n.id);
     if (!kids) { size.set(n.id, sizeOf(n.kind)); return; }
     kids.forEach(measure);
-    const { w, h } = pack(kids.map((k) => size.get(k.id)), axisOf(n.kind), gap);
+    const { w, h } = arrange(sorted(kids).map((k) => size.get(k.id)), axisOf(n.kind), gap, wrap);
     size.set(n.id, { w: w + 2 * pad, h: h + padTop + pad });
   };
   roots.forEach(measure);
 
   // pass 2: positions, top-down
   const boxes = {};
-  const place = (list, axis, originX, originY, crossSize) => {
-    let cursor = 0;
-    for (const n of sorted(list)) {
-      const { w, h } = size.get(n.id);
-      const x = axis === 'row' ? originX + cursor : originX + (crossSize - w) / 2;
-      const y = axis === 'row' ? originY + (crossSize - h) / 2 : originY + cursor;
-      boxes[n.id] = { x, y, w, h };
-      cursor += (axis === 'row' ? w : h) + gap;
-      const kids = children.get(n.id);
-      if (kids) {
-        const innerAxis = axisOf(n.kind);
-        const inner = pack(sorted(kids).map((k) => size.get(k.id)), innerAxis, gap);
-        place(kids, innerAxis, x + pad, y + padTop, innerAxis === 'row' ? inner.h : inner.w);
+  const place = (list, axis, originX, originY) => {
+    const ordered = sorted(list);
+    const layout = arrange(ordered.map((n) => size.get(n.id)), axis, gap, axis === rootAxis && list === roots ? null : wrap);
+    let crossCursor = 0;
+    layout.lines.forEach((line, li) => {
+      let cursor = 0;
+      for (const idx of line) {
+        const n = ordered[idx];
+        const { w, h } = size.get(n.id);
+        const x = axis === 'row' ? originX + cursor : originX + crossCursor + (layout.cross[li] - w) / 2;
+        const y = axis === 'row' ? originY + crossCursor + (layout.cross[li] - h) / 2 : originY + cursor;
+        boxes[n.id] = { x, y, w, h };
+        cursor += (axis === 'row' ? w : h) + gap;
+        const kids = children.get(n.id);
+        if (kids) place(kids, axisOf(n.kind), x + pad, y + padTop);
       }
-    }
+      crossCursor += layout.cross[li] + gap;
+    });
   };
-  const rootPack = pack(sorted(roots).map((r) => size.get(r.id)), rootAxis, gap);
-  place(roots, rootAxis, 0, 0, rootAxis === 'row' ? rootPack.h : rootPack.w);
+  place(roots, rootAxis, 0, 0);
 
   const centers = {};
   for (const [id, b] of Object.entries(boxes)) centers[id] = { x: b.x + b.w / 2, y: b.y + b.h / 2 };
   return { boxes, centers };
 }
 
-/** Total extent of boxes laid out along an axis; the other axis is the max. */
-function pack(sizes, axis, gap) {
-  const along = sizes.reduce((sum, s) => sum + (axis === 'row' ? s.w : s.h), 0) + gap * Math.max(0, sizes.length - 1);
-  const across = Math.max(0, ...sizes.map((s) => (axis === 'row' ? s.h : s.w)));
-  return axis === 'row' ? { w: along, h: across } : { w: across, h: along };
+/**
+ * Splits boxes (already in order) into lines along `axis`, wrapping when
+ * wrapping is enabled and the container is crowded.
+ * Returns { lines: index[][], cross: per-line cross size, w, h }.
+ */
+function arrange(sizes, axis, gap, wrap) {
+  const along = (s) => (axis === 'row' ? s.w : s.h);
+  const across = (s) => (axis === 'row' ? s.h : s.w);
+  let limit = Infinity;
+  if (wrap && sizes.length >= wrap.min) {
+    const area = sizes.reduce((sum, s) => sum + (s.w + gap) * (s.h + gap), 0);
+    const target = axis === 'row' ? Math.sqrt(area * wrap.aspect) : Math.sqrt(area / wrap.aspect);
+    limit = Math.max(target, ...sizes.map(along));
+  }
+  const lines = [];
+  let line = [];
+  let used = 0;
+  sizes.forEach((s, i) => {
+    if (line.length && used + gap + along(s) > limit) { lines.push(line); line = []; used = 0; }
+    used += (line.length ? gap : 0) + along(s);
+    line.push(i);
+  });
+  if (line.length) lines.push(line);
+  const lineAlong = lines.map((l) => l.reduce((sum, i) => sum + along(sizes[i]), 0) + gap * (l.length - 1));
+  const cross = lines.map((l) => Math.max(0, ...l.map((i) => across(sizes[i]))));
+  const a = Math.max(0, ...lineAlong);
+  const c = cross.reduce((sum, v) => sum + v, 0) + gap * Math.max(0, lines.length - 1);
+  return { lines, cross, w: axis === 'row' ? a : c, h: axis === 'row' ? c : a };
 }
