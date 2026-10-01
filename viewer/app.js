@@ -14,19 +14,22 @@
 // data/<env>.json.
 import { layoutLanes } from './lanes-layout.mjs';
 
-const ENVIRONMENTS = ['data_dev'];
+const ENVIRONMENTS = ['platform_prod', 'data_dev'];
 
 // cytoscape-expand-collapse (UMD, v4.x) self-registers against the global
 // `cytoscape` once both scripts are loaded — no explicit cytoscape.use() call.
 
-const CLASSES = ['net', 'eks', 'iam', 'data', 'k8s', 'default'];
-const CLASS_NAMES = { net: 'Network', eks: 'EKS', iam: 'IAM', data: 'Data stores', k8s: 'Workloads', default: 'Other' };
+const CLASSES = ['net', 'compute', 'eks', 'k8s', 'data', 'iam', 'cfg', 'edgeapp', 'default'];
+const CLASS_NAMES = { net: 'Network', compute: 'Compute', eks: 'EKS', k8s: 'Workloads', data: 'Data stores', iam: 'IAM', cfg: 'Config', edgeapp: 'DNS & LB', default: 'Other' };
 const KIND_CLASS = (kind) => {
   if (kind.startsWith('aws.eks')) return 'eks';
   if (kind.startsWith('aws.iam') || kind.startsWith('group.iam')) return 'iam';
-  if (kind.startsWith('aws.rds') || kind.startsWith('aws.docdb') || kind.startsWith('aws.dynamodb') || kind.startsWith('aws.elasticache')) return 'data';
+  if (kind.startsWith('aws.ec2')) return 'compute';
+  if (kind.startsWith('aws.ssm') || kind.startsWith('group.ssm')) return 'cfg';
+  if (kind.startsWith('aws.route53') || kind.startsWith('aws.lb')) return 'edgeapp';
+  if (kind.startsWith('aws.rds') || kind.startsWith('aws.docdb') || kind.startsWith('aws.dynamodb') || kind.startsWith('aws.elasticache') || kind.startsWith('aws.opensearch')) return 'data';
   if (kind.startsWith('k8s.')) return 'k8s';
-  if (/^aws\.(vpc|subnet|nat|internet|route|security_group)/.test(kind)) return 'net';
+  if (/^aws\.(vpc|subnet|nat|internet|route_table|security_group)/.test(kind)) return 'net';
   return 'default';
 };
 
@@ -78,7 +81,8 @@ const sizeOf = (kind) => (specFor(kind).size === 'chip' ? CHIP : CARD);
 
 const cssVar = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 const currentTheme = () => document.documentElement.getAttribute('data-theme');
-const classColor = (cls) => cssVar(`--${cls === 'default' ? 'def' : cls}`);
+const CSS_NAME = { default: 'def', edgeapp: 'edgeapp' };
+const classColor = (cls) => cssVar(`--${CSS_NAME[cls] ?? cls}`);
 
 function syncThemeLabel() {
   themeLabel.textContent = currentTheme() === 'light' ? 'Light' : 'Dark';
@@ -112,6 +116,14 @@ const GLYPHS = {
   document: 'M5 2.5h7l3 3v12H5zM12 2.5v3h3M7.5 10h5M7.5 13h5',
   key: 'M12.5 3a4.5 4.5 0 1 0 .8 8.9L14 13h2v2h2v-2.3l-4.8-4.8A4.5 4.5 0 0 0 12.5 3zM11 7.5a1 1 0 1 0 2 0 1 1 0 0 0-2 0',
   pod: 'M10 2l6.5 3.7v7.6L10 17l-6.5-3.7V5.7zM10 9.5l6.5-3.8M10 9.5L3.5 5.7M10 9.5V17',
+  server: 'M3 4h14v5H3zM3 11h14v5H3zM6.5 6.5h.01M6.5 13.5h.01',
+  bolt: 'M11 2L4 11h5l-1 7 7-9h-5z',
+  search: 'M9 3a6 6 0 1 0 .01 0zM14 14l4 4',
+  sliders: 'M4 6h12M4 10h12M4 14h12M7 4v4M13 8v4M9 12v4',
+  dns: 'M3 10h14M10 3c3 3 3 11 0 14M10 3c-3 3-3 11 0 14M3 10a7 7 0 1 0 14 0a7 7 0 1 0-14 0',
+  record: 'M4 4h12v12H4zM7 8h6M7 12h4',
+  balance: 'M10 3v14M5 17h10M4 6l3 5H1zM16 6l3 5h-6z',
+  link: 'M8 12l4-4M7 9L5 11a3 3 0 0 0 4 4l2-2M13 11l2-2a3 3 0 0 0-4-4L9 7',
   box: 'M4 4h12v12H4z',
 };
 const xmlEscape = (t) => String(t).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;' }[c]));
@@ -282,6 +294,14 @@ function groupLabel(entity, embeddedOf) {
   return `${first}\n${version ? `v${version} · ` : ''}addons: ${names.join(', ')}`;
 }
 
+/** true when `maybeAncestor` contains `id` anywhere up its parent chain. */
+function isAncestor(byId, maybeAncestor, id) {
+  for (let cur = byId.get(id)?.parent, guard = 0; cur && guard < 20; cur = byId.get(cur)?.parent, guard++) {
+    if (cur === maybeAncestor) return true;
+  }
+  return false;
+}
+
 function renderGraph(graph) {
   const elements = [];
   const visible = graph.entities.filter((e) => !e.embedded);
@@ -333,7 +353,7 @@ function renderGraph(graph) {
     const from = byId.get(edge.from);
     const to = byId.get(edge.to);
     if (!shown.has(edge.from) || !shown.has(edge.to)) continue;
-    if (from?.parent === edge.to || to?.parent === edge.from) continue;
+    if (isAncestor(byId, edge.to, edge.from) || isAncestor(byId, edge.from, edge.to)) continue;
     elements.push({ data: { id: `e${i}`, source: edge.from, target: edge.to, label: edge.label ?? '', cls: to ? KIND_CLASS(to.kind) : 'default' } });
   }
 

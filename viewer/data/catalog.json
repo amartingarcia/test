@@ -7,6 +7,12 @@
       "axis": "column",
       "order": 100,
       "glyph": "key"
+    },
+    "ssm": {
+      "label": "Parameter Store · config",
+      "axis": "column",
+      "order": 110,
+      "glyph": "sliders"
     }
   },
   "kinds": {
@@ -142,6 +148,66 @@
       "placement": {
         "parentKinds": [
           "aws.eks.nodegroup"
+        ]
+      }
+    },
+    "aws.vpc_peering": {
+      "order": 50,
+      "glyph": "link"
+    },
+    "aws.lb": {
+      "glyph": "balance",
+      "placement": {
+        "parentKinds": [
+          "aws.subnet.public",
+          "aws.vpc"
+        ]
+      }
+    },
+    "aws.ec2.instance": {
+      "glyph": "server",
+      "placement": {
+        "parentKinds": [
+          "aws.subnet.private",
+          "aws.subnet.public",
+          "aws.vpc"
+        ]
+      }
+    },
+    "aws.elasticache": {
+      "glyph": "bolt",
+      "placement": {
+        "parentKinds": [
+          "aws.subnet.data",
+          "aws.subnet.private",
+          "aws.vpc"
+        ]
+      }
+    },
+    "aws.opensearch": {
+      "glyph": "search",
+      "placement": {
+        "parentKinds": [
+          "aws.subnet.data",
+          "aws.subnet.private",
+          "aws.vpc"
+        ]
+      }
+    },
+    "aws.ssm": {
+      "glyph": "sliders",
+      "group": "ssm"
+    },
+    "aws.route53.zone": {
+      "axis": "column",
+      "order": 60,
+      "glyph": "dns"
+    },
+    "aws.route53.record": {
+      "glyph": "record",
+      "placement": {
+        "parentKinds": [
+          "aws.route53.zone"
         ]
       }
     }

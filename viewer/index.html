@@ -38,6 +38,9 @@
     --iam: #ffd23f;
     --data: #ff5ea8;
     --k8s: #4ade80;
+    --compute: #38bdf8;
+    --edgeapp: #a3e635;
+    --cfg: #94a3b8;
     --edge: #2de2e6;
     --edge-alt: #ff4fd8;
     --glow: .38;
@@ -61,6 +64,9 @@
     --iam: #a16207;
     --data: #be185d;
     --k8s: #15803d;
+    --compute: #0369a1;
+    --edgeapp: #4d7c0f;
+    --cfg: #475569;
     --edge: #0a7f92;
     --edge-alt: #c2188f;
     --glow: .16;
@@ -143,6 +149,7 @@
   .key-dot { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); }
   .key-dot i { width: 10px; height: 10px; border-radius: 3px; border: 1.5px solid currentColor; box-shadow: 0 0 8px currentColor; }
   .key-dot.net { color: var(--net); } .key-dot.eks { color: var(--eks); } .key-dot.def { color: var(--def); }
+  .key-dot.compute { color: var(--compute); } .key-dot.edgeapp { color: var(--edgeapp); } .key-dot.cfg { color: var(--cfg); }
   .key-dot.iam { color: var(--iam); } .key-dot.data { color: var(--data); } .key-dot.k8s { color: var(--k8s); }
   .key-dot span { color: var(--text); }
   #coverage { margin-top: 6px; padding: 0 4px; color: var(--warn); }
@@ -160,6 +167,7 @@
   .raw { white-space: pre-wrap; font-size: 11px; color: var(--muted); }
   .badge { display: inline-block; font: 600 10px 'Space Grotesk', sans-serif; padding: 2px 8px; border-radius: 10px; margin-left: 8px; vertical-align: middle; border: 1px solid currentColor; }
   .badge.net { color: var(--net); } .badge.eks { color: var(--eks); } .badge.default { color: var(--def); }
+  .badge.compute { color: var(--compute); } .badge.edgeapp { color: var(--edgeapp); } .badge.cfg { color: var(--cfg); }
   .badge.iam { color: var(--iam); } .badge.data { color: var(--data); } .badge.k8s { color: var(--k8s); }
 
   @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }

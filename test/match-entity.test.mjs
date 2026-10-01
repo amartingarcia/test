@@ -96,3 +96,9 @@ test('returns null when no rule matches (unmapped resource)', () => {
   const manifest = { repoId: 'network', rules: [{ match: { type: 'aws_vpc' }, entity: { kind: 'aws.vpc', idFrom: 'name' } }] };
   assert.equal(matchEntity(eksNode, manifest), null);
 });
+
+test('matchEntity returns {ignored: true} for an `ignore` rule, so it is not reported as unmapped', () => {
+  const manifest = { repoId: 'r', rules: [{ match: { type: 'aws_db_subnet_group' }, ignore: true }] };
+  const n = { address: 'aws_db_subnet_group.g', modulePath: [], isData: false, type: 'aws_db_subnet_group', name: 'g', index: null };
+  assert.deepEqual(matchEntity(n, manifest), { ignored: true });
+});

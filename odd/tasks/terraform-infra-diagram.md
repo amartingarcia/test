@@ -252,6 +252,17 @@ can nest them under it.
       blocks (lifecycle/provisioner/connection) excluded; depth cap 4.
       References inside nested blocks stay unresolved-with-raw, so placement
       inference now sees e.g. EKS `vpc_config.subnet_ids`.
+- [x] T9d — Complex synthetic environment `platform_prod` (examples/sample-platform/*.tf,
+      `scripts/build-platform-sample.mjs`): 2 VPCs + peering, IGW/NAT, 5 subnets, ALB,
+      3 EC2, EKS (+3 embedded addons, node group, Helm releases from a 2nd repo),
+      RDS, DocDB, Redis, OpenSearch, SSM parameters, Route 53 zone + records,
+      4 IAM roles. DOT is derived from the .tf references (like `terraform graph`);
+      with two VPCs boundaries are ambiguous, so the manifest has none and
+      placement comes from references (`vpc_id`, `subnet_id`, `subnet_ids`,
+      nested `vpc_options`/`vpc_config`, subnet groups) — 41 entities, 0
+      unresolved. New: manifest `ignore: true` rules (helpers not drawn, not
+      "unmapped"); compiler `inferPlacement` hook (runs before the catalog:
+      explicit boundary > nest link > references > catalog kind-level).
 - [ ] T8 — End-to-end validation against at least one environment for both
       repos; confirm zero writes happened inside the source repos (e.g.
       `git status --porcelain` clean).

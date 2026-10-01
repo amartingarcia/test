@@ -108,3 +108,14 @@ test('edgeLabels label unlabeled edges by their endpoint kinds, leaving others a
   assert.equal(out.edges.find((e) => e.to.includes('iam')).label, 'assumes');
   assert.equal('label' in out.edges.find((e) => e.to.includes('vpc')), false);
 });
+
+import { validateManifest as validate2 } from '../lib/manifest/validate-manifest.mjs';
+
+test('validateManifest accepts an `ignore` rule without an entity, and rejects ignore + entity or a bad ignore', () => {
+  assert.deepEqual(validate2({ repoId: 'r', rules: [{ match: { type: 'x' }, ignore: true }] }), []);
+  assert.deepEqual(
+    validate2({ repoId: 'r', rules: [{ match: { type: 'x' }, ignore: true, entity: { kind: 'k', idFrom: 'name' } }] }),
+    ['rules[0] cannot have both `ignore` and `entity`']
+  );
+  assert.deepEqual(validate2({ repoId: 'r', rules: [{ match: { type: 'x' }, ignore: 'yes' }] }), ['rules[0].ignore must be true when set']);
+});

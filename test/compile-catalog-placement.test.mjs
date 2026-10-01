@@ -78,3 +78,39 @@ test('without a catalog nothing changes and unresolvedPlacements is empty', () =
   assert.equal(out.entities[0].parent, null);
   assert.deepEqual(out.unresolvedPlacements, []);
 });
+
+test('ignored nodes are neither entities nor reported as unmapped, and their edges are dropped', () => {
+  const out = compileEnvironmentGraph({ environment: 'e', repoGraphs: [{
+    repoId: 'r',
+    manifest: { repoId: 'r', rules: [
+      { match: { type: 'aws_db_subnet_group' }, ignore: true },
+      { match: { type: 'aws_vpc' }, entity: { kind: 'aws.vpc', idFrom: 'name' } },
+    ] },
+    nodes: [node('aws_db_subnet_group', 'g'), node('aws_vpc', 'v'), node('aws_other', 'x')],
+    edges: [{ from: 'aws_db_subnet_group.g', to: 'aws_vpc.v' }],
+  }] });
+  assert.deepEqual(out.entities.map((e) => e.kind), ['aws.vpc']);
+  assert.deepEqual(out.coverage.r.unmapped, ['aws_other.x']); // only the genuinely unmapped one
+  assert.deepEqual(out.edges, []);
+});
+
+test('the inferPlacement hook runs before the catalog: its placements win, its ambiguities block the catalog fallback', () => {
+  const cat = { kinds: { 'aws.rds.instance': { placement: { parentKinds: ['aws.vpc'] } }, 'aws.ec2.instance': { placement: { parentKinds: ['aws.vpc'] } } } };
+  const rules = [
+    { match: { type: 'aws_vpc' }, entity: { kind: 'aws.vpc', idFrom: 'name' } },
+    { match: { type: 'aws_db_instance' }, entity: { kind: 'aws.rds.instance', idFrom: 'name' } },
+    { match: { type: 'aws_instance' }, entity: { kind: 'aws.ec2.instance', idFrom: 'name' } },
+  ];
+  const out = compileEnvironmentGraph({
+    environment: 'e', catalog: cat,
+    repoGraphs: [{ repoId: 'r', manifest: { repoId: 'r', rules }, edges: [],
+      nodes: [node('aws_vpc', 'a'), node('aws_db_instance', 'db'), node('aws_instance', 'vm')] }],
+    inferPlacement: (entities) => ({
+      placements: [{ entityId: 'r:aws.rds.instance:db', parent: 'r:aws.vpc:a' }],
+      unresolved: [{ entityId: 'r:aws.ec2.instance:vm', parentKind: 'aws.vpc', candidateCount: 2 }],
+    }),
+  });
+  assert.equal(out.entities.find((e) => e.kind === 'aws.rds.instance').parent, 'r:aws.vpc:a');
+  assert.equal(out.entities.find((e) => e.kind === 'aws.ec2.instance').parent, null);
+  assert.deepEqual(out.unresolvedPlacements, [{ entityId: 'r:aws.ec2.instance:vm', parentKind: 'aws.vpc', candidateCount: 2 }]);
+});
