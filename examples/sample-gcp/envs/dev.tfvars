@@ -1,0 +1,11 @@
+env              = "dev"
+project          = "sample-project-dev"
+region           = "europe-west1"
+release_channel  = "RAPID"
+nodes            = 1
+max_nodes        = 3
+machine_type     = "e2-standard-4"
+enable_spot_pool = false
+sql_tier         = "db-custom-2-7680"
+enable_redis     = false
+redis_gb         = 1

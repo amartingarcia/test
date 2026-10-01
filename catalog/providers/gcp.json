@@ -1,0 +1,140 @@
+{
+  "kinds": {
+    "gcp.vpc": {
+      "glyph": "vpc",
+      "axis": "row",
+      "order": 0
+    },
+    "gcp.subnet": {
+      "glyph": "subnet",
+      "placement": {
+        "parentKinds": [
+          "gcp.vpc"
+        ]
+      },
+      "axis": "column",
+      "order": 10
+    },
+    "gcp.router": {
+      "glyph": "route",
+      "placement": {
+        "parentKinds": [
+          "gcp.vpc"
+        ]
+      },
+      "axis": "column",
+      "order": 45
+    },
+    "gcp.nat": {
+      "glyph": "nat",
+      "placement": {
+        "parentKinds": [
+          "gcp.router"
+        ]
+      },
+      "order": 10
+    },
+    "gcp.firewall": {
+      "glyph": "security_group",
+      "placement": {
+        "parentKinds": [
+          "gcp.vpc"
+        ]
+      },
+      "order": 40
+    },
+    "gcp.lb": {
+      "glyph": "balance",
+      "placement": {
+        "parentKinds": [
+          "gcp.subnet",
+          "gcp.vpc"
+        ]
+      },
+      "order": 8
+    },
+    "gcp.gke.cluster": {
+      "glyph": "eks",
+      "placement": {
+        "parentKinds": [
+          "gcp.subnet",
+          "gcp.vpc"
+        ]
+      },
+      "axis": "column",
+      "order": 20
+    },
+    "gcp.gke.nodepool": {
+      "glyph": "nodegroup",
+      "placement": {
+        "parentKinds": [
+          "gcp.gke.cluster"
+        ]
+      },
+      "axis": "row",
+      "order": 10
+    },
+    "gcp.vm": {
+      "glyph": "server",
+      "placement": {
+        "parentKinds": [
+          "gcp.subnet",
+          "gcp.vpc"
+        ]
+      },
+      "order": 30
+    },
+    "gcp.sql.instance": {
+      "glyph": "database",
+      "placement": {
+        "parentKinds": [
+          "gcp.vpc"
+        ]
+      },
+      "order": 50
+    },
+    "gcp.redis": {
+      "glyph": "database",
+      "placement": {
+        "parentKinds": [
+          "gcp.vpc"
+        ]
+      },
+      "order": 52
+    },
+    "gcp.dns.zone": {
+      "glyph": "dns",
+      "axis": "column",
+      "order": 60
+    },
+    "gcp.dns.record": {
+      "glyph": "record",
+      "placement": {
+        "parentKinds": [
+          "gcp.dns.zone"
+        ]
+      }
+    },
+    "gcp.service_account": {
+      "glyph": "key",
+      "group": "iam"
+    },
+    "gcp.iam.binding": {
+      "glyph": "key",
+      "group": "iam"
+    },
+    "gcp.secret": {
+      "glyph": "key",
+      "group": "secrets"
+    },
+    "gcp.bucket": {
+      "glyph": "document",
+      "group": "storage"
+    },
+    "gcp.artifact_registry": {
+      "glyph": "document",
+      "group": "storage"
+    }
+  },
+  "groups": {}
+}

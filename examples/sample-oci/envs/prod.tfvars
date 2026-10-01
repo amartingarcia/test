@@ -1,0 +1,10 @@
+env                        = "prod"
+tenancy_ocid               = "ocid1.tenancy.oc1..sample"
+service_gateway_service_id = "ocid1.service.oc1.eu-frankfurt-1.sample"
+availability_domain        = "AD-1"
+os_namespace               = "samplens"
+k8s_version                = "v1.30.1"
+nodes                      = 4
+enable_batch_pool          = true
+mysql_shape                = "MySQL.VM.Standard.E4.4.32GB"
+enable_adb                 = true

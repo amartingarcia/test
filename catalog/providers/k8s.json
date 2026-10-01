@@ -1,0 +1,222 @@
+{
+  "kinds": {
+    "k8s.release": {
+      "size": "chip",
+      "glyph": "pod",
+      "placement": {
+        "parentKinds": [
+          "aws.eks.nodegroup"
+        ]
+      }
+    },
+    "k8s.cluster": {
+      "glyph": "eks",
+      "axis": "row",
+      "placement": {
+        "parentKinds": []
+      }
+    },
+    "k8s.namespace": {
+      "glyph": "box",
+      "placement": {
+        "parentKinds": [
+          "k8s.cluster"
+        ]
+      },
+      "axis": "column",
+      "order": 20
+    },
+    "k8s.nodeclass": {
+      "glyph": "server",
+      "placement": {
+        "parentKinds": [
+          "k8s.cluster"
+        ]
+      },
+      "axis": "column",
+      "order": 5
+    },
+    "k8s.nodepool": {
+      "glyph": "nodegroup",
+      "placement": {
+        "parentKinds": [
+          "k8s.cluster"
+        ]
+      },
+      "axis": "column",
+      "order": 10
+    },
+    "k8s.nodegroup": {
+      "glyph": "nodegroup",
+      "placement": {
+        "parentKinds": [
+          "k8s.cluster"
+        ]
+      },
+      "axis": "column",
+      "order": 8
+    },
+    "k8s.deployment": {
+      "glyph": "pod",
+      "placement": {
+        "parentKinds": [
+          "k8s.nodepool",
+          "k8s.nodegroup",
+          "k8s.namespace",
+          "k8s.cluster"
+        ]
+      },
+      "axis": "row",
+      "order": 10,
+      "size": "chip"
+    },
+    "k8s.statefulset": {
+      "glyph": "database",
+      "placement": {
+        "parentKinds": [
+          "k8s.nodepool",
+          "k8s.nodegroup",
+          "k8s.namespace",
+          "k8s.cluster"
+        ]
+      },
+      "axis": "row",
+      "order": 11,
+      "size": "chip"
+    },
+    "k8s.daemonset": {
+      "glyph": "server",
+      "placement": {
+        "parentKinds": [
+          "k8s.nodepool",
+          "k8s.nodegroup",
+          "k8s.namespace",
+          "k8s.cluster"
+        ]
+      },
+      "axis": "row",
+      "order": 12,
+      "size": "chip"
+    },
+    "k8s.cronjob": {
+      "glyph": "clock",
+      "placement": {
+        "parentKinds": [
+          "k8s.nodepool",
+          "k8s.nodegroup",
+          "k8s.namespace",
+          "k8s.cluster"
+        ]
+      },
+      "axis": "row",
+      "order": 13,
+      "size": "chip"
+    },
+    "k8s.job": {
+      "glyph": "bolt",
+      "placement": {
+        "parentKinds": [
+          "k8s.nodepool",
+          "k8s.nodegroup",
+          "k8s.namespace",
+          "k8s.cluster"
+        ]
+      },
+      "axis": "row",
+      "order": 14,
+      "size": "chip"
+    },
+    "k8s.pod": {
+      "glyph": "pod",
+      "placement": {
+        "parentKinds": [
+          "k8s.nodepool",
+          "k8s.nodegroup",
+          "k8s.namespace",
+          "k8s.cluster"
+        ]
+      },
+      "axis": "row",
+      "order": 15,
+      "size": "chip"
+    },
+    "k8s.service": {
+      "glyph": "dns",
+      "placement": {
+        "parentKinds": [
+          "k8s.namespace"
+        ]
+      },
+      "axis": "row",
+      "order": 30,
+      "size": "chip"
+    },
+    "k8s.ingress": {
+      "glyph": "balance",
+      "placement": {
+        "parentKinds": [
+          "k8s.namespace"
+        ]
+      },
+      "axis": "row",
+      "order": 31,
+      "size": "chip"
+    },
+    "k8s.configmap": {
+      "glyph": "sliders",
+      "placement": {
+        "parentKinds": [
+          "k8s.namespace"
+        ]
+      },
+      "axis": "row",
+      "order": 40,
+      "size": "chip"
+    },
+    "k8s.secret": {
+      "glyph": "key",
+      "placement": {
+        "parentKinds": [
+          "k8s.namespace"
+        ]
+      },
+      "axis": "row",
+      "order": 41,
+      "size": "chip"
+    },
+    "k8s.pvc": {
+      "glyph": "database",
+      "placement": {
+        "parentKinds": [
+          "k8s.namespace"
+        ]
+      },
+      "axis": "row",
+      "order": 42,
+      "size": "chip"
+    },
+    "k8s.argo.application": {
+      "glyph": "argo",
+      "placement": {
+        "parentKinds": [
+          "k8s.namespace"
+        ]
+      },
+      "axis": "row",
+      "order": 5,
+      "size": "chip"
+    },
+    "k8s.argo.applicationset": {
+      "glyph": "argo",
+      "placement": {
+        "parentKinds": [
+          "k8s.namespace"
+        ]
+      },
+      "axis": "row",
+      "order": 4,
+      "size": "chip"
+    }
+  },
+  "groups": {}
+}

@@ -318,6 +318,26 @@ can nest them under it.
       build:samples`). The sample Terraform gained a tainted `system` node group
       and workload IRSA roles (prod only); the standalone prod view now reports
       its two GitOps releases as ambiguous (2 node groups), which is correct.
+- [x] T11 — Azure, GCP and OCI (synthetic samples; same pipeline as AWS).
+      * Catalog split per provider: `catalog/providers/{aws,azure,gcp,oci,k8s,common}.json`
+        merged by `lib/catalog/load-catalog.mjs` (duplicate kind = error); shared
+        groups (iam, secrets, storage) in common.json; `catalog/kinds.json` removed.
+      * Kinds: azure.* (resource group > vnet > subnet > aks/postgres/pe/vm...),
+        gcp.* (vpc > subnet > gke/lb/vm; router > nat; sql/redis in the VPC),
+        oci.* (compartment > vcn > subnet > oke/lb/mysql/instance). The container
+        hierarchy of each cloud comes from its own references (resource_group_name,
+        network, vcn_id, compartment_id, subnet ids) + catalog placement.
+      * `scripts/build-cloud-samples.mjs` + `scripts/lib/sample-dot.mjs` (DOT derived
+        from references, shared with the AWS sample). Manifests are rule tables
+        (type -> kind, or ignore) linted on every build. Result: azure 28/25, gcp
+        21/19, oci 26/24 entities (prod/dev), 0 unmapped, 0 ambiguous placements.
+      * Viewer: class mapping for the three clouds, per-cloud legend.
+      * Not done: VNet/VPC peering as an edge (peering resources are ignored), Azure
+        AppGW/Firewall, GCP shared VPC/projects/folders, OCI nested compartments,
+        cloud-specific K8s join (AKS/GKE/OKE node pools -> k8s layer), real-repo
+        validation of any of the three providers. Resource types and argument names
+        were written from knowledge of the providers, not validated with
+        `terraform validate` (no binary here).
 - [ ] T8 — End-to-end validation against at least one environment for both
       repos; confirm zero writes happened inside the source repos (e.g.
       `git status --porcelain` clean).

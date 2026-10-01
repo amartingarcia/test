@@ -8,6 +8,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { loadCatalog } from '../lib/catalog/load-catalog.mjs';
 import { loadK8sManifests } from '../lib/k8s/load-manifests.mjs';
 import { buildK8sGraph } from '../lib/k8s/build-k8s-graph.mjs';
 
@@ -39,4 +40,4 @@ for (const v of views) {
 const envPath = path.join(outDir, 'environments.json');
 const existing = JSON.parse(await fs.readFile(envPath, 'utf8')).environments.filter((e) => !views.some((v) => v.id === e.id));
 await fs.writeFile(envPath, JSON.stringify({ environments: [...existing, ...environments] }, null, 2) + '\n', 'utf8');
-await fs.copyFile(path.join(root, 'catalog', 'kinds.json'), path.join(outDir, 'catalog.json'));
+await fs.writeFile(path.join(outDir, 'catalog.json'), JSON.stringify(await loadCatalog(path.join(root, 'catalog', 'providers')), null, 2) + '\n', 'utf8');

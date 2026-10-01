@@ -1,0 +1,13 @@
+env            = "prod"
+location       = "westeurope"
+aks_version    = "1.30"
+system_nodes   = 3
+user_vm_size   = "Standard_D8s_v5"
+user_min       = 3
+user_max       = 12
+pg_sku         = "GP_Standard_D4s_v3"
+pg_storage_mb  = 262144
+redis_capacity = 2
+enable_sql     = true
+enable_cosmos  = true
+tenant_id = "00000000-0000-0000-0000-000000000000"

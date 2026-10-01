@@ -1,0 +1,907 @@
+{
+  "environment": "oci_prod",
+  "entities": [
+    {
+      "id": "oci:oci.compartment:platform",
+      "kind": "oci.compartment",
+      "repoId": "oci",
+      "sourceAddress": "oci_identity_compartment.platform",
+      "parent": null,
+      "details": {
+        "compartment_id": {
+          "resolved": true,
+          "value": "ocid1.tenancy.oc1..sample"
+        },
+        "name": {
+          "resolved": false,
+          "raw": "\"platform-${var.env}\""
+        },
+        "description": {
+          "resolved": false,
+          "raw": "\"Platform resources (${var.env})\""
+        }
+      }
+    },
+    {
+      "id": "oci:oci.vcn:main",
+      "kind": "oci.vcn",
+      "repoId": "oci",
+      "sourceAddress": "oci_core_vcn.main",
+      "parent": "oci:oci.compartment:platform",
+      "details": {
+        "compartment_id": {
+          "resolved": false,
+          "raw": "oci_identity_compartment.platform.id"
+        },
+        "cidr_blocks": {
+          "resolved": true,
+          "value": [
+            "10.40.0.0/16"
+          ]
+        },
+        "display_name": {
+          "resolved": false,
+          "raw": "\"vcn-${var.env}\""
+        }
+      }
+    },
+    {
+      "id": "oci:oci.internet_gateway:igw",
+      "kind": "oci.internet_gateway",
+      "repoId": "oci",
+      "sourceAddress": "oci_core_internet_gateway.igw",
+      "parent": "oci:oci.vcn:main",
+      "details": {
+        "compartment_id": {
+          "resolved": false,
+          "raw": "oci_identity_compartment.platform.id"
+        },
+        "vcn_id": {
+          "resolved": false,
+          "raw": "oci_core_vcn.main.id"
+        }
+      }
+    },
+    {
+      "id": "oci:oci.nat_gateway:nat",
+      "kind": "oci.nat_gateway",
+      "repoId": "oci",
+      "sourceAddress": "oci_core_nat_gateway.nat",
+      "parent": "oci:oci.vcn:main",
+      "details": {
+        "compartment_id": {
+          "resolved": false,
+          "raw": "oci_identity_compartment.platform.id"
+        },
+        "vcn_id": {
+          "resolved": false,
+          "raw": "oci_core_vcn.main.id"
+        }
+      }
+    },
+    {
+      "id": "oci:oci.service_gateway:sgw",
+      "kind": "oci.service_gateway",
+      "repoId": "oci",
+      "sourceAddress": "oci_core_service_gateway.sgw",
+      "parent": "oci:oci.vcn:main",
+      "details": {
+        "compartment_id": {
+          "resolved": false,
+          "raw": "oci_identity_compartment.platform.id"
+        },
+        "vcn_id": {
+          "resolved": false,
+          "raw": "oci_core_vcn.main.id"
+        },
+        "services.service_id": {
+          "resolved": true,
+          "value": "ocid1.service.oc1.eu-frankfurt-1.sample"
+        }
+      }
+    },
+    {
+      "id": "oci:oci.route_table:public",
+      "kind": "oci.route_table",
+      "repoId": "oci",
+      "sourceAddress": "oci_core_route_table.public",
+      "parent": "oci:oci.vcn:main",
+      "details": {
+        "compartment_id": {
+          "resolved": false,
+          "raw": "oci_identity_compartment.platform.id"
+        },
+        "vcn_id": {
+          "resolved": false,
+          "raw": "oci_core_vcn.main.id"
+        },
+        "route_rules.network_entity_id": {
+          "resolved": false,
+          "raw": "oci_core_internet_gateway.igw.id"
+        },
+        "route_rules.destination": {
+          "resolved": true,
+          "value": "0.0.0.0/0"
+        }
+      }
+    },
+    {
+      "id": "oci:oci.route_table:private",
+      "kind": "oci.route_table",
+      "repoId": "oci",
+      "sourceAddress": "oci_core_route_table.private",
+      "parent": "oci:oci.vcn:main",
+      "details": {
+        "compartment_id": {
+          "resolved": false,
+          "raw": "oci_identity_compartment.platform.id"
+        },
+        "vcn_id": {
+          "resolved": false,
+          "raw": "oci_core_vcn.main.id"
+        },
+        "route_rules.network_entity_id": {
+          "resolved": false,
+          "raw": "oci_core_nat_gateway.nat.id"
+        },
+        "route_rules.destination": {
+          "resolved": true,
+          "value": "0.0.0.0/0"
+        }
+      }
+    },
+    {
+      "id": "oci:oci.security_list:workers",
+      "kind": "oci.security_list",
+      "repoId": "oci",
+      "sourceAddress": "oci_core_security_list.workers",
+      "parent": "oci:oci.vcn:main",
+      "details": {
+        "compartment_id": {
+          "resolved": false,
+          "raw": "oci_identity_compartment.platform.id"
+        },
+        "vcn_id": {
+          "resolved": false,
+          "raw": "oci_core_vcn.main.id"
+        }
+      }
+    },
+    {
+      "id": "oci:oci.nsg:db",
+      "kind": "oci.nsg",
+      "repoId": "oci",
+      "sourceAddress": "oci_core_network_security_group.db",
+      "parent": "oci:oci.vcn:main",
+      "details": {
+        "compartment_id": {
+          "resolved": false,
+          "raw": "oci_identity_compartment.platform.id"
+        },
+        "vcn_id": {
+          "resolved": false,
+          "raw": "oci_core_vcn.main.id"
+        }
+      }
+    },
+    {
+      "id": "oci:oci.subnet:lb",
+      "kind": "oci.subnet",
+      "repoId": "oci",
+      "sourceAddress": "oci_core_subnet.lb",
+      "parent": "oci:oci.vcn:main",
+      "details": {
+        "compartment_id": {
+          "resolved": false,
+          "raw": "oci_identity_compartment.platform.id"
+        },
+        "vcn_id": {
+          "resolved": false,
+          "raw": "oci_core_vcn.main.id"
+        },
+        "cidr_block": {
+          "resolved": true,
+          "value": "10.40.0.0/24"
+        },
+        "route_table_id": {
+          "resolved": false,
+          "raw": "oci_core_route_table.public.id"
+        }
+      }
+    },
+    {
+      "id": "oci:oci.subnet:api",
+      "kind": "oci.subnet",
+      "repoId": "oci",
+      "sourceAddress": "oci_core_subnet.api",
+      "parent": "oci:oci.vcn:main",
+      "details": {
+        "compartment_id": {
+          "resolved": false,
+          "raw": "oci_identity_compartment.platform.id"
+        },
+        "vcn_id": {
+          "resolved": false,
+          "raw": "oci_core_vcn.main.id"
+        },
+        "cidr_block": {
+          "resolved": true,
+          "value": "10.40.1.0/24"
+        },
+        "route_table_id": {
+          "resolved": false,
+          "raw": "oci_core_route_table.private.id"
+        }
+      }
+    },
+    {
+      "id": "oci:oci.subnet:workers",
+      "kind": "oci.subnet",
+      "repoId": "oci",
+      "sourceAddress": "oci_core_subnet.workers",
+      "parent": "oci:oci.vcn:main",
+      "details": {
+        "compartment_id": {
+          "resolved": false,
+          "raw": "oci_identity_compartment.platform.id"
+        },
+        "vcn_id": {
+          "resolved": false,
+          "raw": "oci_core_vcn.main.id"
+        },
+        "cidr_block": {
+          "resolved": true,
+          "value": "10.40.16.0/20"
+        },
+        "route_table_id": {
+          "resolved": false,
+          "raw": "oci_core_route_table.private.id"
+        },
+        "security_list_ids": {
+          "resolved": false,
+          "raw": "[oci_core_security_list.workers.id]"
+        }
+      }
+    },
+    {
+      "id": "oci:oci.subnet:db",
+      "kind": "oci.subnet",
+      "repoId": "oci",
+      "sourceAddress": "oci_core_subnet.db",
+      "parent": "oci:oci.vcn:main",
+      "details": {
+        "compartment_id": {
+          "resolved": false,
+          "raw": "oci_identity_compartment.platform.id"
+        },
+        "vcn_id": {
+          "resolved": false,
+          "raw": "oci_core_vcn.main.id"
+        },
+        "cidr_block": {
+          "resolved": true,
+          "value": "10.40.2.0/24"
+        },
+        "route_table_id": {
+          "resolved": false,
+          "raw": "oci_core_route_table.private.id"
+        }
+      }
+    },
+    {
+      "id": "oci:oci.oke.cluster:oke",
+      "kind": "oci.oke.cluster",
+      "repoId": "oci",
+      "sourceAddress": "oci_containerengine_cluster.oke",
+      "parent": "oci:oci.subnet:api",
+      "details": {
+        "compartment_id": {
+          "resolved": false,
+          "raw": "oci_identity_compartment.platform.id"
+        },
+        "kubernetes_version": {
+          "resolved": true,
+          "value": "v1.30.1"
+        },
+        "name": {
+          "resolved": false,
+          "raw": "\"oke-${var.env}\""
+        },
+        "vcn_id": {
+          "resolved": false,
+          "raw": "oci_core_vcn.main.id"
+        },
+        "endpoint_config.subnet_id": {
+          "resolved": false,
+          "raw": "oci_core_subnet.api.id"
+        },
+        "endpoint_config.is_public_ip_enabled": {
+          "resolved": true,
+          "value": false
+        }
+      }
+    },
+    {
+      "id": "oci:oci.oke.nodepool:general",
+      "kind": "oci.oke.nodepool",
+      "repoId": "oci",
+      "sourceAddress": "oci_containerengine_node_pool.general",
+      "parent": "oci:oci.oke.cluster:oke",
+      "details": {
+        "cluster_id": {
+          "resolved": false,
+          "raw": "oci_containerengine_cluster.oke.id"
+        },
+        "compartment_id": {
+          "resolved": false,
+          "raw": "oci_identity_compartment.platform.id"
+        },
+        "kubernetes_version": {
+          "resolved": true,
+          "value": "v1.30.1"
+        },
+        "name": {
+          "resolved": true,
+          "value": "general"
+        },
+        "node_shape": {
+          "resolved": true,
+          "value": "VM.Standard.E4.Flex"
+        },
+        "node_config_details.size": {
+          "resolved": true,
+          "value": 4
+        },
+        "node_config_details.placement_configs.availability_domain": {
+          "resolved": true,
+          "value": "AD-1"
+        },
+        "node_config_details.placement_configs.subnet_id": {
+          "resolved": false,
+          "raw": "oci_core_subnet.workers.id"
+        }
+      }
+    },
+    {
+      "id": "oci:oci.oke.nodepool:batch",
+      "kind": "oci.oke.nodepool",
+      "repoId": "oci",
+      "sourceAddress": "oci_containerengine_node_pool.batch",
+      "parent": "oci:oci.oke.cluster:oke",
+      "details": {
+        "count": {
+          "resolved": true,
+          "value": 1
+        },
+        "cluster_id": {
+          "resolved": false,
+          "raw": "oci_containerengine_cluster.oke.id"
+        },
+        "compartment_id": {
+          "resolved": false,
+          "raw": "oci_identity_compartment.platform.id"
+        },
+        "kubernetes_version": {
+          "resolved": true,
+          "value": "v1.30.1"
+        },
+        "name": {
+          "resolved": true,
+          "value": "batch"
+        },
+        "node_shape": {
+          "resolved": true,
+          "value": "VM.Standard.E4.Flex"
+        },
+        "node_config_details.size": {
+          "resolved": true,
+          "value": 2
+        },
+        "node_config_details.placement_configs.availability_domain": {
+          "resolved": true,
+          "value": "AD-1"
+        },
+        "node_config_details.placement_configs.subnet_id": {
+          "resolved": false,
+          "raw": "oci_core_subnet.workers.id"
+        }
+      }
+    },
+    {
+      "id": "oci:oci.instance:bastion",
+      "kind": "oci.instance",
+      "repoId": "oci",
+      "sourceAddress": "oci_core_instance.bastion",
+      "parent": "oci:oci.subnet:api",
+      "details": {
+        "compartment_id": {
+          "resolved": false,
+          "raw": "oci_identity_compartment.platform.id"
+        },
+        "availability_domain": {
+          "resolved": true,
+          "value": "AD-1"
+        },
+        "shape": {
+          "resolved": true,
+          "value": "VM.Standard.E4.Flex"
+        },
+        "create_vnic_details.subnet_id": {
+          "resolved": false,
+          "raw": "oci_core_subnet.api.id"
+        }
+      }
+    },
+    {
+      "id": "oci:oci.lb:lb",
+      "kind": "oci.lb",
+      "repoId": "oci",
+      "sourceAddress": "oci_load_balancer_load_balancer.lb",
+      "parent": "oci:oci.subnet:lb",
+      "details": {
+        "compartment_id": {
+          "resolved": false,
+          "raw": "oci_identity_compartment.platform.id"
+        },
+        "display_name": {
+          "resolved": false,
+          "raw": "\"lb-${var.env}\""
+        },
+        "shape": {
+          "resolved": true,
+          "value": "flexible"
+        },
+        "subnet_ids": {
+          "resolved": false,
+          "raw": "[oci_core_subnet.lb.id]"
+        }
+      }
+    },
+    {
+      "id": "oci:oci.mysql:mysql",
+      "kind": "oci.mysql",
+      "repoId": "oci",
+      "sourceAddress": "oci_mysql_mysql_db_system.mysql",
+      "parent": "oci:oci.subnet:db",
+      "details": {
+        "compartment_id": {
+          "resolved": false,
+          "raw": "oci_identity_compartment.platform.id"
+        },
+        "availability_domain": {
+          "resolved": true,
+          "value": "AD-1"
+        },
+        "shape_name": {
+          "resolved": true,
+          "value": "MySQL.VM.Standard.E4.4.32GB"
+        },
+        "subnet_id": {
+          "resolved": false,
+          "raw": "oci_core_subnet.db.id"
+        }
+      }
+    },
+    {
+      "id": "oci:oci.adb:adw",
+      "kind": "oci.adb",
+      "repoId": "oci",
+      "sourceAddress": "oci_database_autonomous_database.adw",
+      "parent": "oci:oci.compartment:platform",
+      "details": {
+        "count": {
+          "resolved": true,
+          "value": 1
+        },
+        "compartment_id": {
+          "resolved": false,
+          "raw": "oci_identity_compartment.platform.id"
+        },
+        "db_name": {
+          "resolved": false,
+          "raw": "\"adw${var.env}\""
+        },
+        "db_workload": {
+          "resolved": true,
+          "value": "DW"
+        }
+      }
+    },
+    {
+      "id": "oci:oci.bucket:assets",
+      "kind": "oci.bucket",
+      "repoId": "oci",
+      "sourceAddress": "oci_objectstorage_bucket.assets",
+      "parent": null,
+      "details": {
+        "compartment_id": {
+          "resolved": false,
+          "raw": "oci_identity_compartment.platform.id"
+        },
+        "namespace": {
+          "resolved": true,
+          "value": "samplens"
+        },
+        "name": {
+          "resolved": false,
+          "raw": "\"assets-${var.env}\""
+        }
+      }
+    },
+    {
+      "id": "oci:oci.vault:vault",
+      "kind": "oci.vault",
+      "repoId": "oci",
+      "sourceAddress": "oci_kms_vault.vault",
+      "parent": null,
+      "details": {
+        "compartment_id": {
+          "resolved": false,
+          "raw": "oci_identity_compartment.platform.id"
+        },
+        "display_name": {
+          "resolved": false,
+          "raw": "\"vault-${var.env}\""
+        },
+        "vault_type": {
+          "resolved": true,
+          "value": "DEFAULT"
+        }
+      }
+    },
+    {
+      "id": "oci:oci.dynamic_group:workers",
+      "kind": "oci.dynamic_group",
+      "repoId": "oci",
+      "sourceAddress": "oci_identity_dynamic_group.workers",
+      "parent": null,
+      "details": {
+        "compartment_id": {
+          "resolved": true,
+          "value": "ocid1.tenancy.oc1..sample"
+        },
+        "name": {
+          "resolved": true,
+          "value": "oke-workers"
+        },
+        "description": {
+          "resolved": true,
+          "value": "OKE worker instances"
+        },
+        "matching_rule": {
+          "resolved": false,
+          "raw": "\"ALL {instance.compartment.id = '${oci_identity_compartment.platform.id}'}\""
+        }
+      }
+    },
+    {
+      "id": "oci:oci.policy:oke",
+      "kind": "oci.policy",
+      "repoId": "oci",
+      "sourceAddress": "oci_identity_policy.oke",
+      "parent": null,
+      "details": {
+        "compartment_id": {
+          "resolved": false,
+          "raw": "oci_identity_compartment.platform.id"
+        },
+        "name": {
+          "resolved": true,
+          "value": "oke-workers-policy"
+        },
+        "description": {
+          "resolved": true,
+          "value": "Workers may read the vault"
+        },
+        "statements": {
+          "resolved": false,
+          "raw": "[\"Allow dynamic-group ${oci_identity_dynamic_group.workers.name} to read secret-family in compartment id ${oci_identity_compartment.platform.id}\"]"
+        }
+      }
+    },
+    {
+      "id": "oci:oci.dns.zone:main",
+      "kind": "oci.dns.zone",
+      "repoId": "oci",
+      "sourceAddress": "oci_dns_zone.main",
+      "parent": "oci:oci.compartment:platform",
+      "details": {
+        "compartment_id": {
+          "resolved": false,
+          "raw": "oci_identity_compartment.platform.id"
+        },
+        "name": {
+          "resolved": true,
+          "value": "sample.example.com"
+        },
+        "zone_type": {
+          "resolved": true,
+          "value": "PRIMARY"
+        }
+      }
+    },
+    {
+      "id": "oci:oci.dns.record:app",
+      "kind": "oci.dns.record",
+      "repoId": "oci",
+      "sourceAddress": "oci_dns_rrset.app",
+      "parent": "oci:oci.dns.zone:main",
+      "details": {
+        "zone_name_or_id": {
+          "resolved": false,
+          "raw": "oci_dns_zone.main.id"
+        },
+        "domain": {
+          "resolved": true,
+          "value": "app.sample.example.com"
+        },
+        "rtype": {
+          "resolved": true,
+          "value": "A"
+        },
+        "compartment_id": {
+          "resolved": false,
+          "raw": "oci_identity_compartment.platform.id"
+        },
+        "items.domain": {
+          "resolved": true,
+          "value": "app.sample.example.com"
+        },
+        "items.rtype": {
+          "resolved": true,
+          "value": "A"
+        },
+        "items.rdata": {
+          "resolved": false,
+          "raw": "oci_load_balancer_load_balancer.lb.ip_address_details[0].ip_address"
+        },
+        "items.ttl": {
+          "resolved": true,
+          "value": 300
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "from": "oci:oci.vcn:main",
+      "to": "oci:oci.compartment:platform"
+    },
+    {
+      "from": "oci:oci.internet_gateway:igw",
+      "to": "oci:oci.compartment:platform"
+    },
+    {
+      "from": "oci:oci.internet_gateway:igw",
+      "to": "oci:oci.vcn:main"
+    },
+    {
+      "from": "oci:oci.nat_gateway:nat",
+      "to": "oci:oci.compartment:platform"
+    },
+    {
+      "from": "oci:oci.nat_gateway:nat",
+      "to": "oci:oci.vcn:main"
+    },
+    {
+      "from": "oci:oci.service_gateway:sgw",
+      "to": "oci:oci.compartment:platform"
+    },
+    {
+      "from": "oci:oci.service_gateway:sgw",
+      "to": "oci:oci.vcn:main"
+    },
+    {
+      "from": "oci:oci.route_table:public",
+      "to": "oci:oci.compartment:platform"
+    },
+    {
+      "from": "oci:oci.route_table:public",
+      "to": "oci:oci.vcn:main"
+    },
+    {
+      "from": "oci:oci.route_table:public",
+      "to": "oci:oci.internet_gateway:igw"
+    },
+    {
+      "from": "oci:oci.route_table:private",
+      "to": "oci:oci.compartment:platform"
+    },
+    {
+      "from": "oci:oci.route_table:private",
+      "to": "oci:oci.vcn:main"
+    },
+    {
+      "from": "oci:oci.route_table:private",
+      "to": "oci:oci.nat_gateway:nat"
+    },
+    {
+      "from": "oci:oci.security_list:workers",
+      "to": "oci:oci.compartment:platform"
+    },
+    {
+      "from": "oci:oci.security_list:workers",
+      "to": "oci:oci.vcn:main"
+    },
+    {
+      "from": "oci:oci.nsg:db",
+      "to": "oci:oci.compartment:platform"
+    },
+    {
+      "from": "oci:oci.nsg:db",
+      "to": "oci:oci.vcn:main"
+    },
+    {
+      "from": "oci:oci.subnet:lb",
+      "to": "oci:oci.compartment:platform"
+    },
+    {
+      "from": "oci:oci.subnet:lb",
+      "to": "oci:oci.vcn:main"
+    },
+    {
+      "from": "oci:oci.subnet:lb",
+      "to": "oci:oci.route_table:public"
+    },
+    {
+      "from": "oci:oci.subnet:api",
+      "to": "oci:oci.compartment:platform"
+    },
+    {
+      "from": "oci:oci.subnet:api",
+      "to": "oci:oci.vcn:main"
+    },
+    {
+      "from": "oci:oci.subnet:api",
+      "to": "oci:oci.route_table:private"
+    },
+    {
+      "from": "oci:oci.subnet:workers",
+      "to": "oci:oci.compartment:platform"
+    },
+    {
+      "from": "oci:oci.subnet:workers",
+      "to": "oci:oci.vcn:main"
+    },
+    {
+      "from": "oci:oci.subnet:workers",
+      "to": "oci:oci.route_table:private"
+    },
+    {
+      "from": "oci:oci.subnet:workers",
+      "to": "oci:oci.security_list:workers"
+    },
+    {
+      "from": "oci:oci.subnet:db",
+      "to": "oci:oci.compartment:platform"
+    },
+    {
+      "from": "oci:oci.subnet:db",
+      "to": "oci:oci.vcn:main"
+    },
+    {
+      "from": "oci:oci.subnet:db",
+      "to": "oci:oci.route_table:private"
+    },
+    {
+      "from": "oci:oci.oke.cluster:oke",
+      "to": "oci:oci.compartment:platform"
+    },
+    {
+      "from": "oci:oci.oke.cluster:oke",
+      "to": "oci:oci.vcn:main"
+    },
+    {
+      "from": "oci:oci.oke.cluster:oke",
+      "to": "oci:oci.subnet:api"
+    },
+    {
+      "from": "oci:oci.oke.nodepool:general",
+      "to": "oci:oci.oke.cluster:oke"
+    },
+    {
+      "from": "oci:oci.oke.nodepool:general",
+      "to": "oci:oci.compartment:platform"
+    },
+    {
+      "from": "oci:oci.oke.nodepool:general",
+      "to": "oci:oci.subnet:workers"
+    },
+    {
+      "from": "oci:oci.oke.nodepool:batch",
+      "to": "oci:oci.oke.cluster:oke"
+    },
+    {
+      "from": "oci:oci.oke.nodepool:batch",
+      "to": "oci:oci.compartment:platform"
+    },
+    {
+      "from": "oci:oci.oke.nodepool:batch",
+      "to": "oci:oci.subnet:workers"
+    },
+    {
+      "from": "oci:oci.instance:bastion",
+      "to": "oci:oci.compartment:platform"
+    },
+    {
+      "from": "oci:oci.instance:bastion",
+      "to": "oci:oci.subnet:api"
+    },
+    {
+      "from": "oci:oci.lb:lb",
+      "to": "oci:oci.compartment:platform"
+    },
+    {
+      "from": "oci:oci.lb:lb",
+      "to": "oci:oci.subnet:lb"
+    },
+    {
+      "from": "oci:oci.mysql:mysql",
+      "to": "oci:oci.compartment:platform"
+    },
+    {
+      "from": "oci:oci.mysql:mysql",
+      "to": "oci:oci.subnet:db"
+    },
+    {
+      "from": "oci:oci.adb:adw",
+      "to": "oci:oci.compartment:platform"
+    },
+    {
+      "from": "oci:oci.bucket:assets",
+      "to": "oci:oci.compartment:platform"
+    },
+    {
+      "from": "oci:oci.vault:vault",
+      "to": "oci:oci.compartment:platform"
+    },
+    {
+      "from": "oci:oci.dynamic_group:workers",
+      "to": "oci:oci.compartment:platform"
+    },
+    {
+      "from": "oci:oci.policy:oke",
+      "to": "oci:oci.compartment:platform"
+    },
+    {
+      "from": "oci:oci.policy:oke",
+      "to": "oci:oci.dynamic_group:workers",
+      "label": "applies to"
+    },
+    {
+      "from": "oci:oci.dns.zone:main",
+      "to": "oci:oci.compartment:platform"
+    },
+    {
+      "from": "oci:oci.dns.record:app",
+      "to": "oci:oci.dns.zone:main"
+    },
+    {
+      "from": "oci:oci.dns.record:app",
+      "to": "oci:oci.compartment:platform"
+    },
+    {
+      "from": "oci:oci.dns.record:app",
+      "to": "oci:oci.lb:lb",
+      "label": "points to"
+    }
+  ],
+  "coverage": {
+    "oci": {
+      "unmapped": [],
+      "unresolvedBoundaries": []
+    }
+  },
+  "unresolvedCrossRepoLinks": [],
+  "unresolvedPlacements": [],
+  "legend": {
+    "default": "Compartments",
+    "net": "Network",
+    "eks": "OKE",
+    "compute": "VMs",
+    "data": "Data services",
+    "edgeapp": "LB & DNS",
+    "iam": "IAM",
+    "cfg": "Secrets & storage"
+  }
+}

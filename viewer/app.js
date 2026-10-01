@@ -24,9 +24,21 @@ const KIND_CLASS = (kind) => {
   if (kind.startsWith('aws.eks')) return 'eks';
   if (kind.startsWith('aws.iam') || kind.startsWith('group.iam')) return 'iam';
   if (kind.startsWith('aws.ec2')) return 'compute';
-  if (kind.startsWith('aws.ssm') || kind.startsWith('group.ssm')) return 'cfg';
+  if (kind.startsWith('aws.ssm') || kind.startsWith('group.ssm') || kind.startsWith('group.secrets') || kind.startsWith('group.storage')) return 'cfg';
   if (kind.startsWith('aws.route53') || kind.startsWith('aws.lb')) return 'edgeapp';
   if (kind.startsWith('aws.rds') || kind.startsWith('aws.docdb') || kind.startsWith('aws.dynamodb') || kind.startsWith('aws.elasticache') || kind.startsWith('aws.opensearch')) return 'data';
+  const cloud = /^(azure|gcp|oci)\.(.+)$/.exec(kind);
+  if (cloud) {
+    const r = cloud[2];
+    if (/^(resource_group|compartment)$/.test(r)) return 'default';
+    if (/^(vnet|vpc|vcn|subnet|nat|nat_gateway|router|firewall|nsg|route_table|security_list|public_ip|internet_gateway|service_gateway)$/.test(r)) return 'net';
+    if (/^(aks|gke|oke)\./.test(r)) return 'eks';
+    if (/^(vm|instance)$/.test(r)) return 'compute';
+    if (/^(postgres|sql|redis|cosmos|mysql|adb)/.test(r)) return 'data';
+    if (/^(lb|appgw|dns|private_endpoint)/.test(r)) return 'edgeapp';
+    if (/^(identity|service_account|iam|policy|dynamic_group)/.test(r)) return 'iam';
+    return 'cfg';
+  }
   if (kind === 'k8s.cluster') return 'default';
   if (kind === 'k8s.namespace') return 'net';
   if (/^k8s\.(nodepool|nodeclass|nodegroup)$/.test(kind)) return 'compute';

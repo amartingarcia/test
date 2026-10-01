@@ -18,7 +18,7 @@ never hand-drawn: if something cannot be resolved from the source it is reported
 2. **Details (A2)** `lib/extract/extract-resource-details.mjs` + `lib/parse/` — HCL attributes (nested blocks flattened to dotted keys), resolved against tfvars: literals, `var.x`, lists/objects, `cond ? a : b`. Unresolvable values are returned as `{resolved:false, raw}`, never coerced. `count` resolving to 0 = resource not instantiated.
 3. **Manifest (B)** per repo, hand/model-authored: ordered rules, first match wins, mapping resource addresses to entities (`kind`, `idFrom`, `boundary`, `embed`) or `ignore`. See [manifest-authoring](references/manifest-authoring.md).
 4. **Compile (C)** `lib/compile/compile-environment-graph.mjs` — merges repos into one compound graph per environment. Placement precedence: explicit `boundary` > cross-repo `nest` link > `inferPlacement` (references found in source) > catalog kind-level placement. Ambiguity is reported in `unresolvedPlacements`.
-5. **Catalog** `catalog/kinds.json` — the "architect": what goes inside what, ordering, glyph per kind. See [catalog](references/catalog.md).
+5. **Catalog** `catalog/providers/<provider>.json` — the "architect": what goes inside what, ordering, glyph per kind. See [catalog](references/catalog.md).
 6. **Viewer** `viewer/` — Cytoscape; 4 styles (Blueprint, Draft, Neon, Soft) x light/dark, zoom, expand/collapse, fixed layout (no dragging), PNG/PDF export, `#env=<id>&style=<preset>` links.
 
 Kubernetes (rendered manifests, Karpenter, ArgoCD) has its own layer: see [kubernetes](references/kubernetes.md).

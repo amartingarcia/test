@@ -15,7 +15,7 @@ Follow the steps literally, one at a time, and write intermediate artifacts to f
 
 1. `types.txt`: sorted unique `type` values from the DOT nodes.
 2. Draft the manifest in small batches (max ~10 rules), lint after each batch.
-3. Use only kinds present in `catalog/kinds.json` (list them first). If a type has no kind, mark it `ignore` or add a catalog entry copying the closest existing one, and flag it in the report.
+3. Use only kinds present in `catalog/providers/<provider>.json` (list them first). If a type has no kind, mark it `ignore` or add a catalog entry copying the closest existing one, and flag it in the report.
 4. Do not use `boundary` or `crossRepoLinks` unless the placement report explicitly asks for it.
 5. Never edit extractor/compiler code. If a value stays unresolved, report it.
 6. Final answer: counts (types, mapped, ignored, unmapped), remaining warnings, nothing else.

@@ -1,0 +1,23 @@
+{
+  "kinds": {},
+  "groups": {
+    "iam": {
+      "label": "IAM \u00b7 identities & access",
+      "axis": "column",
+      "order": 100,
+      "glyph": "key"
+    },
+    "secrets": {
+      "label": "Secrets & keys",
+      "axis": "column",
+      "order": 120,
+      "glyph": "key"
+    },
+    "storage": {
+      "label": "Storage & registries",
+      "axis": "column",
+      "order": 130,
+      "glyph": "document"
+    }
+  }
+}

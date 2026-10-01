@@ -21,6 +21,36 @@
       "source": "scripts/build-sample-data.mjs"
     },
     {
+      "id": "azure_prod",
+      "label": "azure / prod",
+      "source": "examples/sample-azure/envs/prod.tfvars"
+    },
+    {
+      "id": "azure_dev",
+      "label": "azure / dev",
+      "source": "examples/sample-azure/envs/dev.tfvars"
+    },
+    {
+      "id": "gcp_prod",
+      "label": "gcp / prod",
+      "source": "examples/sample-gcp/envs/prod.tfvars"
+    },
+    {
+      "id": "gcp_dev",
+      "label": "gcp / dev",
+      "source": "examples/sample-gcp/envs/dev.tfvars"
+    },
+    {
+      "id": "oci_prod",
+      "label": "oci / prod",
+      "source": "examples/sample-oci/envs/prod.tfvars"
+    },
+    {
+      "id": "oci_dev",
+      "label": "oci / dev",
+      "source": "examples/sample-oci/envs/dev.tfvars"
+    },
+    {
       "id": "k8s_namespaces",
       "label": "k8s / by namespace",
       "source": "examples/sample-k8s"

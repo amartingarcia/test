@@ -1,0 +1,642 @@
+{
+  "environment": "gcp_prod",
+  "entities": [
+    {
+      "id": "gcp:gcp.vpc:main",
+      "kind": "gcp.vpc",
+      "repoId": "gcp",
+      "sourceAddress": "google_compute_network.main",
+      "parent": null,
+      "details": {
+        "name": {
+          "resolved": false,
+          "raw": "\"vpc-${var.env}\""
+        },
+        "auto_create_subnetworks": {
+          "resolved": true,
+          "value": false
+        }
+      }
+    },
+    {
+      "id": "gcp:gcp.subnet:gke",
+      "kind": "gcp.subnet",
+      "repoId": "gcp",
+      "sourceAddress": "google_compute_subnetwork.gke",
+      "parent": "gcp:gcp.vpc:main",
+      "details": {
+        "name": {
+          "resolved": true,
+          "value": "snet-gke"
+        },
+        "region": {
+          "resolved": true,
+          "value": "europe-west1"
+        },
+        "network": {
+          "resolved": false,
+          "raw": "google_compute_network.main.id"
+        },
+        "ip_cidr_range": {
+          "resolved": true,
+          "value": "10.30.0.0/20"
+        },
+        "secondary_ip_range.range_name": {
+          "resolved": true,
+          "value": "pods"
+        },
+        "secondary_ip_range.ip_cidr_range": {
+          "resolved": true,
+          "value": "10.64.0.0/14"
+        }
+      }
+    },
+    {
+      "id": "gcp:gcp.subnet:data",
+      "kind": "gcp.subnet",
+      "repoId": "gcp",
+      "sourceAddress": "google_compute_subnetwork.data",
+      "parent": "gcp:gcp.vpc:main",
+      "details": {
+        "name": {
+          "resolved": true,
+          "value": "snet-data"
+        },
+        "region": {
+          "resolved": true,
+          "value": "europe-west1"
+        },
+        "network": {
+          "resolved": false,
+          "raw": "google_compute_network.main.id"
+        },
+        "ip_cidr_range": {
+          "resolved": true,
+          "value": "10.30.16.0/24"
+        }
+      }
+    },
+    {
+      "id": "gcp:gcp.firewall:internal",
+      "kind": "gcp.firewall",
+      "repoId": "gcp",
+      "sourceAddress": "google_compute_firewall.internal",
+      "parent": "gcp:gcp.vpc:main",
+      "details": {
+        "name": {
+          "resolved": true,
+          "value": "allow-internal"
+        },
+        "network": {
+          "resolved": false,
+          "raw": "google_compute_network.main.name"
+        },
+        "source_ranges": {
+          "resolved": true,
+          "value": [
+            "10.30.0.0/16"
+          ]
+        },
+        "allow.protocol": {
+          "resolved": true,
+          "value": "tcp"
+        }
+      }
+    },
+    {
+      "id": "gcp:gcp.router:main",
+      "kind": "gcp.router",
+      "repoId": "gcp",
+      "sourceAddress": "google_compute_router.main",
+      "parent": "gcp:gcp.vpc:main",
+      "details": {
+        "name": {
+          "resolved": false,
+          "raw": "\"router-${var.env}\""
+        },
+        "region": {
+          "resolved": true,
+          "value": "europe-west1"
+        },
+        "network": {
+          "resolved": false,
+          "raw": "google_compute_network.main.id"
+        }
+      }
+    },
+    {
+      "id": "gcp:gcp.nat:main",
+      "kind": "gcp.nat",
+      "repoId": "gcp",
+      "sourceAddress": "google_compute_router_nat.main",
+      "parent": "gcp:gcp.router:main",
+      "details": {
+        "name": {
+          "resolved": false,
+          "raw": "\"nat-${var.env}\""
+        },
+        "router": {
+          "resolved": false,
+          "raw": "google_compute_router.main.name"
+        },
+        "region": {
+          "resolved": true,
+          "value": "europe-west1"
+        },
+        "nat_ip_allocate_option": {
+          "resolved": true,
+          "value": "AUTO_ONLY"
+        },
+        "source_subnetwork_ip_ranges_to_nat": {
+          "resolved": true,
+          "value": "ALL_SUBNETWORKS_ALL_IP_RANGES"
+        }
+      }
+    },
+    {
+      "id": "gcp:gcp.service_account:nodes",
+      "kind": "gcp.service_account",
+      "repoId": "gcp",
+      "sourceAddress": "google_service_account.nodes",
+      "parent": null,
+      "details": {
+        "account_id": {
+          "resolved": true,
+          "value": "gke-nodes"
+        },
+        "display_name": {
+          "resolved": true,
+          "value": "GKE nodes"
+        }
+      }
+    },
+    {
+      "id": "gcp:gcp.service_account:workload",
+      "kind": "gcp.service_account",
+      "repoId": "gcp",
+      "sourceAddress": "google_service_account.workload",
+      "parent": null,
+      "details": {
+        "account_id": {
+          "resolved": true,
+          "value": "app-workload"
+        },
+        "display_name": {
+          "resolved": true,
+          "value": "Application workload identity"
+        }
+      }
+    },
+    {
+      "id": "gcp:gcp.iam.binding:nodes_logging",
+      "kind": "gcp.iam.binding",
+      "repoId": "gcp",
+      "sourceAddress": "google_project_iam_member.nodes_logging",
+      "parent": null,
+      "details": {
+        "project": {
+          "resolved": true,
+          "value": "sample-project-prod"
+        },
+        "role": {
+          "resolved": true,
+          "value": "roles/logging.logWriter"
+        },
+        "member": {
+          "resolved": false,
+          "raw": "\"serviceAccount:${google_service_account.nodes.email}\""
+        }
+      }
+    },
+    {
+      "id": "gcp:gcp.gke.cluster:gke",
+      "kind": "gcp.gke.cluster",
+      "repoId": "gcp",
+      "sourceAddress": "google_container_cluster.gke",
+      "parent": "gcp:gcp.subnet:gke",
+      "details": {
+        "name": {
+          "resolved": false,
+          "raw": "\"gke-${var.env}\""
+        },
+        "location": {
+          "resolved": true,
+          "value": "europe-west1"
+        },
+        "network": {
+          "resolved": false,
+          "raw": "google_compute_network.main.id"
+        },
+        "subnetwork": {
+          "resolved": false,
+          "raw": "google_compute_subnetwork.gke.id"
+        },
+        "remove_default_node_pool": {
+          "resolved": true,
+          "value": true
+        },
+        "initial_node_count": {
+          "resolved": true,
+          "value": 1
+        },
+        "release_channel.channel": {
+          "resolved": true,
+          "value": "REGULAR"
+        },
+        "workload_identity_config.workload_pool": {
+          "resolved": false,
+          "raw": "\"${var.project}.svc.id.goog\""
+        }
+      }
+    },
+    {
+      "id": "gcp:gcp.gke.nodepool:general",
+      "kind": "gcp.gke.nodepool",
+      "repoId": "gcp",
+      "sourceAddress": "google_container_node_pool.general",
+      "parent": "gcp:gcp.gke.cluster:gke",
+      "details": {
+        "name": {
+          "resolved": true,
+          "value": "general"
+        },
+        "cluster": {
+          "resolved": false,
+          "raw": "google_container_cluster.gke.name"
+        },
+        "location": {
+          "resolved": true,
+          "value": "europe-west1"
+        },
+        "node_count": {
+          "resolved": true,
+          "value": 3
+        },
+        "node_config.machine_type": {
+          "resolved": true,
+          "value": "e2-standard-8"
+        },
+        "node_config.service_account": {
+          "resolved": false,
+          "raw": "google_service_account.nodes.email"
+        },
+        "autoscaling.min_node_count": {
+          "resolved": true,
+          "value": 3
+        },
+        "autoscaling.max_node_count": {
+          "resolved": true,
+          "value": 12
+        }
+      }
+    },
+    {
+      "id": "gcp:gcp.gke.nodepool:spot",
+      "kind": "gcp.gke.nodepool",
+      "repoId": "gcp",
+      "sourceAddress": "google_container_node_pool.spot",
+      "parent": "gcp:gcp.gke.cluster:gke",
+      "details": {
+        "count": {
+          "resolved": true,
+          "value": 1
+        },
+        "name": {
+          "resolved": true,
+          "value": "spot"
+        },
+        "cluster": {
+          "resolved": false,
+          "raw": "google_container_cluster.gke.name"
+        },
+        "location": {
+          "resolved": true,
+          "value": "europe-west1"
+        },
+        "node_config.machine_type": {
+          "resolved": true,
+          "value": "e2-standard-8"
+        },
+        "node_config.spot": {
+          "resolved": true,
+          "value": true
+        },
+        "autoscaling.min_node_count": {
+          "resolved": true,
+          "value": 0
+        },
+        "autoscaling.max_node_count": {
+          "resolved": true,
+          "value": 20
+        }
+      }
+    },
+    {
+      "id": "gcp:gcp.sql.instance:pg",
+      "kind": "gcp.sql.instance",
+      "repoId": "gcp",
+      "sourceAddress": "google_sql_database_instance.pg",
+      "parent": "gcp:gcp.vpc:main",
+      "details": {
+        "name": {
+          "resolved": false,
+          "raw": "\"pg-${var.env}\""
+        },
+        "region": {
+          "resolved": true,
+          "value": "europe-west1"
+        },
+        "database_version": {
+          "resolved": true,
+          "value": "POSTGRES_16"
+        },
+        "settings.tier": {
+          "resolved": true,
+          "value": "db-custom-8-30720"
+        },
+        "settings.ip_configuration.private_network": {
+          "resolved": false,
+          "raw": "google_compute_network.main.id"
+        }
+      }
+    },
+    {
+      "id": "gcp:gcp.redis:cache",
+      "kind": "gcp.redis",
+      "repoId": "gcp",
+      "sourceAddress": "google_redis_instance.cache",
+      "parent": "gcp:gcp.vpc:main",
+      "details": {
+        "count": {
+          "resolved": true,
+          "value": 1
+        },
+        "name": {
+          "resolved": false,
+          "raw": "\"redis-${var.env}\""
+        },
+        "region": {
+          "resolved": true,
+          "value": "europe-west1"
+        },
+        "memory_size_gb": {
+          "resolved": true,
+          "value": 5
+        },
+        "authorized_network": {
+          "resolved": false,
+          "raw": "google_compute_network.main.id"
+        }
+      }
+    },
+    {
+      "id": "gcp:gcp.vm:bastion",
+      "kind": "gcp.vm",
+      "repoId": "gcp",
+      "sourceAddress": "google_compute_instance.bastion",
+      "parent": "gcp:gcp.subnet:data",
+      "details": {
+        "name": {
+          "resolved": true,
+          "value": "bastion"
+        },
+        "machine_type": {
+          "resolved": true,
+          "value": "e2-small"
+        },
+        "zone": {
+          "resolved": false,
+          "raw": "\"${var.region}-b\""
+        },
+        "network_interface.subnetwork": {
+          "resolved": false,
+          "raw": "google_compute_subnetwork.data.id"
+        }
+      }
+    },
+    {
+      "id": "gcp:gcp.lb:ilb",
+      "kind": "gcp.lb",
+      "repoId": "gcp",
+      "sourceAddress": "google_compute_forwarding_rule.ilb",
+      "parent": "gcp:gcp.subnet:gke",
+      "details": {
+        "name": {
+          "resolved": true,
+          "value": "ilb-api"
+        },
+        "region": {
+          "resolved": true,
+          "value": "europe-west1"
+        },
+        "load_balancing_scheme": {
+          "resolved": true,
+          "value": "INTERNAL"
+        },
+        "network": {
+          "resolved": false,
+          "raw": "google_compute_network.main.id"
+        },
+        "subnetwork": {
+          "resolved": false,
+          "raw": "google_compute_subnetwork.gke.id"
+        },
+        "backend_service": {
+          "resolved": false,
+          "raw": "google_compute_region_backend_service.api.id"
+        }
+      }
+    },
+    {
+      "id": "gcp:gcp.bucket:assets",
+      "kind": "gcp.bucket",
+      "repoId": "gcp",
+      "sourceAddress": "google_storage_bucket.assets",
+      "parent": null,
+      "details": {
+        "name": {
+          "resolved": false,
+          "raw": "\"assets-${var.project}-${var.env}\""
+        },
+        "location": {
+          "resolved": true,
+          "value": "europe-west1"
+        }
+      }
+    },
+    {
+      "id": "gcp:gcp.artifact_registry:images",
+      "kind": "gcp.artifact_registry",
+      "repoId": "gcp",
+      "sourceAddress": "google_artifact_registry_repository.images",
+      "parent": null,
+      "details": {
+        "location": {
+          "resolved": true,
+          "value": "europe-west1"
+        },
+        "repository_id": {
+          "resolved": true,
+          "value": "images"
+        },
+        "format": {
+          "resolved": true,
+          "value": "DOCKER"
+        }
+      }
+    },
+    {
+      "id": "gcp:gcp.secret:db",
+      "kind": "gcp.secret",
+      "repoId": "gcp",
+      "sourceAddress": "google_secret_manager_secret.db",
+      "parent": null,
+      "details": {
+        "secret_id": {
+          "resolved": true,
+          "value": "db-password"
+        }
+      }
+    },
+    {
+      "id": "gcp:gcp.dns.zone:main",
+      "kind": "gcp.dns.zone",
+      "repoId": "gcp",
+      "sourceAddress": "google_dns_managed_zone.main",
+      "parent": null,
+      "details": {
+        "name": {
+          "resolved": true,
+          "value": "sample-zone"
+        },
+        "dns_name": {
+          "resolved": true,
+          "value": "sample.example.com."
+        }
+      }
+    },
+    {
+      "id": "gcp:gcp.dns.record:app",
+      "kind": "gcp.dns.record",
+      "repoId": "gcp",
+      "sourceAddress": "google_dns_record_set.app",
+      "parent": "gcp:gcp.dns.zone:main",
+      "details": {
+        "name": {
+          "resolved": true,
+          "value": "app.sample.example.com."
+        },
+        "managed_zone": {
+          "resolved": false,
+          "raw": "google_dns_managed_zone.main.name"
+        },
+        "type": {
+          "resolved": true,
+          "value": "A"
+        },
+        "ttl": {
+          "resolved": true,
+          "value": 300
+        },
+        "rrdatas": {
+          "resolved": false,
+          "raw": "[google_compute_forwarding_rule.ilb.ip_address]"
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "from": "gcp:gcp.subnet:gke",
+      "to": "gcp:gcp.vpc:main"
+    },
+    {
+      "from": "gcp:gcp.subnet:data",
+      "to": "gcp:gcp.vpc:main"
+    },
+    {
+      "from": "gcp:gcp.firewall:internal",
+      "to": "gcp:gcp.vpc:main"
+    },
+    {
+      "from": "gcp:gcp.router:main",
+      "to": "gcp:gcp.vpc:main"
+    },
+    {
+      "from": "gcp:gcp.nat:main",
+      "to": "gcp:gcp.router:main"
+    },
+    {
+      "from": "gcp:gcp.iam.binding:nodes_logging",
+      "to": "gcp:gcp.service_account:nodes",
+      "label": "grants"
+    },
+    {
+      "from": "gcp:gcp.gke.cluster:gke",
+      "to": "gcp:gcp.vpc:main"
+    },
+    {
+      "from": "gcp:gcp.gke.cluster:gke",
+      "to": "gcp:gcp.subnet:gke"
+    },
+    {
+      "from": "gcp:gcp.gke.nodepool:general",
+      "to": "gcp:gcp.gke.cluster:gke"
+    },
+    {
+      "from": "gcp:gcp.gke.nodepool:general",
+      "to": "gcp:gcp.service_account:nodes",
+      "label": "runs as"
+    },
+    {
+      "from": "gcp:gcp.gke.nodepool:spot",
+      "to": "gcp:gcp.gke.cluster:gke"
+    },
+    {
+      "from": "gcp:gcp.sql.instance:pg",
+      "to": "gcp:gcp.vpc:main"
+    },
+    {
+      "from": "gcp:gcp.redis:cache",
+      "to": "gcp:gcp.vpc:main"
+    },
+    {
+      "from": "gcp:gcp.vm:bastion",
+      "to": "gcp:gcp.subnet:data"
+    },
+    {
+      "from": "gcp:gcp.lb:ilb",
+      "to": "gcp:gcp.vpc:main"
+    },
+    {
+      "from": "gcp:gcp.lb:ilb",
+      "to": "gcp:gcp.subnet:gke"
+    },
+    {
+      "from": "gcp:gcp.dns.record:app",
+      "to": "gcp:gcp.dns.zone:main"
+    },
+    {
+      "from": "gcp:gcp.dns.record:app",
+      "to": "gcp:gcp.lb:ilb",
+      "label": "points to"
+    }
+  ],
+  "coverage": {
+    "gcp": {
+      "unmapped": [],
+      "unresolvedBoundaries": []
+    }
+  },
+  "unresolvedCrossRepoLinks": [],
+  "unresolvedPlacements": [],
+  "legend": {
+    "net": "Network",
+    "eks": "GKE",
+    "compute": "VMs",
+    "data": "Data services",
+    "edgeapp": "LB & DNS",
+    "iam": "IAM",
+    "cfg": "Secrets & storage"
+  }
+}

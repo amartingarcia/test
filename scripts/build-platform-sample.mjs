@@ -13,6 +13,8 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { loadCatalog } from '../lib/catalog/load-catalog.mjs';
+import { dotFromTerraform } from './lib/sample-dot.mjs';
 import { parseDotGraph } from '../lib/parse/parse-dot-graph.mjs';
 import { parseHclBlocks } from '../lib/parse/parse-hcl-blocks.mjs';
 import { parseResourceAddress } from '../lib/parse/parse-resource-address.mjs';
@@ -23,7 +25,7 @@ import { validateManifest } from '../lib/manifest/validate-manifest.mjs';
 import { parseTfvars } from '../lib/parse/parse-tfvars.mjs';
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
-const catalog = JSON.parse(await fs.readFile(path.join(root, 'catalog', 'kinds.json'), 'utf8'));
+const catalog = await loadCatalog(path.join(root, 'catalog', 'providers'));
 
 const platformDir = path.join(root, 'examples', 'sample-platform');
 const platformFiles = await Promise.all(
@@ -108,33 +110,6 @@ resource "helm_release" "report_job" {
 for (const m of [platformManifest, gitopsManifest]) {
   const errors = validateManifest(m);
   if (errors.length) throw new Error(`invalid manifest ${m.repoId}: ${errors.join('; ')}`);
-}
-
-/**
- * The DOT a `terraform graph` would give for one environment: one node per
- * instantiated resource, an edge per reference between resources. A resource
- * whose `count` resolves to 0 under the environment's tfvars is not
- * instantiated, so it (and its edges) simply is not there.
- */
-function dotFromTerraform(files, vars) {
-  const all = [];
-  for (const f of files) {
-    for (const b of parseHclBlocks(f.content)) {
-      if (b.blockType === 'resource' && b.labels.length === 2) all.push(`${b.labels[0]}.${b.labels[1]}`);
-    }
-  }
-  const addresses = all.filter((a) => {
-    const p = parseResourceAddress(a);
-    const d = extractResourceDetails(files, { blockType: 'resource', labels: [p.type, p.name] }, vars);
-    return !(d?.attributes.count?.resolved && d.attributes.count.value === 0);
-  });
-  const known = new Set(addresses);
-  const q = (a) => `"[root] ${a} (expand)"`;
-  const lines = addresses.map((a) => `\t\t${q(a)} [label = "${a}", shape = "box"]`);
-  for (const a of addresses) {
-    for (const ref of referencesOf(a, files, vars)) if (known.has(ref)) lines.push(`\t\t${q(a)} -> ${q(ref)}`);
-  }
-  return `digraph {\n\tsubgraph "root" {\n${lines.join('\n')}\n\t}\n}\n`;
 }
 
 // runtime relationships between workloads and what they talk to (not visible as Terraform references)

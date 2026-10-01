@@ -1,0 +1,208 @@
+{
+  "kinds": {
+    "azure.resource_group": {
+      "glyph": "box",
+      "axis": "row",
+      "order": 0
+    },
+    "azure.vnet": {
+      "glyph": "vpc",
+      "placement": {
+        "parentKinds": [
+          "azure.resource_group"
+        ]
+      },
+      "axis": "row",
+      "order": 10
+    },
+    "azure.subnet": {
+      "glyph": "subnet",
+      "placement": {
+        "parentKinds": [
+          "azure.vnet"
+        ]
+      },
+      "axis": "column",
+      "order": 10
+    },
+    "azure.public_ip": {
+      "glyph": "internet_gateway",
+      "placement": {
+        "parentKinds": [
+          "azure.resource_group"
+        ]
+      },
+      "order": 5
+    },
+    "azure.nat_gateway": {
+      "glyph": "nat",
+      "placement": {
+        "parentKinds": [
+          "azure.resource_group"
+        ]
+      },
+      "order": 6
+    },
+    "azure.lb": {
+      "glyph": "balance",
+      "placement": {
+        "parentKinds": [
+          "azure.resource_group"
+        ]
+      },
+      "order": 7
+    },
+    "azure.appgw": {
+      "glyph": "balance",
+      "placement": {
+        "parentKinds": [
+          "azure.subnet",
+          "azure.resource_group"
+        ]
+      },
+      "order": 8
+    },
+    "azure.nsg": {
+      "glyph": "security_group",
+      "placement": {
+        "parentKinds": [
+          "azure.resource_group"
+        ]
+      },
+      "order": 40
+    },
+    "azure.route_table": {
+      "glyph": "route",
+      "placement": {
+        "parentKinds": [
+          "azure.resource_group"
+        ]
+      },
+      "order": 45
+    },
+    "azure.aks.cluster": {
+      "glyph": "eks",
+      "placement": {
+        "parentKinds": [
+          "azure.subnet",
+          "azure.vnet",
+          "azure.resource_group"
+        ]
+      },
+      "axis": "column",
+      "order": 20
+    },
+    "azure.aks.nodepool": {
+      "glyph": "nodegroup",
+      "placement": {
+        "parentKinds": [
+          "azure.aks.cluster"
+        ]
+      },
+      "axis": "row",
+      "order": 10
+    },
+    "azure.vm": {
+      "glyph": "server",
+      "placement": {
+        "parentKinds": [
+          "azure.subnet",
+          "azure.resource_group"
+        ]
+      },
+      "order": 30
+    },
+    "azure.private_endpoint": {
+      "glyph": "link",
+      "placement": {
+        "parentKinds": [
+          "azure.subnet",
+          "azure.resource_group"
+        ]
+      },
+      "order": 35
+    },
+    "azure.postgres": {
+      "glyph": "database",
+      "placement": {
+        "parentKinds": [
+          "azure.subnet",
+          "azure.resource_group"
+        ]
+      },
+      "order": 50
+    },
+    "azure.sql.server": {
+      "glyph": "database",
+      "placement": {
+        "parentKinds": [
+          "azure.resource_group"
+        ]
+      },
+      "axis": "column",
+      "order": 51
+    },
+    "azure.sql.database": {
+      "glyph": "database",
+      "placement": {
+        "parentKinds": [
+          "azure.sql.server"
+        ]
+      },
+      "order": 10
+    },
+    "azure.redis": {
+      "glyph": "database",
+      "placement": {
+        "parentKinds": [
+          "azure.resource_group"
+        ]
+      },
+      "order": 52
+    },
+    "azure.cosmos": {
+      "glyph": "database",
+      "placement": {
+        "parentKinds": [
+          "azure.resource_group"
+        ]
+      },
+      "order": 53
+    },
+    "azure.dns.zone": {
+      "glyph": "dns",
+      "placement": {
+        "parentKinds": [
+          "azure.resource_group"
+        ]
+      },
+      "axis": "column",
+      "order": 60
+    },
+    "azure.dns.record": {
+      "glyph": "record",
+      "placement": {
+        "parentKinds": [
+          "azure.dns.zone"
+        ]
+      }
+    },
+    "azure.identity": {
+      "glyph": "key",
+      "group": "iam"
+    },
+    "azure.keyvault": {
+      "glyph": "key",
+      "group": "secrets"
+    },
+    "azure.storage": {
+      "glyph": "document",
+      "group": "storage"
+    },
+    "azure.acr": {
+      "glyph": "document",
+      "group": "storage"
+    }
+  },
+  "groups": {}
+}

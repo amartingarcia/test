@@ -19,7 +19,7 @@ One manifest per repo: `{ "repoId": "...", "rules": [...] }`. Schema: `schemas/m
 ## Checklist
 
 1. List the distinct resource types in the DOT graph; each must end in an entity rule or an `ignore` rule.
-2. Prefer a kind that already exists in `catalog/kinds.json`; if you need a new one, add it to the catalog (see catalog.md) instead of leaving it without placement.
+2. Prefer a kind that already exists in `catalog/providers/<provider>.json`; if you need a new one, add it to the catalog (see catalog.md) instead of leaving it without placement.
 3. Use `idFrom: "name"` unless names collide across modules; then `address`.
 4. Do NOT set `boundary` when the parent can be inferred from references or the catalog; use it only when the kind of the parent is exact and unique in the repo.
 5. Counted/indexed resources (`aws_subnet.private[0]`) become one entity each; choose `address` if ids would clash.

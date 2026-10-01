@@ -9,6 +9,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { loadCatalog } from '../lib/catalog/load-catalog.mjs';
 import { parseDotGraph } from '../lib/parse/parse-dot-graph.mjs';
 import { compileEnvironmentGraph } from '../lib/compile/compile-environment-graph.mjs';
 import { extractResourceDetails } from '../lib/extract/extract-resource-details.mjs';
@@ -17,7 +18,7 @@ import { inferPlacementFromReferences } from '../lib/compile/infer-placement.mjs
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-const catalog = JSON.parse(await fs.readFile(path.join(__dirname, '..', 'catalog', 'kinds.json'), 'utf8'));
+const catalog = await loadCatalog(path.join(__dirname, '..', 'catalog', 'providers'));
 
 const baseNetworkManifest = JSON.parse(
   await fs.readFile(path.join(__dirname, '..', 'examples', 'manifests', 'network.example.manifest.json'), 'utf8')
@@ -233,7 +234,7 @@ const compiled = compileEnvironmentGraph({
     { repoId: 'gitops', manifest: gitopsManifest, nodes: gitopsParsed.nodes, edges: gitopsParsed.edges },
   ],
   crossRepoLinks: [
-    // placement (containment) now comes from catalog/kinds.json
+    // placement (containment) now comes from catalog/providers
     // runtime dependencies
     { fromKind: 'k8s.release.service', toKind: 'aws.iam.role.irsa', label: 'assumes (IRSA)' },
     { fromKind: 'k8s.release.service', toKind: 'aws.rds.instance', label: 'SQL' },

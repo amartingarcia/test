@@ -1,0 +1,907 @@
+{
+  "environment": "azure_dev",
+  "entities": [
+    {
+      "id": "azure:azure.resource_group:net",
+      "kind": "azure.resource_group",
+      "repoId": "azure",
+      "sourceAddress": "azurerm_resource_group.net",
+      "parent": null,
+      "details": {
+        "name": {
+          "resolved": false,
+          "raw": "\"rg-net-${var.env}\""
+        },
+        "location": {
+          "resolved": true,
+          "value": "westeurope"
+        }
+      }
+    },
+    {
+      "id": "azure:azure.resource_group:app",
+      "kind": "azure.resource_group",
+      "repoId": "azure",
+      "sourceAddress": "azurerm_resource_group.app",
+      "parent": null,
+      "details": {
+        "name": {
+          "resolved": false,
+          "raw": "\"rg-app-${var.env}\""
+        },
+        "location": {
+          "resolved": true,
+          "value": "westeurope"
+        }
+      }
+    },
+    {
+      "id": "azure:azure.vnet:hub",
+      "kind": "azure.vnet",
+      "repoId": "azure",
+      "sourceAddress": "azurerm_virtual_network.hub",
+      "parent": "azure:azure.resource_group:net",
+      "details": {
+        "name": {
+          "resolved": true,
+          "value": "vnet-hub"
+        },
+        "location": {
+          "resolved": true,
+          "value": "westeurope"
+        },
+        "resource_group_name": {
+          "resolved": false,
+          "raw": "azurerm_resource_group.net.name"
+        },
+        "address_space": {
+          "resolved": true,
+          "value": [
+            "10.10.0.0/16"
+          ]
+        }
+      }
+    },
+    {
+      "id": "azure:azure.vnet:spoke",
+      "kind": "azure.vnet",
+      "repoId": "azure",
+      "sourceAddress": "azurerm_virtual_network.spoke",
+      "parent": "azure:azure.resource_group:app",
+      "details": {
+        "name": {
+          "resolved": true,
+          "value": "vnet-spoke"
+        },
+        "location": {
+          "resolved": true,
+          "value": "westeurope"
+        },
+        "resource_group_name": {
+          "resolved": false,
+          "raw": "azurerm_resource_group.app.name"
+        },
+        "address_space": {
+          "resolved": true,
+          "value": [
+            "10.20.0.0/16"
+          ]
+        }
+      }
+    },
+    {
+      "id": "azure:azure.subnet:hub_mgmt",
+      "kind": "azure.subnet",
+      "repoId": "azure",
+      "sourceAddress": "azurerm_subnet.hub_mgmt",
+      "parent": "azure:azure.vnet:hub",
+      "details": {
+        "name": {
+          "resolved": true,
+          "value": "snet-mgmt"
+        },
+        "resource_group_name": {
+          "resolved": false,
+          "raw": "azurerm_resource_group.net.name"
+        },
+        "virtual_network_name": {
+          "resolved": false,
+          "raw": "azurerm_virtual_network.hub.name"
+        },
+        "address_prefixes": {
+          "resolved": true,
+          "value": [
+            "10.10.1.0/24"
+          ]
+        }
+      }
+    },
+    {
+      "id": "azure:azure.subnet:spoke_aks",
+      "kind": "azure.subnet",
+      "repoId": "azure",
+      "sourceAddress": "azurerm_subnet.spoke_aks",
+      "parent": "azure:azure.vnet:spoke",
+      "details": {
+        "name": {
+          "resolved": true,
+          "value": "snet-aks"
+        },
+        "resource_group_name": {
+          "resolved": false,
+          "raw": "azurerm_resource_group.app.name"
+        },
+        "virtual_network_name": {
+          "resolved": false,
+          "raw": "azurerm_virtual_network.spoke.name"
+        },
+        "address_prefixes": {
+          "resolved": true,
+          "value": [
+            "10.20.0.0/20"
+          ]
+        }
+      }
+    },
+    {
+      "id": "azure:azure.subnet:spoke_data",
+      "kind": "azure.subnet",
+      "repoId": "azure",
+      "sourceAddress": "azurerm_subnet.spoke_data",
+      "parent": "azure:azure.vnet:spoke",
+      "details": {
+        "name": {
+          "resolved": true,
+          "value": "snet-data"
+        },
+        "resource_group_name": {
+          "resolved": false,
+          "raw": "azurerm_resource_group.app.name"
+        },
+        "virtual_network_name": {
+          "resolved": false,
+          "raw": "azurerm_virtual_network.spoke.name"
+        },
+        "address_prefixes": {
+          "resolved": true,
+          "value": [
+            "10.20.16.0/24"
+          ]
+        },
+        "delegation.name": {
+          "resolved": true,
+          "value": "postgres"
+        },
+        "delegation.service_delegation.name": {
+          "resolved": true,
+          "value": "Microsoft.DBforPostgreSQL/flexibleServers"
+        }
+      }
+    },
+    {
+      "id": "azure:azure.subnet:spoke_pe",
+      "kind": "azure.subnet",
+      "repoId": "azure",
+      "sourceAddress": "azurerm_subnet.spoke_pe",
+      "parent": "azure:azure.vnet:spoke",
+      "details": {
+        "name": {
+          "resolved": true,
+          "value": "snet-private-endpoints"
+        },
+        "resource_group_name": {
+          "resolved": false,
+          "raw": "azurerm_resource_group.app.name"
+        },
+        "virtual_network_name": {
+          "resolved": false,
+          "raw": "azurerm_virtual_network.spoke.name"
+        },
+        "address_prefixes": {
+          "resolved": true,
+          "value": [
+            "10.20.17.0/24"
+          ]
+        }
+      }
+    },
+    {
+      "id": "azure:azure.nsg:aks",
+      "kind": "azure.nsg",
+      "repoId": "azure",
+      "sourceAddress": "azurerm_network_security_group.aks",
+      "parent": "azure:azure.resource_group:app",
+      "details": {
+        "name": {
+          "resolved": true,
+          "value": "nsg-aks"
+        },
+        "location": {
+          "resolved": true,
+          "value": "westeurope"
+        },
+        "resource_group_name": {
+          "resolved": false,
+          "raw": "azurerm_resource_group.app.name"
+        }
+      }
+    },
+    {
+      "id": "azure:azure.public_ip:nat",
+      "kind": "azure.public_ip",
+      "repoId": "azure",
+      "sourceAddress": "azurerm_public_ip.nat",
+      "parent": "azure:azure.resource_group:net",
+      "details": {
+        "name": {
+          "resolved": true,
+          "value": "pip-nat"
+        },
+        "location": {
+          "resolved": true,
+          "value": "westeurope"
+        },
+        "resource_group_name": {
+          "resolved": false,
+          "raw": "azurerm_resource_group.net.name"
+        },
+        "allocation_method": {
+          "resolved": true,
+          "value": "Static"
+        },
+        "sku": {
+          "resolved": true,
+          "value": "Standard"
+        }
+      }
+    },
+    {
+      "id": "azure:azure.nat_gateway:hub",
+      "kind": "azure.nat_gateway",
+      "repoId": "azure",
+      "sourceAddress": "azurerm_nat_gateway.hub",
+      "parent": "azure:azure.resource_group:net",
+      "details": {
+        "name": {
+          "resolved": true,
+          "value": "natgw-hub"
+        },
+        "location": {
+          "resolved": true,
+          "value": "westeurope"
+        },
+        "resource_group_name": {
+          "resolved": false,
+          "raw": "azurerm_resource_group.net.name"
+        },
+        "sku_name": {
+          "resolved": true,
+          "value": "Standard"
+        }
+      }
+    },
+    {
+      "id": "azure:azure.public_ip:ingress",
+      "kind": "azure.public_ip",
+      "repoId": "azure",
+      "sourceAddress": "azurerm_public_ip.ingress",
+      "parent": "azure:azure.resource_group:net",
+      "details": {
+        "name": {
+          "resolved": true,
+          "value": "pip-ingress"
+        },
+        "location": {
+          "resolved": true,
+          "value": "westeurope"
+        },
+        "resource_group_name": {
+          "resolved": false,
+          "raw": "azurerm_resource_group.net.name"
+        },
+        "allocation_method": {
+          "resolved": true,
+          "value": "Static"
+        },
+        "sku": {
+          "resolved": true,
+          "value": "Standard"
+        }
+      }
+    },
+    {
+      "id": "azure:azure.lb:ingress",
+      "kind": "azure.lb",
+      "repoId": "azure",
+      "sourceAddress": "azurerm_lb.ingress",
+      "parent": "azure:azure.resource_group:net",
+      "details": {
+        "name": {
+          "resolved": true,
+          "value": "lb-ingress"
+        },
+        "location": {
+          "resolved": true,
+          "value": "westeurope"
+        },
+        "resource_group_name": {
+          "resolved": false,
+          "raw": "azurerm_resource_group.net.name"
+        },
+        "sku": {
+          "resolved": true,
+          "value": "Standard"
+        },
+        "frontend_ip_configuration.name": {
+          "resolved": true,
+          "value": "public"
+        },
+        "frontend_ip_configuration.public_ip_address_id": {
+          "resolved": false,
+          "raw": "azurerm_public_ip.ingress.id"
+        }
+      }
+    },
+    {
+      "id": "azure:azure.identity:aks",
+      "kind": "azure.identity",
+      "repoId": "azure",
+      "sourceAddress": "azurerm_user_assigned_identity.aks",
+      "parent": null,
+      "details": {
+        "name": {
+          "resolved": true,
+          "value": "id-aks"
+        },
+        "location": {
+          "resolved": true,
+          "value": "westeurope"
+        },
+        "resource_group_name": {
+          "resolved": false,
+          "raw": "azurerm_resource_group.app.name"
+        }
+      }
+    },
+    {
+      "id": "azure:azure.aks.cluster:main",
+      "kind": "azure.aks.cluster",
+      "repoId": "azure",
+      "sourceAddress": "azurerm_kubernetes_cluster.main",
+      "parent": "azure:azure.subnet:spoke_aks",
+      "details": {
+        "name": {
+          "resolved": false,
+          "raw": "\"aks-${var.env}\""
+        },
+        "location": {
+          "resolved": true,
+          "value": "westeurope"
+        },
+        "resource_group_name": {
+          "resolved": false,
+          "raw": "azurerm_resource_group.app.name"
+        },
+        "dns_prefix": {
+          "resolved": false,
+          "raw": "\"aks-${var.env}\""
+        },
+        "kubernetes_version": {
+          "resolved": true,
+          "value": "1.29"
+        },
+        "default_node_pool.name": {
+          "resolved": true,
+          "value": "system"
+        },
+        "default_node_pool.vm_size": {
+          "resolved": true,
+          "value": "Standard_D4s_v5"
+        },
+        "default_node_pool.node_count": {
+          "resolved": true,
+          "value": 1
+        },
+        "default_node_pool.vnet_subnet_id": {
+          "resolved": false,
+          "raw": "azurerm_subnet.spoke_aks.id"
+        },
+        "identity.type": {
+          "resolved": true,
+          "value": "UserAssigned"
+        },
+        "identity.identity_ids": {
+          "resolved": false,
+          "raw": "[azurerm_user_assigned_identity.aks.id]"
+        },
+        "network_profile.network_plugin": {
+          "resolved": true,
+          "value": "azure"
+        },
+        "network_profile.network_policy": {
+          "resolved": true,
+          "value": "calico"
+        }
+      }
+    },
+    {
+      "id": "azure:azure.aks.nodepool:user",
+      "kind": "azure.aks.nodepool",
+      "repoId": "azure",
+      "sourceAddress": "azurerm_kubernetes_cluster_node_pool.user",
+      "parent": "azure:azure.aks.cluster:main",
+      "details": {
+        "name": {
+          "resolved": true,
+          "value": "user"
+        },
+        "kubernetes_cluster_id": {
+          "resolved": false,
+          "raw": "azurerm_kubernetes_cluster.main.id"
+        },
+        "vm_size": {
+          "resolved": true,
+          "value": "Standard_D4s_v5"
+        },
+        "min_count": {
+          "resolved": true,
+          "value": 1
+        },
+        "max_count": {
+          "resolved": true,
+          "value": 3
+        },
+        "enable_auto_scaling": {
+          "resolved": true,
+          "value": true
+        },
+        "vnet_subnet_id": {
+          "resolved": false,
+          "raw": "azurerm_subnet.spoke_aks.id"
+        }
+      }
+    },
+    {
+      "id": "azure:azure.acr:acr",
+      "kind": "azure.acr",
+      "repoId": "azure",
+      "sourceAddress": "azurerm_container_registry.acr",
+      "parent": null,
+      "details": {
+        "name": {
+          "resolved": false,
+          "raw": "\"acrsample${var.env}\""
+        },
+        "resource_group_name": {
+          "resolved": false,
+          "raw": "azurerm_resource_group.app.name"
+        },
+        "location": {
+          "resolved": true,
+          "value": "westeurope"
+        },
+        "sku": {
+          "resolved": true,
+          "value": "Premium"
+        }
+      }
+    },
+    {
+      "id": "azure:azure.postgres:pg",
+      "kind": "azure.postgres",
+      "repoId": "azure",
+      "sourceAddress": "azurerm_postgresql_flexible_server.pg",
+      "parent": "azure:azure.subnet:spoke_data",
+      "details": {
+        "name": {
+          "resolved": false,
+          "raw": "\"pg-${var.env}\""
+        },
+        "resource_group_name": {
+          "resolved": false,
+          "raw": "azurerm_resource_group.app.name"
+        },
+        "location": {
+          "resolved": true,
+          "value": "westeurope"
+        },
+        "version": {
+          "resolved": true,
+          "value": "16"
+        },
+        "sku_name": {
+          "resolved": true,
+          "value": "B_Standard_B2s"
+        },
+        "storage_mb": {
+          "resolved": true,
+          "value": 32768
+        },
+        "delegated_subnet_id": {
+          "resolved": false,
+          "raw": "azurerm_subnet.spoke_data.id"
+        }
+      }
+    },
+    {
+      "id": "azure:azure.redis:cache",
+      "kind": "azure.redis",
+      "repoId": "azure",
+      "sourceAddress": "azurerm_redis_cache.cache",
+      "parent": "azure:azure.resource_group:app",
+      "details": {
+        "name": {
+          "resolved": false,
+          "raw": "\"redis-${var.env}\""
+        },
+        "resource_group_name": {
+          "resolved": false,
+          "raw": "azurerm_resource_group.app.name"
+        },
+        "location": {
+          "resolved": true,
+          "value": "westeurope"
+        },
+        "capacity": {
+          "resolved": true,
+          "value": 1
+        },
+        "family": {
+          "resolved": true,
+          "value": "C"
+        },
+        "sku_name": {
+          "resolved": true,
+          "value": "Standard"
+        }
+      }
+    },
+    {
+      "id": "azure:azure.keyvault:kv",
+      "kind": "azure.keyvault",
+      "repoId": "azure",
+      "sourceAddress": "azurerm_key_vault.kv",
+      "parent": null,
+      "details": {
+        "name": {
+          "resolved": false,
+          "raw": "\"kv-${var.env}\""
+        },
+        "resource_group_name": {
+          "resolved": false,
+          "raw": "azurerm_resource_group.app.name"
+        },
+        "location": {
+          "resolved": true,
+          "value": "westeurope"
+        },
+        "tenant_id": {
+          "resolved": true,
+          "value": "00000000-0000-0000-0000-000000000000"
+        },
+        "sku_name": {
+          "resolved": true,
+          "value": "standard"
+        }
+      }
+    },
+    {
+      "id": "azure:azure.private_endpoint:kv",
+      "kind": "azure.private_endpoint",
+      "repoId": "azure",
+      "sourceAddress": "azurerm_private_endpoint.kv",
+      "parent": "azure:azure.subnet:spoke_pe",
+      "details": {
+        "name": {
+          "resolved": true,
+          "value": "pe-kv"
+        },
+        "resource_group_name": {
+          "resolved": false,
+          "raw": "azurerm_resource_group.app.name"
+        },
+        "location": {
+          "resolved": true,
+          "value": "westeurope"
+        },
+        "subnet_id": {
+          "resolved": false,
+          "raw": "azurerm_subnet.spoke_pe.id"
+        },
+        "private_service_connection.name": {
+          "resolved": true,
+          "value": "kv"
+        },
+        "private_service_connection.private_connection_resource_id": {
+          "resolved": false,
+          "raw": "azurerm_key_vault.kv.id"
+        },
+        "private_service_connection.is_manual_connection": {
+          "resolved": true,
+          "value": false
+        },
+        "private_service_connection.subresource_names": {
+          "resolved": true,
+          "value": [
+            "vault"
+          ]
+        }
+      }
+    },
+    {
+      "id": "azure:azure.storage:data",
+      "kind": "azure.storage",
+      "repoId": "azure",
+      "sourceAddress": "azurerm_storage_account.data",
+      "parent": null,
+      "details": {
+        "name": {
+          "resolved": false,
+          "raw": "\"stsample${var.env}\""
+        },
+        "resource_group_name": {
+          "resolved": false,
+          "raw": "azurerm_resource_group.app.name"
+        },
+        "location": {
+          "resolved": true,
+          "value": "westeurope"
+        },
+        "account_tier": {
+          "resolved": true,
+          "value": "Standard"
+        },
+        "account_replication_type": {
+          "resolved": true,
+          "value": "GRS"
+        }
+      }
+    },
+    {
+      "id": "azure:azure.vm:bastion",
+      "kind": "azure.vm",
+      "repoId": "azure",
+      "sourceAddress": "azurerm_linux_virtual_machine.bastion",
+      "parent": "azure:azure.subnet:hub_mgmt",
+      "details": {
+        "name": {
+          "resolved": true,
+          "value": "vm-bastion"
+        },
+        "resource_group_name": {
+          "resolved": false,
+          "raw": "azurerm_resource_group.net.name"
+        },
+        "location": {
+          "resolved": true,
+          "value": "westeurope"
+        },
+        "size": {
+          "resolved": true,
+          "value": "Standard_B2s"
+        },
+        "admin_username": {
+          "resolved": true,
+          "value": "ops"
+        },
+        "network_interface_ids": {
+          "resolved": false,
+          "raw": "[azurerm_network_interface.bastion.id]"
+        }
+      }
+    },
+    {
+      "id": "azure:azure.dns.zone:main",
+      "kind": "azure.dns.zone",
+      "repoId": "azure",
+      "sourceAddress": "azurerm_dns_zone.main",
+      "parent": "azure:azure.resource_group:net",
+      "details": {
+        "name": {
+          "resolved": true,
+          "value": "sample.example.com"
+        },
+        "resource_group_name": {
+          "resolved": false,
+          "raw": "azurerm_resource_group.net.name"
+        }
+      }
+    },
+    {
+      "id": "azure:azure.dns.record:app",
+      "kind": "azure.dns.record",
+      "repoId": "azure",
+      "sourceAddress": "azurerm_dns_a_record.app",
+      "parent": "azure:azure.dns.zone:main",
+      "details": {
+        "name": {
+          "resolved": true,
+          "value": "app"
+        },
+        "zone_name": {
+          "resolved": false,
+          "raw": "azurerm_dns_zone.main.name"
+        },
+        "resource_group_name": {
+          "resolved": false,
+          "raw": "azurerm_resource_group.net.name"
+        },
+        "ttl": {
+          "resolved": true,
+          "value": 300
+        },
+        "target_resource_id": {
+          "resolved": false,
+          "raw": "azurerm_public_ip.ingress.id"
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "from": "azure:azure.vnet:hub",
+      "to": "azure:azure.resource_group:net"
+    },
+    {
+      "from": "azure:azure.vnet:spoke",
+      "to": "azure:azure.resource_group:app"
+    },
+    {
+      "from": "azure:azure.subnet:hub_mgmt",
+      "to": "azure:azure.resource_group:net"
+    },
+    {
+      "from": "azure:azure.subnet:hub_mgmt",
+      "to": "azure:azure.vnet:hub"
+    },
+    {
+      "from": "azure:azure.subnet:spoke_aks",
+      "to": "azure:azure.resource_group:app"
+    },
+    {
+      "from": "azure:azure.subnet:spoke_aks",
+      "to": "azure:azure.vnet:spoke"
+    },
+    {
+      "from": "azure:azure.subnet:spoke_data",
+      "to": "azure:azure.resource_group:app"
+    },
+    {
+      "from": "azure:azure.subnet:spoke_data",
+      "to": "azure:azure.vnet:spoke"
+    },
+    {
+      "from": "azure:azure.subnet:spoke_pe",
+      "to": "azure:azure.resource_group:app"
+    },
+    {
+      "from": "azure:azure.subnet:spoke_pe",
+      "to": "azure:azure.vnet:spoke"
+    },
+    {
+      "from": "azure:azure.nsg:aks",
+      "to": "azure:azure.resource_group:app"
+    },
+    {
+      "from": "azure:azure.public_ip:nat",
+      "to": "azure:azure.resource_group:net"
+    },
+    {
+      "from": "azure:azure.nat_gateway:hub",
+      "to": "azure:azure.resource_group:net"
+    },
+    {
+      "from": "azure:azure.public_ip:ingress",
+      "to": "azure:azure.resource_group:net"
+    },
+    {
+      "from": "azure:azure.lb:ingress",
+      "to": "azure:azure.resource_group:net"
+    },
+    {
+      "from": "azure:azure.lb:ingress",
+      "to": "azure:azure.public_ip:ingress"
+    },
+    {
+      "from": "azure:azure.identity:aks",
+      "to": "azure:azure.resource_group:app"
+    },
+    {
+      "from": "azure:azure.aks.cluster:main",
+      "to": "azure:azure.resource_group:app"
+    },
+    {
+      "from": "azure:azure.aks.cluster:main",
+      "to": "azure:azure.subnet:spoke_aks"
+    },
+    {
+      "from": "azure:azure.aks.cluster:main",
+      "to": "azure:azure.identity:aks",
+      "label": "runs as"
+    },
+    {
+      "from": "azure:azure.aks.nodepool:user",
+      "to": "azure:azure.aks.cluster:main"
+    },
+    {
+      "from": "azure:azure.aks.nodepool:user",
+      "to": "azure:azure.subnet:spoke_aks"
+    },
+    {
+      "from": "azure:azure.acr:acr",
+      "to": "azure:azure.resource_group:app"
+    },
+    {
+      "from": "azure:azure.postgres:pg",
+      "to": "azure:azure.resource_group:app"
+    },
+    {
+      "from": "azure:azure.postgres:pg",
+      "to": "azure:azure.subnet:spoke_data"
+    },
+    {
+      "from": "azure:azure.redis:cache",
+      "to": "azure:azure.resource_group:app"
+    },
+    {
+      "from": "azure:azure.keyvault:kv",
+      "to": "azure:azure.resource_group:app"
+    },
+    {
+      "from": "azure:azure.private_endpoint:kv",
+      "to": "azure:azure.resource_group:app"
+    },
+    {
+      "from": "azure:azure.private_endpoint:kv",
+      "to": "azure:azure.subnet:spoke_pe"
+    },
+    {
+      "from": "azure:azure.private_endpoint:kv",
+      "to": "azure:azure.keyvault:kv",
+      "label": "connects"
+    },
+    {
+      "from": "azure:azure.storage:data",
+      "to": "azure:azure.resource_group:app"
+    },
+    {
+      "from": "azure:azure.vm:bastion",
+      "to": "azure:azure.resource_group:net"
+    },
+    {
+      "from": "azure:azure.dns.zone:main",
+      "to": "azure:azure.resource_group:net"
+    },
+    {
+      "from": "azure:azure.dns.record:app",
+      "to": "azure:azure.dns.zone:main"
+    },
+    {
+      "from": "azure:azure.dns.record:app",
+      "to": "azure:azure.resource_group:net"
+    },
+    {
+      "from": "azure:azure.dns.record:app",
+      "to": "azure:azure.public_ip:ingress",
+      "label": "points to"
+    }
+  ],
+  "coverage": {
+    "azure": {
+      "unmapped": [],
+      "unresolvedBoundaries": []
+    }
+  },
+  "unresolvedCrossRepoLinks": [],
+  "unresolvedPlacements": [],
+  "legend": {
+    "default": "Resource groups",
+    "net": "Network",
+    "eks": "AKS",
+    "compute": "VMs",
+    "data": "Data services",
+    "edgeapp": "LB, DNS & endpoints",
+    "iam": "Identity",
+    "cfg": "Secrets & storage"
+  }
+}

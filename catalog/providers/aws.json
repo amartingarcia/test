@@ -1,0 +1,198 @@
+{
+  "kinds": {
+    "aws.vpc": {
+      "axis": "row",
+      "order": 0,
+      "glyph": "vpc"
+    },
+    "aws.internet_gateway": {
+      "order": 0,
+      "glyph": "internet_gateway",
+      "placement": {
+        "parentKinds": [
+          "aws.vpc"
+        ]
+      }
+    },
+    "aws.subnet": {
+      "axis": "column",
+      "glyph": "subnet",
+      "placement": {
+        "parentKinds": [
+          "aws.vpc"
+        ]
+      }
+    },
+    "aws.subnet.public": {
+      "axis": "column",
+      "order": 10,
+      "glyph": "subnet",
+      "placement": {
+        "parentKinds": [
+          "aws.vpc"
+        ]
+      }
+    },
+    "aws.subnet.private": {
+      "axis": "column",
+      "order": 20,
+      "glyph": "subnet",
+      "placement": {
+        "parentKinds": [
+          "aws.vpc"
+        ]
+      }
+    },
+    "aws.subnet.data": {
+      "axis": "column",
+      "order": 30,
+      "glyph": "subnet",
+      "placement": {
+        "parentKinds": [
+          "aws.vpc"
+        ]
+      }
+    },
+    "aws.nat_gateway": {
+      "glyph": "nat",
+      "placement": {
+        "parentKinds": [
+          "aws.subnet.public",
+          "aws.vpc"
+        ]
+      }
+    },
+    "aws.security_group": {
+      "order": 40,
+      "glyph": "security_group",
+      "placement": {
+        "parentKinds": [
+          "aws.vpc"
+        ]
+      }
+    },
+    "aws.route_table": {
+      "order": 45,
+      "glyph": "route",
+      "placement": {
+        "parentKinds": [
+          "aws.vpc"
+        ]
+      }
+    },
+    "aws.eks.cluster": {
+      "axis": "column",
+      "glyph": "eks",
+      "placement": {
+        "parentKinds": [
+          "aws.subnet.private",
+          "aws.vpc"
+        ]
+      }
+    },
+    "aws.eks.nodegroup": {
+      "axis": "row",
+      "glyph": "nodegroup",
+      "placement": {
+        "parentKinds": [
+          "aws.eks.cluster"
+        ]
+      }
+    },
+    "aws.eks.addon": {
+      "glyph": "addon"
+    },
+    "aws.rds.instance": {
+      "glyph": "database",
+      "placement": {
+        "parentKinds": [
+          "aws.subnet.data",
+          "aws.subnet.private",
+          "aws.vpc"
+        ]
+      }
+    },
+    "aws.docdb.cluster": {
+      "glyph": "document",
+      "placement": {
+        "parentKinds": [
+          "aws.subnet.data",
+          "aws.subnet.private",
+          "aws.vpc"
+        ]
+      }
+    },
+    "aws.iam": {
+      "glyph": "key",
+      "group": "iam"
+    },
+    "aws.vpc_peering": {
+      "order": 50,
+      "glyph": "link"
+    },
+    "aws.lb": {
+      "glyph": "balance",
+      "placement": {
+        "parentKinds": [
+          "aws.subnet.public",
+          "aws.vpc"
+        ]
+      }
+    },
+    "aws.ec2.instance": {
+      "glyph": "server",
+      "placement": {
+        "parentKinds": [
+          "aws.subnet.private",
+          "aws.subnet.public",
+          "aws.vpc"
+        ]
+      }
+    },
+    "aws.elasticache": {
+      "glyph": "bolt",
+      "placement": {
+        "parentKinds": [
+          "aws.subnet.data",
+          "aws.subnet.private",
+          "aws.vpc"
+        ]
+      }
+    },
+    "aws.opensearch": {
+      "glyph": "search",
+      "placement": {
+        "parentKinds": [
+          "aws.subnet.data",
+          "aws.subnet.private",
+          "aws.vpc"
+        ]
+      }
+    },
+    "aws.ssm": {
+      "glyph": "sliders",
+      "group": "ssm"
+    },
+    "aws.route53.zone": {
+      "axis": "column",
+      "order": 60,
+      "glyph": "dns"
+    },
+    "aws.route53.record": {
+      "glyph": "record",
+      "placement": {
+        "parentKinds": [
+          "aws.route53.zone"
+        ]
+      }
+    }
+  },
+  "groups": {
+    "ssm": {
+      "label": "Parameter Store \u00b7 config",
+      "axis": "column",
+      "order": 110,
+      "glyph": "sliders"
+    }
+  }
+}

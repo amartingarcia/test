@@ -1,20 +1,4 @@
 {
-  "version": 1,
-  "description": "What goes inside what. Per kind: where it may be placed (placement.parentKinds, in preference order), how it lays out its children (axis), where it sits among siblings (order: lower = further left / higher), how it is drawn (glyph, size) and whether it belongs to a global group. Looked up by exact kind, then by longest dotted prefix (see lib/catalog/spec-for-kind.mjs). Shared by the compiler (placement) and the viewer (layout + look).",
-  "groups": {
-    "iam": {
-      "label": "IAM \u00b7 account-wide",
-      "axis": "column",
-      "order": 100,
-      "glyph": "key"
-    },
-    "ssm": {
-      "label": "Parameter Store \u00b7 config",
-      "axis": "column",
-      "order": 110,
-      "glyph": "sliders"
-    }
-  },
   "kinds": {
     "aws.vpc": {
       "axis": "row",
@@ -142,15 +126,6 @@
       "glyph": "key",
       "group": "iam"
     },
-    "k8s.release": {
-      "size": "chip",
-      "glyph": "pod",
-      "placement": {
-        "parentKinds": [
-          "aws.eks.nodegroup"
-        ]
-      }
-    },
     "aws.vpc_peering": {
       "order": 50,
       "glyph": "link"
@@ -208,6 +183,353 @@
       "placement": {
         "parentKinds": [
           "aws.route53.zone"
+        ]
+      }
+    },
+    "azure.resource_group": {
+      "glyph": "box",
+      "axis": "row",
+      "order": 0
+    },
+    "azure.vnet": {
+      "glyph": "vpc",
+      "placement": {
+        "parentKinds": [
+          "azure.resource_group"
+        ]
+      },
+      "axis": "row",
+      "order": 10
+    },
+    "azure.subnet": {
+      "glyph": "subnet",
+      "placement": {
+        "parentKinds": [
+          "azure.vnet"
+        ]
+      },
+      "axis": "column",
+      "order": 10
+    },
+    "azure.public_ip": {
+      "glyph": "internet_gateway",
+      "placement": {
+        "parentKinds": [
+          "azure.resource_group"
+        ]
+      },
+      "order": 5
+    },
+    "azure.nat_gateway": {
+      "glyph": "nat",
+      "placement": {
+        "parentKinds": [
+          "azure.resource_group"
+        ]
+      },
+      "order": 6
+    },
+    "azure.lb": {
+      "glyph": "balance",
+      "placement": {
+        "parentKinds": [
+          "azure.resource_group"
+        ]
+      },
+      "order": 7
+    },
+    "azure.appgw": {
+      "glyph": "balance",
+      "placement": {
+        "parentKinds": [
+          "azure.subnet",
+          "azure.resource_group"
+        ]
+      },
+      "order": 8
+    },
+    "azure.nsg": {
+      "glyph": "security_group",
+      "placement": {
+        "parentKinds": [
+          "azure.resource_group"
+        ]
+      },
+      "order": 40
+    },
+    "azure.route_table": {
+      "glyph": "route",
+      "placement": {
+        "parentKinds": [
+          "azure.resource_group"
+        ]
+      },
+      "order": 45
+    },
+    "azure.aks.cluster": {
+      "glyph": "eks",
+      "placement": {
+        "parentKinds": [
+          "azure.subnet",
+          "azure.vnet",
+          "azure.resource_group"
+        ]
+      },
+      "axis": "column",
+      "order": 20
+    },
+    "azure.aks.nodepool": {
+      "glyph": "nodegroup",
+      "placement": {
+        "parentKinds": [
+          "azure.aks.cluster"
+        ]
+      },
+      "axis": "row",
+      "order": 10
+    },
+    "azure.vm": {
+      "glyph": "server",
+      "placement": {
+        "parentKinds": [
+          "azure.subnet",
+          "azure.resource_group"
+        ]
+      },
+      "order": 30
+    },
+    "azure.private_endpoint": {
+      "glyph": "link",
+      "placement": {
+        "parentKinds": [
+          "azure.subnet",
+          "azure.resource_group"
+        ]
+      },
+      "order": 35
+    },
+    "azure.postgres": {
+      "glyph": "database",
+      "placement": {
+        "parentKinds": [
+          "azure.subnet",
+          "azure.resource_group"
+        ]
+      },
+      "order": 50
+    },
+    "azure.sql.server": {
+      "glyph": "database",
+      "placement": {
+        "parentKinds": [
+          "azure.resource_group"
+        ]
+      },
+      "axis": "column",
+      "order": 51
+    },
+    "azure.sql.database": {
+      "glyph": "database",
+      "placement": {
+        "parentKinds": [
+          "azure.sql.server"
+        ]
+      },
+      "order": 10
+    },
+    "azure.redis": {
+      "glyph": "database",
+      "placement": {
+        "parentKinds": [
+          "azure.resource_group"
+        ]
+      },
+      "order": 52
+    },
+    "azure.cosmos": {
+      "glyph": "database",
+      "placement": {
+        "parentKinds": [
+          "azure.resource_group"
+        ]
+      },
+      "order": 53
+    },
+    "azure.dns.zone": {
+      "glyph": "dns",
+      "placement": {
+        "parentKinds": [
+          "azure.resource_group"
+        ]
+      },
+      "axis": "column",
+      "order": 60
+    },
+    "azure.dns.record": {
+      "glyph": "record",
+      "placement": {
+        "parentKinds": [
+          "azure.dns.zone"
+        ]
+      }
+    },
+    "azure.identity": {
+      "glyph": "key",
+      "group": "iam"
+    },
+    "azure.keyvault": {
+      "glyph": "key",
+      "group": "secrets"
+    },
+    "azure.storage": {
+      "glyph": "document",
+      "group": "storage"
+    },
+    "azure.acr": {
+      "glyph": "document",
+      "group": "storage"
+    },
+    "gcp.vpc": {
+      "glyph": "vpc",
+      "axis": "row",
+      "order": 0
+    },
+    "gcp.subnet": {
+      "glyph": "subnet",
+      "placement": {
+        "parentKinds": [
+          "gcp.vpc"
+        ]
+      },
+      "axis": "column",
+      "order": 10
+    },
+    "gcp.router": {
+      "glyph": "route",
+      "placement": {
+        "parentKinds": [
+          "gcp.vpc"
+        ]
+      },
+      "axis": "column",
+      "order": 45
+    },
+    "gcp.nat": {
+      "glyph": "nat",
+      "placement": {
+        "parentKinds": [
+          "gcp.router"
+        ]
+      },
+      "order": 10
+    },
+    "gcp.firewall": {
+      "glyph": "security_group",
+      "placement": {
+        "parentKinds": [
+          "gcp.vpc"
+        ]
+      },
+      "order": 40
+    },
+    "gcp.lb": {
+      "glyph": "balance",
+      "placement": {
+        "parentKinds": [
+          "gcp.subnet",
+          "gcp.vpc"
+        ]
+      },
+      "order": 8
+    },
+    "gcp.gke.cluster": {
+      "glyph": "eks",
+      "placement": {
+        "parentKinds": [
+          "gcp.subnet",
+          "gcp.vpc"
+        ]
+      },
+      "axis": "column",
+      "order": 20
+    },
+    "gcp.gke.nodepool": {
+      "glyph": "nodegroup",
+      "placement": {
+        "parentKinds": [
+          "gcp.gke.cluster"
+        ]
+      },
+      "axis": "row",
+      "order": 10
+    },
+    "gcp.vm": {
+      "glyph": "server",
+      "placement": {
+        "parentKinds": [
+          "gcp.subnet",
+          "gcp.vpc"
+        ]
+      },
+      "order": 30
+    },
+    "gcp.sql.instance": {
+      "glyph": "database",
+      "placement": {
+        "parentKinds": [
+          "gcp.vpc"
+        ]
+      },
+      "order": 50
+    },
+    "gcp.redis": {
+      "glyph": "database",
+      "placement": {
+        "parentKinds": [
+          "gcp.vpc"
+        ]
+      },
+      "order": 52
+    },
+    "gcp.dns.zone": {
+      "glyph": "dns",
+      "axis": "column",
+      "order": 60
+    },
+    "gcp.dns.record": {
+      "glyph": "record",
+      "placement": {
+        "parentKinds": [
+          "gcp.dns.zone"
+        ]
+      }
+    },
+    "gcp.service_account": {
+      "glyph": "key",
+      "group": "iam"
+    },
+    "gcp.iam.binding": {
+      "glyph": "key",
+      "group": "iam"
+    },
+    "gcp.secret": {
+      "glyph": "key",
+      "group": "secrets"
+    },
+    "gcp.bucket": {
+      "glyph": "document",
+      "group": "storage"
+    },
+    "gcp.artifact_registry": {
+      "glyph": "document",
+      "group": "storage"
+    },
+    "k8s.release": {
+      "size": "chip",
+      "glyph": "pod",
+      "placement": {
+        "parentKinds": [
+          "aws.eks.nodegroup"
         ]
       }
     },
@@ -418,6 +740,207 @@
       "axis": "row",
       "order": 4,
       "size": "chip"
+    },
+    "oci.compartment": {
+      "glyph": "box",
+      "axis": "row",
+      "order": 0
+    },
+    "oci.vcn": {
+      "glyph": "vpc",
+      "placement": {
+        "parentKinds": [
+          "oci.compartment"
+        ]
+      },
+      "axis": "row",
+      "order": 10
+    },
+    "oci.subnet": {
+      "glyph": "subnet",
+      "placement": {
+        "parentKinds": [
+          "oci.vcn"
+        ]
+      },
+      "axis": "column",
+      "order": 10
+    },
+    "oci.internet_gateway": {
+      "glyph": "internet_gateway",
+      "placement": {
+        "parentKinds": [
+          "oci.vcn"
+        ]
+      },
+      "order": 5
+    },
+    "oci.nat_gateway": {
+      "glyph": "nat",
+      "placement": {
+        "parentKinds": [
+          "oci.vcn"
+        ]
+      },
+      "order": 6
+    },
+    "oci.service_gateway": {
+      "glyph": "link",
+      "placement": {
+        "parentKinds": [
+          "oci.vcn"
+        ]
+      },
+      "order": 7
+    },
+    "oci.security_list": {
+      "glyph": "security_group",
+      "placement": {
+        "parentKinds": [
+          "oci.vcn"
+        ]
+      },
+      "order": 40
+    },
+    "oci.nsg": {
+      "glyph": "security_group",
+      "placement": {
+        "parentKinds": [
+          "oci.vcn"
+        ]
+      },
+      "order": 41
+    },
+    "oci.route_table": {
+      "glyph": "route",
+      "placement": {
+        "parentKinds": [
+          "oci.vcn"
+        ]
+      },
+      "order": 45
+    },
+    "oci.lb": {
+      "glyph": "balance",
+      "placement": {
+        "parentKinds": [
+          "oci.subnet",
+          "oci.compartment"
+        ]
+      },
+      "order": 8
+    },
+    "oci.oke.cluster": {
+      "glyph": "eks",
+      "placement": {
+        "parentKinds": [
+          "oci.subnet",
+          "oci.vcn",
+          "oci.compartment"
+        ]
+      },
+      "axis": "column",
+      "order": 20
+    },
+    "oci.oke.nodepool": {
+      "glyph": "nodegroup",
+      "placement": {
+        "parentKinds": [
+          "oci.oke.cluster"
+        ]
+      },
+      "axis": "row",
+      "order": 10
+    },
+    "oci.instance": {
+      "glyph": "server",
+      "placement": {
+        "parentKinds": [
+          "oci.subnet",
+          "oci.compartment"
+        ]
+      },
+      "order": 30
+    },
+    "oci.mysql": {
+      "glyph": "database",
+      "placement": {
+        "parentKinds": [
+          "oci.subnet",
+          "oci.compartment"
+        ]
+      },
+      "order": 50
+    },
+    "oci.adb": {
+      "glyph": "database",
+      "placement": {
+        "parentKinds": [
+          "oci.subnet",
+          "oci.compartment"
+        ]
+      },
+      "order": 51
+    },
+    "oci.dns.zone": {
+      "glyph": "dns",
+      "placement": {
+        "parentKinds": [
+          "oci.compartment"
+        ]
+      },
+      "axis": "column",
+      "order": 60
+    },
+    "oci.dns.record": {
+      "glyph": "record",
+      "placement": {
+        "parentKinds": [
+          "oci.dns.zone"
+        ]
+      }
+    },
+    "oci.policy": {
+      "glyph": "key",
+      "group": "iam"
+    },
+    "oci.dynamic_group": {
+      "glyph": "key",
+      "group": "iam"
+    },
+    "oci.vault": {
+      "glyph": "key",
+      "group": "secrets"
+    },
+    "oci.bucket": {
+      "glyph": "document",
+      "group": "storage"
+    }
+  },
+  "groups": {
+    "ssm": {
+      "label": "Parameter Store · config",
+      "axis": "column",
+      "order": 110,
+      "glyph": "sliders"
+    },
+    "iam": {
+      "label": "IAM · identities & access",
+      "axis": "column",
+      "order": 100,
+      "glyph": "key"
+    },
+    "secrets": {
+      "label": "Secrets & keys",
+      "axis": "column",
+      "order": 120,
+      "glyph": "key"
+    },
+    "storage": {
+      "label": "Storage & registries",
+      "axis": "column",
+      "order": 130,
+      "glyph": "document"
     }
   }
 }

@@ -1,0 +1,11 @@
+env              = "prod"
+project          = "sample-project-prod"
+region           = "europe-west1"
+release_channel  = "REGULAR"
+nodes            = 3
+max_nodes        = 12
+machine_type     = "e2-standard-8"
+enable_spot_pool = true
+sql_tier         = "db-custom-8-30720"
+enable_redis     = true
+redis_gb         = 5

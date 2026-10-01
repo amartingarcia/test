@@ -1,0 +1,13 @@
+env            = "dev"
+location       = "westeurope"
+aks_version    = "1.29"
+system_nodes   = 1
+user_vm_size   = "Standard_D4s_v5"
+user_min       = 1
+user_max       = 3
+pg_sku         = "B_Standard_B2s"
+pg_storage_mb  = 32768
+redis_capacity = 1
+enable_sql     = false
+enable_cosmos  = false
+tenant_id = "00000000-0000-0000-0000-000000000000"

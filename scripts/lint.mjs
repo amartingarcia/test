@@ -2,18 +2,19 @@
 // Lints one or more manifests (and the catalog) and prints actionable findings.
 // Exit code 1 if there is any error; warnings alone exit 0.
 //
-//   node scripts/lint.mjs path/to/manifest.json [more.json ...] [--catalog catalog/kinds.json]
+//   node scripts/lint.mjs path/to/manifest.json [more.json ...] [--catalog <catalog dir or file>]
 
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { loadCatalog } from '../lib/catalog/load-catalog.mjs';
 import { lintManifest, lintCatalog } from '../lib/manifest/lint-manifest.mjs';
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const args = process.argv.slice(2);
 const catalogIdx = args.indexOf('--catalog');
-const catalogPath = catalogIdx >= 0 ? args.splice(catalogIdx, 2)[1] : path.join(root, 'catalog', 'kinds.json');
+const catalogPath = catalogIdx >= 0 ? args.splice(catalogIdx, 2)[1] : path.join(root, 'catalog', 'providers');
 const manifestPaths = args;
 
 if (manifestPaths.length === 0) {
@@ -21,7 +22,7 @@ if (manifestPaths.length === 0) {
   process.exit(2);
 }
 
-const catalog = JSON.parse(await fs.readFile(catalogPath, 'utf8'));
+const catalog = (await fs.stat(catalogPath)).isDirectory() ? await loadCatalog(catalogPath) : JSON.parse(await fs.readFile(catalogPath, 'utf8'));
 let errors = 0;
 let warnings = 0;
 const report = (label, findings) => {

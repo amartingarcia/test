@@ -1,4 +1,6 @@
-# Catalog (`catalog/kinds.json`)
+# Catalog (`catalog/providers/*.json`)
+
+One file per provider (`aws`, `azure`, `gcp`, `oci`, `k8s`) plus `common.json` for groups shared across providers (iam, secrets, storage). `loadCatalog` merges them; a kind or group defined twice fails the load. Kind names: `<provider>.<service>[.<variant>]`.
 
 The knowledge of "what goes inside what", separate from any repo.
 

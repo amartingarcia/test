@@ -1,0 +1,180 @@
+{
+  "kinds": {
+    "oci.compartment": {
+      "glyph": "box",
+      "axis": "row",
+      "order": 0
+    },
+    "oci.vcn": {
+      "glyph": "vpc",
+      "placement": {
+        "parentKinds": [
+          "oci.compartment"
+        ]
+      },
+      "axis": "row",
+      "order": 10
+    },
+    "oci.subnet": {
+      "glyph": "subnet",
+      "placement": {
+        "parentKinds": [
+          "oci.vcn"
+        ]
+      },
+      "axis": "column",
+      "order": 10
+    },
+    "oci.internet_gateway": {
+      "glyph": "internet_gateway",
+      "placement": {
+        "parentKinds": [
+          "oci.vcn"
+        ]
+      },
+      "order": 5
+    },
+    "oci.nat_gateway": {
+      "glyph": "nat",
+      "placement": {
+        "parentKinds": [
+          "oci.vcn"
+        ]
+      },
+      "order": 6
+    },
+    "oci.service_gateway": {
+      "glyph": "link",
+      "placement": {
+        "parentKinds": [
+          "oci.vcn"
+        ]
+      },
+      "order": 7
+    },
+    "oci.security_list": {
+      "glyph": "security_group",
+      "placement": {
+        "parentKinds": [
+          "oci.vcn"
+        ]
+      },
+      "order": 40
+    },
+    "oci.nsg": {
+      "glyph": "security_group",
+      "placement": {
+        "parentKinds": [
+          "oci.vcn"
+        ]
+      },
+      "order": 41
+    },
+    "oci.route_table": {
+      "glyph": "route",
+      "placement": {
+        "parentKinds": [
+          "oci.vcn"
+        ]
+      },
+      "order": 45
+    },
+    "oci.lb": {
+      "glyph": "balance",
+      "placement": {
+        "parentKinds": [
+          "oci.subnet",
+          "oci.compartment"
+        ]
+      },
+      "order": 8
+    },
+    "oci.oke.cluster": {
+      "glyph": "eks",
+      "placement": {
+        "parentKinds": [
+          "oci.subnet",
+          "oci.vcn",
+          "oci.compartment"
+        ]
+      },
+      "axis": "column",
+      "order": 20
+    },
+    "oci.oke.nodepool": {
+      "glyph": "nodegroup",
+      "placement": {
+        "parentKinds": [
+          "oci.oke.cluster"
+        ]
+      },
+      "axis": "row",
+      "order": 10
+    },
+    "oci.instance": {
+      "glyph": "server",
+      "placement": {
+        "parentKinds": [
+          "oci.subnet",
+          "oci.compartment"
+        ]
+      },
+      "order": 30
+    },
+    "oci.mysql": {
+      "glyph": "database",
+      "placement": {
+        "parentKinds": [
+          "oci.subnet",
+          "oci.compartment"
+        ]
+      },
+      "order": 50
+    },
+    "oci.adb": {
+      "glyph": "database",
+      "placement": {
+        "parentKinds": [
+          "oci.subnet",
+          "oci.compartment"
+        ]
+      },
+      "order": 51
+    },
+    "oci.dns.zone": {
+      "glyph": "dns",
+      "placement": {
+        "parentKinds": [
+          "oci.compartment"
+        ]
+      },
+      "axis": "column",
+      "order": 60
+    },
+    "oci.dns.record": {
+      "glyph": "record",
+      "placement": {
+        "parentKinds": [
+          "oci.dns.zone"
+        ]
+      }
+    },
+    "oci.policy": {
+      "glyph": "key",
+      "group": "iam"
+    },
+    "oci.dynamic_group": {
+      "glyph": "key",
+      "group": "iam"
+    },
+    "oci.vault": {
+      "glyph": "key",
+      "group": "secrets"
+    },
+    "oci.bucket": {
+      "glyph": "document",
+      "group": "storage"
+    }
+  },
+  "groups": {}
+}
