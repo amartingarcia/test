@@ -1,0 +1,15 @@
+environment         = "stage"
+eks_version         = "1.29"
+enable_shared_vpc   = true
+enable_legacy       = false
+enable_docdb        = true
+opensearch_enabled  = true
+opensearch_nodes    = 2
+node_instance_types = ["m5.large"]
+node_min            = 2
+node_max            = 4
+node_desired        = 2
+db_instance_class   = "db.r6g.large"
+db_multi_az         = false
+db_storage_gb       = 50
+redis_nodes         = 1

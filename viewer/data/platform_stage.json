@@ -1,5 +1,5 @@
 {
-  "environment": "platform_prod",
+  "environment": "platform_stage",
   "entities": [
     {
       "id": "platform:aws.lb:public",
@@ -81,31 +81,6 @@
       }
     },
     {
-      "id": "platform:aws.ec2.instance:legacy_api",
-      "kind": "aws.ec2.instance",
-      "repoId": "platform",
-      "sourceAddress": "aws_instance.legacy_api",
-      "parent": "platform:aws.subnet.private:prod_private",
-      "details": {
-        "count": {
-          "resolved": true,
-          "value": 1
-        },
-        "ami": {
-          "resolved": true,
-          "value": "ami-0a1b2c3d4e5f67890"
-        },
-        "instance_type": {
-          "resolved": true,
-          "value": "m5.large"
-        },
-        "subnet_id": {
-          "resolved": false,
-          "raw": "aws_subnet.prod_private.id"
-        }
-      }
-    },
-    {
       "id": "platform:aws.eks.cluster:this",
       "kind": "aws.eks.cluster",
       "repoId": "platform",
@@ -164,8 +139,7 @@
         "instance_types": {
           "resolved": true,
           "value": [
-            "m5.large",
-            "m5a.large"
+            "m5.large"
           ]
         },
         "capacity_type": {
@@ -178,11 +152,11 @@
         },
         "scaling_config.max_size": {
           "resolved": true,
-          "value": 6
+          "value": 4
         },
         "scaling_config.desired_size": {
           "resolved": true,
-          "value": 3
+          "value": 2
         }
       }
     },
@@ -477,15 +451,15 @@
         },
         "instance_class": {
           "resolved": true,
-          "value": "db.r6g.xlarge"
+          "value": "db.r6g.large"
         },
         "allocated_storage": {
           "resolved": true,
-          "value": 100
+          "value": 50
         },
         "multi_az": {
           "resolved": true,
-          "value": true
+          "value": false
         },
         "storage_encrypted": {
           "resolved": true,
@@ -563,7 +537,7 @@
         },
         "num_cache_clusters": {
           "resolved": true,
-          "value": 2
+          "value": 1
         },
         "subnet_group_name": {
           "resolved": false,
@@ -596,7 +570,7 @@
         },
         "cluster_config.instance_count": {
           "resolved": true,
-          "value": 3
+          "value": 2
         },
         "vpc_options.subnet_ids": {
           "resolved": false,
@@ -1006,10 +980,6 @@
     {
       "from": "platform:aws.ec2.instance:ci_runner",
       "to": "platform:aws.subnet.private:shared_private"
-    },
-    {
-      "from": "platform:aws.ec2.instance:legacy_api",
-      "to": "platform:aws.subnet.private:prod_private"
     },
     {
       "from": "platform:aws.eks.cluster:this",

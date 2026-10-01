@@ -8,13 +8,12 @@
 // using the catalog's "what goes inside what" knowledge and ordering, so the
 // diagram reads like an architecture (edge -> public -> private -> data).
 //
-// Known limitation: the environment list below is hardcoded because this
-// is a static site with no directory listing — add an entry here whenever
-// scripts/build-sample-data.mjs (or its real-repo equivalent) writes a new
-// data/<env>.json.
 import { layoutLanes } from './lanes-layout.mjs';
 
-const ENVIRONMENTS = ['platform_prod', 'data_dev'];
+// Environment list comes from data/environments.json (one entry per tfvars file,
+// written by the build scripts). The fallback below only matters if that file
+// is missing.
+const FALLBACK_ENVIRONMENTS = [{ id: 'platform_prod', label: 'platform / prod' }, { id: 'data_dev', label: 'data_dev' }];
 
 // cytoscape-expand-collapse (UMD, v4.x) self-registers against the global
 // `cytoscape` once both scripts are loaded — no explicit cytoscape.use() call.
@@ -46,12 +45,24 @@ const zoomLevelEl = document.getElementById('zoom-level');
 const flowBtn = document.getElementById('flow-btn');
 const themeLabel = document.getElementById('theme-label');
 
-for (const env of ENVIRONMENTS) {
-  const opt = document.createElement('option');
-  opt.value = env;
-  opt.textContent = env;
-  envSelect.appendChild(opt);
+async function loadEnvironmentList() {
+  let list = FALLBACK_ENVIRONMENTS;
+  try {
+    const res = await fetch('data/environments.json', { cache: 'no-cache' });
+    if (res.ok) list = (await res.json()).environments ?? list;
+  } catch { /* offline or missing: use the fallback */ }
+  envSelect.innerHTML = '';
+  for (const env of list) {
+    const opt = document.createElement('option');
+    opt.value = env.id;
+    opt.textContent = env.label ?? env.id;
+    envSelect.appendChild(opt);
+  }
+  return list;
 }
+
+/** `#env=platform_stage` selects an environment, so a view can be linked. */
+const envFromHash = () => new URLSearchParams(location.hash.slice(1)).get('env');
 
 let cy = null;
 let catalog = { kinds: {}, groups: {} };
@@ -554,7 +565,17 @@ document.getElementById('collapse-all-btn').addEventListener('click', () => { cy
 document.getElementById('theme-btn').addEventListener('click', toggleTheme);
 document.getElementById('rotate-btn').addEventListener('click', () => { vertical = !vertical; applyLayout(true, fit); });
 flowBtn.addEventListener('click', () => setFlow(!flowOn));
-envSelect.addEventListener('change', () => loadEnvironment(envSelect.value));
+envSelect.addEventListener('change', () => {
+  history.replaceState(null, '', `#env=${encodeURIComponent(envSelect.value)}`);
+  loadEnvironment(envSelect.value);
+});
+window.addEventListener('hashchange', () => {
+  const wanted = envFromHash();
+  if (wanted && wanted !== envSelect.value && [...envSelect.options].some((o) => o.value === wanted)) {
+    envSelect.value = wanted;
+    loadEnvironment(wanted);
+  }
+});
 
 document.addEventListener('keydown', (e) => {
   if (e.target instanceof HTMLSelectElement || e.metaKey || e.ctrlKey || e.altKey) return;
@@ -567,4 +588,9 @@ document.addEventListener('keydown', (e) => {
 flowBtn.setAttribute('aria-pressed', String(flowOn));
 syncThemeLabel();
 requestAnimationFrame(flowTick);
-loadEnvironment(ENVIRONMENTS[0]);
+loadEnvironmentList().then((list) => {
+  const wanted = envFromHash();
+  const initial = list.some((e) => e.id === wanted) ? wanted : list[0].id;
+  envSelect.value = initial;
+  loadEnvironment(initial);
+});

@@ -119,3 +119,44 @@ test('leaves a string interpolation expression unresolved rather than guessing',
 test('leaves a local.X reference unresolved (locals are not in scope for this layer)', () => {
   assert.deepEqual(resolveHclValue('local.name_prefix', {}), { resolved: false, raw: 'local.name_prefix' });
 });
+
+// --- conditional expressions: `cond ? a : b` with a resolvable condition ---
+
+test('a conditional on a boolean var resolves to the chosen branch', () => {
+  assert.deepEqual(resolveHclValue('var.enabled ? 1 : 0', { enabled: true }), { resolved: true, value: 1 });
+  assert.deepEqual(resolveHclValue('var.enabled ? 1 : 0', { enabled: false }), { resolved: true, value: 0 });
+  assert.deepEqual(resolveHclValue('true ? "a" : "b"', {}), { resolved: true, value: 'a' });
+});
+
+test('equality and negation are supported in the condition', () => {
+  assert.deepEqual(resolveHclValue('var.env == "prod" ? 3 : 1', { env: 'prod' }), { resolved: true, value: 3 });
+  assert.deepEqual(resolveHclValue('var.env == "prod" ? 3 : 1', { env: 'dev' }), { resolved: true, value: 1 });
+  assert.deepEqual(resolveHclValue('var.env != "prod" ? 3 : 1', { env: 'dev' }), { resolved: true, value: 3 });
+  assert.deepEqual(resolveHclValue('!var.enabled ? "off" : "on"', { enabled: false }), { resolved: true, value: 'off' });
+});
+
+test('nested conditionals associate to the right', () => {
+  const raw = 'var.env == "prod" ? 3 : var.env == "stage" ? 2 : 1';
+  assert.deepEqual(resolveHclValue(raw, { env: 'stage' }), { resolved: true, value: 2 });
+  assert.deepEqual(resolveHclValue(raw, { env: 'dev' }), { resolved: true, value: 1 });
+});
+
+test('only the chosen branch has to resolve', () => {
+  assert.deepEqual(resolveHclValue('var.on ? 1 : aws_thing.x.id', { on: true }), { resolved: true, value: 1 });
+  assert.deepEqual(resolveHclValue('var.on ? 1 : aws_thing.x.id', { on: false }), { resolved: false, raw: 'var.on ? 1 : aws_thing.x.id' });
+});
+
+test('a condition that is unknown, or not a boolean, stays unresolved (never guessed)', () => {
+  assert.equal(resolveHclValue('var.missing ? 1 : 0', {}).resolved, false);
+  assert.equal(resolveHclValue('var.s ? 1 : 0', { s: 'true' }).resolved, false);
+  assert.equal(resolveHclValue('aws_thing.x.enabled ? 1 : 0', {}).resolved, false);
+});
+
+test('? and : inside strings or brackets are not conditionals', () => {
+  assert.deepEqual(resolveHclValue('"what? yes: no"', {}), { resolved: true, value: 'what? yes: no' });
+  assert.equal(resolveHclValue('lookup(var.m, "a?b", 1)', { m: {} }).resolved, false);
+});
+
+test('two adjacent string literals are not mistaken for one string literal', () => {
+  assert.equal(resolveHclValue('"a" == "b"', {}).resolved, false);
+});

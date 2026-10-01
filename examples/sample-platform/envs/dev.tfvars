@@ -1,0 +1,15 @@
+environment         = "dev"
+eks_version         = "1.28"
+enable_shared_vpc   = false
+enable_legacy       = false
+enable_docdb        = false
+opensearch_enabled  = false
+opensearch_nodes    = 1
+node_instance_types = ["t3.large"]
+node_min            = 1
+node_max            = 2
+node_desired        = 1
+db_instance_class   = "db.t4g.medium"
+db_multi_az         = false
+db_storage_gb       = 20
+redis_nodes         = 1

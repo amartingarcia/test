@@ -5,9 +5,10 @@ resource "aws_ssm_parameter" "db_endpoint" {
 }
 
 resource "aws_ssm_parameter" "docdb_endpoint" {
+  count = var.enable_docdb ? 1 : 0
   name  = "/prod/reports/docdb/endpoint"
   type  = "String"
-  value = aws_docdb_cluster.reports.endpoint
+  value = aws_docdb_cluster.reports[0].endpoint
 }
 
 resource "aws_ssm_parameter" "redis_endpoint" {
@@ -17,9 +18,10 @@ resource "aws_ssm_parameter" "redis_endpoint" {
 }
 
 resource "aws_ssm_parameter" "opensearch_endpoint" {
+  count = var.opensearch_enabled ? 1 : 0
   name  = "/prod/logs/opensearch/endpoint"
   type  = "String"
-  value = aws_opensearch_domain.logs.endpoint
+  value = aws_opensearch_domain.logs[0].endpoint
 }
 
 resource "aws_route53_zone" "main" {
@@ -51,9 +53,10 @@ resource "aws_route53_record" "www" {
 }
 
 resource "aws_route53_record" "bastion" {
+  count = var.enable_shared_vpc ? 1 : 0
   zone_id = aws_route53_zone.main.zone_id
   name    = "bastion.example.com"
   type    = "A"
   ttl     = 300
-  records = [aws_instance.bastion.public_ip]
+  records = [aws_instance.bastion[0].public_ip]
 }

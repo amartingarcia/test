@@ -20,6 +20,7 @@ import { compileEnvironmentGraph } from '../lib/compile/compile-environment-grap
 import { inferPlacementFromReferences, referencesOf } from '../lib/compile/infer-placement.mjs';
 import { extractResourceDetails } from '../lib/extract/extract-resource-details.mjs';
 import { validateManifest } from '../lib/manifest/validate-manifest.mjs';
+import { parseTfvars } from '../lib/parse/parse-tfvars.mjs';
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const catalog = JSON.parse(await fs.readFile(path.join(root, 'catalog', 'kinds.json'), 'utf8'));
@@ -29,7 +30,7 @@ const platformFiles = await Promise.all(
   (await fs.readdir(platformDir)).filter((f) => f.endsWith('.tf')).sort()
     .map(async (f) => ({ filePath: f, content: await fs.readFile(path.join(platformDir, f), 'utf8') }))
 );
-const vars = { eks_version: '1.29', db_instance_class: 'db.r6g.large' };
+const envDir = path.join(platformDir, 'envs');
 
 const ent = (type, kind, extra = {}, nameRegex) => ({
   match: nameRegex ? { type, nameRegex } : { type },
@@ -94,6 +95,7 @@ resource "helm_release" "orders_api" {
 }
 
 resource "helm_release" "report_job" {
+  count     = var.enable_docdb ? 1 : 0
   name      = "report-job"
   chart     = "batch-job"
   version   = "0.4.0"
@@ -107,14 +109,24 @@ for (const m of [platformManifest, gitopsManifest]) {
   if (errors.length) throw new Error(`invalid manifest ${m.repoId}: ${errors.join('; ')}`);
 }
 
-/** The DOT a `terraform graph` would give: one node per resource, an edge per reference between resources. */
-function dotFromTerraform(files) {
-  const addresses = [];
+/**
+ * The DOT a `terraform graph` would give for one environment: one node per
+ * instantiated resource, an edge per reference between resources. A resource
+ * whose `count` resolves to 0 under the environment's tfvars is not
+ * instantiated, so it (and its edges) simply is not there.
+ */
+function dotFromTerraform(files, vars) {
+  const all = [];
   for (const f of files) {
     for (const b of parseHclBlocks(f.content)) {
-      if (b.blockType === 'resource' && b.labels.length === 2) addresses.push(`${b.labels[0]}.${b.labels[1]}`);
+      if (b.blockType === 'resource' && b.labels.length === 2) all.push(`${b.labels[0]}.${b.labels[1]}`);
     }
   }
+  const addresses = all.filter((a) => {
+    const p = parseResourceAddress(a);
+    const d = extractResourceDetails(files, { blockType: 'resource', labels: [p.type, p.name] }, vars);
+    return !(d?.attributes.count?.resolved && d.attributes.count.value === 0);
+  });
   const known = new Set(addresses);
   const q = (a) => `"[root] ${a} (expand)"`;
   const lines = addresses.map((a) => `\t\t${q(a)} [label = "${a}", shape = "box"]`);
@@ -124,56 +136,83 @@ function dotFromTerraform(files) {
   return `digraph {\n\tsubgraph "root" {\n${lines.join('\n')}\n\t}\n}\n`;
 }
 
-const platformParsed = parseDotGraph(dotFromTerraform(platformFiles));
-const gitopsParsed = parseDotGraph(dotFromTerraform(gitopsFiles));
-const filesByRepo = { platform: platformFiles, gitops: gitopsFiles };
+// runtime relationships between workloads and what they talk to (not visible as Terraform references)
+const LINKS = [
+  { fromKind: 'k8s.release.service', toKind: 'aws.iam.role.irsa', label: 'assumes (IRSA)' },
+  { fromKind: 'k8s.release.service', toKind: 'aws.rds.instance', label: 'SQL' },
+  { fromKind: 'k8s.release.service', toKind: 'aws.elasticache.redis', label: 'cache' },
+  { fromKind: 'k8s.release.service', toKind: 'aws.opensearch.domain', label: 'logs' },
+  { fromKind: 'k8s.release.batch', toKind: 'aws.docdb.cluster', label: 'writes' },
+];
 
-const compiled = compileEnvironmentGraph({
-  environment: 'platform_prod',
-  repoGraphs: [
+const EDGE_LABELS = [
+  { fromKind: 'aws.eks.cluster', toKind: 'aws.iam.role.cluster', label: 'assumes' },
+  { fromKind: 'aws.eks.nodegroup', toKind: 'aws.iam.role.node', label: 'assumes' },
+  { fromKind: 'aws.ssm.parameter', toKind: 'aws.rds.instance', label: 'stores endpoint' },
+  { fromKind: 'aws.ssm.parameter', toKind: 'aws.docdb.cluster', label: 'stores endpoint' },
+  { fromKind: 'aws.ssm.parameter', toKind: 'aws.elasticache.redis', label: 'stores endpoint' },
+  { fromKind: 'aws.ssm.parameter', toKind: 'aws.opensearch.domain', label: 'stores endpoint' },
+  { fromKind: 'aws.route53.record', toKind: 'aws.lb', label: 'alias' },
+  { fromKind: 'aws.route53.record', toKind: 'aws.ec2.instance', label: 'points to' },
+  { fromKind: 'aws.rds.instance', toKind: 'aws.security_group', label: 'protected by' },
+  { fromKind: 'aws.lb', toKind: 'aws.security_group', label: 'protected by' },
+  { fromKind: 'aws.vpc_peering', toKind: 'aws.vpc', label: 'peers' },
+];
+
+function buildEnvironment(environment, vars) {
+  const platformParsed = parseDotGraph(dotFromTerraform(platformFiles, vars));
+  const gitopsParsed = parseDotGraph(dotFromTerraform(gitopsFiles, vars));
+  const filesByRepo = { platform: platformFiles, gitops: gitopsFiles };
+  const repoGraphs = [
     { repoId: 'platform', manifest: platformManifest, nodes: platformParsed.nodes, edges: platformParsed.edges },
     { repoId: 'gitops', manifest: gitopsManifest, nodes: gitopsParsed.nodes, edges: gitopsParsed.edges },
-  ],
-  crossRepoLinks: [
-    // what the workloads talk to (runtime relationships; not visible in Terraform references)
-    { fromKind: 'k8s.release.service', toKind: 'aws.iam.role.irsa', label: 'assumes (IRSA)' },
-    { fromKind: 'k8s.release.service', toKind: 'aws.rds.instance', label: 'SQL' },
-    { fromKind: 'k8s.release.service', toKind: 'aws.elasticache.redis', label: 'cache' },
-    { fromKind: 'k8s.release.service', toKind: 'aws.opensearch.domain', label: 'logs' },
-    { fromKind: 'k8s.release.batch', toKind: 'aws.docdb.cluster', label: 'writes' },
-  ],
-  catalog,
-  inferPlacement: (entities) => inferPlacementFromReferences({ entities, files: filesByRepo, vars, catalog }),
-  edgeLabels: [
-    { fromKind: 'aws.eks.cluster', toKind: 'aws.iam.role.cluster', label: 'assumes' },
-    { fromKind: 'aws.eks.nodegroup', toKind: 'aws.iam.role.node', label: 'assumes' },
-    { fromKind: 'aws.ssm.parameter', toKind: 'aws.rds.instance', label: 'stores endpoint' },
-    { fromKind: 'aws.ssm.parameter', toKind: 'aws.docdb.cluster', label: 'stores endpoint' },
-    { fromKind: 'aws.ssm.parameter', toKind: 'aws.elasticache.redis', label: 'stores endpoint' },
-    { fromKind: 'aws.ssm.parameter', toKind: 'aws.opensearch.domain', label: 'stores endpoint' },
-    { fromKind: 'aws.route53.record', toKind: 'aws.lb', label: 'alias' },
-    { fromKind: 'aws.route53.record', toKind: 'aws.ec2.instance', label: 'points to' },
-    { fromKind: 'aws.rds.instance', toKind: 'aws.security_group', label: 'protected by' },
-    { fromKind: 'aws.lb', toKind: 'aws.security_group', label: 'protected by' },
-    { fromKind: 'aws.vpc_peering', toKind: 'aws.vpc', label: 'peers' },
-  ],
-});
+  ];
+  const options = {
+    environment,
+    repoGraphs,
+    catalog,
+    inferPlacement: (entities) => inferPlacementFromReferences({ entities, files: filesByRepo, vars, catalog }),
+    edgeLabels: EDGE_LABELS,
+  };
 
-for (const entity of compiled.entities) {
-  const files = filesByRepo[entity.repoId];
-  const parsed = parseResourceAddress(entity.sourceAddress);
-  if (!files || !parsed) continue;
-  const details = extractResourceDetails(files, { blockType: 'resource', labels: [parsed.type, parsed.name] }, vars);
-  if (details) entity.details = details.attributes;
+  // A link whose endpoint kind does not exist in this environment (no DocDB in
+  // dev) is simply not applicable, not an error: find which kinds exist first.
+  const kinds = new Set(compileEnvironmentGraph(options).entities.map((e) => e.kind));
+  const crossRepoLinks = LINKS.filter((l) => kinds.has(l.fromKind) && kinds.has(l.toKind));
+  const compiled = compileEnvironmentGraph({ ...options, crossRepoLinks });
+
+  for (const entity of compiled.entities) {
+    const files = filesByRepo[entity.repoId];
+    const parsed = parseResourceAddress(entity.sourceAddress);
+    if (!files || !parsed) continue;
+    const details = extractResourceDetails(files, { blockType: 'resource', labels: [parsed.type, parsed.name] }, vars);
+    if (details) entity.details = details.attributes;
+  }
+  return compiled;
 }
 
 const outDir = path.join(root, 'viewer', 'data');
 await fs.mkdir(outDir, { recursive: true });
-await fs.writeFile(path.join(outDir, 'platform_prod.json'), JSON.stringify(compiled, null, 2) + '\n', 'utf8');
-await fs.writeFile(path.join(outDir, 'catalog.json'), JSON.stringify(catalog, null, 2) + '\n', 'utf8');
 
-const roots = compiled.entities.filter((e) => !e.parent && !e.embedded).length;
-console.log(`entities: ${compiled.entities.length} (roots: ${roots}), edges: ${compiled.edges.length}`);
-console.log('coverage:', JSON.stringify(compiled.coverage));
-console.log('unresolved placements:', JSON.stringify(compiled.unresolvedPlacements));
-console.log('unresolved cross-repo links:', JSON.stringify(compiled.unresolvedCrossRepoLinks));
+// one environment per tfvars file
+const envFiles = (await fs.readdir(envDir)).filter((f) => f.endsWith('.tfvars')).sort();
+const order = ['dev', 'stage', 'prod'];
+envFiles.sort((a, b) => (order.indexOf(a.replace('.tfvars', '')) - order.indexOf(b.replace('.tfvars', ''))));
+
+const environments = [];
+for (const file of envFiles) {
+  const name = file.replace(/\.tfvars$/, '');
+  const id = `platform_${name}`;
+  const vars = parseTfvars(await fs.readFile(path.join(envDir, file), 'utf8'));
+  const compiled = buildEnvironment(id, vars);
+  await fs.writeFile(path.join(outDir, `${id}.json`), JSON.stringify(compiled, null, 2) + '\n', 'utf8');
+  environments.push({ id, label: `platform / ${name}`, source: `envs/${file}` });
+  const visible = compiled.entities.filter((e) => !e.embedded).length;
+  console.log(`${id}: ${compiled.entities.length} entities (${visible} drawn), ${compiled.edges.length} edges, ` +
+    `unresolved placements ${compiled.unresolvedPlacements.length}, unmapped ${compiled.coverage.platform.unmapped.length}`);
+}
+
+// the older hand-written demo stays selectable
+environments.push({ id: 'data_dev', label: 'minimal demo (hand-written DOT)', source: 'scripts/build-sample-data.mjs' });
+await fs.writeFile(path.join(outDir, 'environments.json'), JSON.stringify({ environments }, null, 2) + '\n', 'utf8');
+await fs.writeFile(path.join(outDir, 'catalog.json'), JSON.stringify(catalog, null, 2) + '\n', 'utf8');

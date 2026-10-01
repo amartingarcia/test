@@ -1,5 +1,5 @@
 {
-  "environment": "platform_prod",
+  "environment": "platform_dev",
   "entities": [
     {
       "id": "platform:aws.lb:public",
@@ -27,85 +27,6 @@
       }
     },
     {
-      "id": "platform:aws.ec2.instance:bastion",
-      "kind": "aws.ec2.instance",
-      "repoId": "platform",
-      "sourceAddress": "aws_instance.bastion",
-      "parent": "platform:aws.subnet.public:shared_public",
-      "details": {
-        "count": {
-          "resolved": true,
-          "value": 1
-        },
-        "ami": {
-          "resolved": true,
-          "value": "ami-0a1b2c3d4e5f67890"
-        },
-        "instance_type": {
-          "resolved": true,
-          "value": "t3.micro"
-        },
-        "subnet_id": {
-          "resolved": false,
-          "raw": "aws_subnet.shared_public[0].id"
-        },
-        "iam_instance_profile": {
-          "resolved": false,
-          "raw": "aws_iam_instance_profile.ec2[0].name"
-        }
-      }
-    },
-    {
-      "id": "platform:aws.ec2.instance:ci_runner",
-      "kind": "aws.ec2.instance",
-      "repoId": "platform",
-      "sourceAddress": "aws_instance.ci_runner",
-      "parent": "platform:aws.subnet.private:shared_private",
-      "details": {
-        "count": {
-          "resolved": true,
-          "value": 1
-        },
-        "ami": {
-          "resolved": true,
-          "value": "ami-0a1b2c3d4e5f67890"
-        },
-        "instance_type": {
-          "resolved": true,
-          "value": "t3.large"
-        },
-        "subnet_id": {
-          "resolved": false,
-          "raw": "aws_subnet.shared_private[0].id"
-        }
-      }
-    },
-    {
-      "id": "platform:aws.ec2.instance:legacy_api",
-      "kind": "aws.ec2.instance",
-      "repoId": "platform",
-      "sourceAddress": "aws_instance.legacy_api",
-      "parent": "platform:aws.subnet.private:prod_private",
-      "details": {
-        "count": {
-          "resolved": true,
-          "value": 1
-        },
-        "ami": {
-          "resolved": true,
-          "value": "ami-0a1b2c3d4e5f67890"
-        },
-        "instance_type": {
-          "resolved": true,
-          "value": "m5.large"
-        },
-        "subnet_id": {
-          "resolved": false,
-          "raw": "aws_subnet.prod_private.id"
-        }
-      }
-    },
-    {
       "id": "platform:aws.eks.cluster:this",
       "kind": "aws.eks.cluster",
       "repoId": "platform",
@@ -118,7 +39,7 @@
         },
         "version": {
           "resolved": true,
-          "value": "1.29"
+          "value": "1.28"
         },
         "role_arn": {
           "resolved": false,
@@ -164,8 +85,7 @@
         "instance_types": {
           "resolved": true,
           "value": [
-            "m5.large",
-            "m5a.large"
+            "t3.large"
           ]
         },
         "capacity_type": {
@@ -174,15 +94,15 @@
         },
         "scaling_config.min_size": {
           "resolved": true,
-          "value": 2
+          "value": 1
         },
         "scaling_config.max_size": {
           "resolved": true,
-          "value": 6
+          "value": 2
         },
         "scaling_config.desired_size": {
           "resolved": true,
-          "value": 3
+          "value": 1
         }
       }
     },
@@ -274,31 +194,6 @@
       }
     },
     {
-      "id": "platform:aws.ssm.parameter:docdb_endpoint",
-      "kind": "aws.ssm.parameter",
-      "repoId": "platform",
-      "sourceAddress": "aws_ssm_parameter.docdb_endpoint",
-      "parent": null,
-      "details": {
-        "count": {
-          "resolved": true,
-          "value": 1
-        },
-        "name": {
-          "resolved": true,
-          "value": "/prod/reports/docdb/endpoint"
-        },
-        "type": {
-          "resolved": true,
-          "value": "String"
-        },
-        "value": {
-          "resolved": false,
-          "raw": "aws_docdb_cluster.reports[0].endpoint"
-        }
-      }
-    },
-    {
       "id": "platform:aws.ssm.parameter:redis_endpoint",
       "kind": "aws.ssm.parameter",
       "repoId": "platform",
@@ -316,31 +211,6 @@
         "value": {
           "resolved": false,
           "raw": "aws_elasticache_replication_group.sessions.primary_endpoint_address"
-        }
-      }
-    },
-    {
-      "id": "platform:aws.ssm.parameter:opensearch_endpoint",
-      "kind": "aws.ssm.parameter",
-      "repoId": "platform",
-      "sourceAddress": "aws_ssm_parameter.opensearch_endpoint",
-      "parent": null,
-      "details": {
-        "count": {
-          "resolved": true,
-          "value": 1
-        },
-        "name": {
-          "resolved": true,
-          "value": "/prod/logs/opensearch/endpoint"
-        },
-        "type": {
-          "resolved": true,
-          "value": "String"
-        },
-        "value": {
-          "resolved": false,
-          "raw": "aws_opensearch_domain.logs[0].endpoint"
         }
       }
     },
@@ -424,39 +294,6 @@
       }
     },
     {
-      "id": "platform:aws.route53.record:bastion",
-      "kind": "aws.route53.record",
-      "repoId": "platform",
-      "sourceAddress": "aws_route53_record.bastion",
-      "parent": "platform:aws.route53.zone:main",
-      "details": {
-        "count": {
-          "resolved": true,
-          "value": 1
-        },
-        "zone_id": {
-          "resolved": false,
-          "raw": "aws_route53_zone.main.zone_id"
-        },
-        "name": {
-          "resolved": true,
-          "value": "bastion.example.com"
-        },
-        "type": {
-          "resolved": true,
-          "value": "A"
-        },
-        "ttl": {
-          "resolved": true,
-          "value": 300
-        },
-        "records": {
-          "resolved": false,
-          "raw": "[aws_instance.bastion[0].public_ip]"
-        }
-      }
-    },
-    {
       "id": "platform:aws.rds.instance:orders",
       "kind": "aws.rds.instance",
       "repoId": "platform",
@@ -477,15 +314,15 @@
         },
         "instance_class": {
           "resolved": true,
-          "value": "db.r6g.xlarge"
+          "value": "db.t4g.medium"
         },
         "allocated_storage": {
           "resolved": true,
-          "value": 100
+          "value": 20
         },
         "multi_az": {
           "resolved": true,
-          "value": true
+          "value": false
         },
         "storage_encrypted": {
           "resolved": true,
@@ -498,39 +335,6 @@
         "vpc_security_group_ids": {
           "resolved": false,
           "raw": "[aws_security_group.prod_default.id]"
-        }
-      }
-    },
-    {
-      "id": "platform:aws.docdb.cluster:reports",
-      "kind": "aws.docdb.cluster",
-      "repoId": "platform",
-      "sourceAddress": "aws_docdb_cluster.reports",
-      "parent": "platform:aws.subnet.data:prod_data",
-      "details": {
-        "count": {
-          "resolved": true,
-          "value": 1
-        },
-        "cluster_identifier": {
-          "resolved": true,
-          "value": "reports"
-        },
-        "engine_version": {
-          "resolved": true,
-          "value": "5.0.0"
-        },
-        "storage_encrypted": {
-          "resolved": true,
-          "value": true
-        },
-        "backup_retention_period": {
-          "resolved": true,
-          "value": 7
-        },
-        "db_subnet_group_name": {
-          "resolved": false,
-          "raw": "aws_docdb_subnet_group.data[0].name"
         }
       }
     },
@@ -563,44 +367,11 @@
         },
         "num_cache_clusters": {
           "resolved": true,
-          "value": 2
+          "value": 1
         },
         "subnet_group_name": {
           "resolved": false,
           "raw": "aws_elasticache_subnet_group.data.name"
-        }
-      }
-    },
-    {
-      "id": "platform:aws.opensearch.domain:logs",
-      "kind": "aws.opensearch.domain",
-      "repoId": "platform",
-      "sourceAddress": "aws_opensearch_domain.logs",
-      "parent": "platform:aws.subnet.data:prod_data",
-      "details": {
-        "count": {
-          "resolved": true,
-          "value": 1
-        },
-        "domain_name": {
-          "resolved": true,
-          "value": "logs"
-        },
-        "engine_version": {
-          "resolved": true,
-          "value": "OpenSearch_2.13"
-        },
-        "cluster_config.instance_type": {
-          "resolved": true,
-          "value": "r6g.large.search"
-        },
-        "cluster_config.instance_count": {
-          "resolved": true,
-          "value": 3
-        },
-        "vpc_options.subnet_ids": {
-          "resolved": false,
-          "raw": "[aws_subnet.prod_data.id]"
         }
       }
     },
@@ -656,27 +427,6 @@
       }
     },
     {
-      "id": "platform:aws.iam.role.ec2:ec2_ssm",
-      "kind": "aws.iam.role.ec2",
-      "repoId": "platform",
-      "sourceAddress": "aws_iam_role.ec2_ssm",
-      "parent": null,
-      "details": {
-        "count": {
-          "resolved": true,
-          "value": 1
-        },
-        "name": {
-          "resolved": true,
-          "value": "shared-ec2-ssm"
-        },
-        "path": {
-          "resolved": true,
-          "value": "/"
-        }
-      }
-    },
-    {
       "id": "platform:aws.vpc:prod",
       "kind": "aws.vpc",
       "repoId": "platform",
@@ -694,48 +444,6 @@
       }
     },
     {
-      "id": "platform:aws.vpc:shared",
-      "kind": "aws.vpc",
-      "repoId": "platform",
-      "sourceAddress": "aws_vpc.shared",
-      "parent": null,
-      "details": {
-        "count": {
-          "resolved": true,
-          "value": 1
-        },
-        "cidr_block": {
-          "resolved": true,
-          "value": "10.20.0.0/16"
-        }
-      }
-    },
-    {
-      "id": "platform:aws.vpc_peering:prod_shared",
-      "kind": "aws.vpc_peering",
-      "repoId": "platform",
-      "sourceAddress": "aws_vpc_peering_connection.prod_shared",
-      "parent": null,
-      "details": {
-        "count": {
-          "resolved": true,
-          "value": 1
-        },
-        "vpc_id": {
-          "resolved": false,
-          "raw": "aws_vpc.prod.id"
-        },
-        "peer_vpc_id": {
-          "resolved": false,
-          "raw": "aws_vpc.shared[0].id"
-        },
-        "auto_accept": {
-          "resolved": true,
-          "value": true
-        }
-      }
-    },
-    {
       "id": "platform:aws.internet_gateway:prod",
       "kind": "aws.internet_gateway",
       "repoId": "platform",
@@ -745,23 +453,6 @@
         "vpc_id": {
           "resolved": false,
           "raw": "aws_vpc.prod.id"
-        }
-      }
-    },
-    {
-      "id": "platform:aws.internet_gateway:shared",
-      "kind": "aws.internet_gateway",
-      "repoId": "platform",
-      "sourceAddress": "aws_internet_gateway.shared",
-      "parent": "platform:aws.vpc:shared",
-      "details": {
-        "count": {
-          "resolved": true,
-          "value": 1
-        },
-        "vpc_id": {
-          "resolved": false,
-          "raw": "aws_vpc.shared[0].id"
         }
       }
     },
@@ -817,48 +508,6 @@
       }
     },
     {
-      "id": "platform:aws.subnet.public:shared_public",
-      "kind": "aws.subnet.public",
-      "repoId": "platform",
-      "sourceAddress": "aws_subnet.shared_public",
-      "parent": "platform:aws.vpc:shared",
-      "details": {
-        "count": {
-          "resolved": true,
-          "value": 1
-        },
-        "vpc_id": {
-          "resolved": false,
-          "raw": "aws_vpc.shared[0].id"
-        },
-        "cidr_block": {
-          "resolved": true,
-          "value": "10.20.0.0/20"
-        }
-      }
-    },
-    {
-      "id": "platform:aws.subnet.private:shared_private",
-      "kind": "aws.subnet.private",
-      "repoId": "platform",
-      "sourceAddress": "aws_subnet.shared_private",
-      "parent": "platform:aws.vpc:shared",
-      "details": {
-        "count": {
-          "resolved": true,
-          "value": 1
-        },
-        "vpc_id": {
-          "resolved": false,
-          "raw": "aws_vpc.shared[0].id"
-        },
-        "cidr_block": {
-          "resolved": true,
-          "value": "10.20.16.0/20"
-        }
-      }
-    },
-    {
       "id": "platform:aws.nat_gateway:prod",
       "kind": "aws.nat_gateway",
       "repoId": "platform",
@@ -876,27 +525,6 @@
       }
     },
     {
-      "id": "platform:aws.nat_gateway:shared",
-      "kind": "aws.nat_gateway",
-      "repoId": "platform",
-      "sourceAddress": "aws_nat_gateway.shared",
-      "parent": "platform:aws.subnet.public:shared_public",
-      "details": {
-        "count": {
-          "resolved": true,
-          "value": 1
-        },
-        "subnet_id": {
-          "resolved": false,
-          "raw": "aws_subnet.shared_public[0].id"
-        },
-        "allocation_id": {
-          "resolved": false,
-          "raw": "aws_eip.shared_nat[0].id"
-        }
-      }
-    },
-    {
       "id": "platform:aws.security_group:prod_default",
       "kind": "aws.security_group",
       "repoId": "platform",
@@ -910,27 +538,6 @@
         "vpc_id": {
           "resolved": false,
           "raw": "aws_vpc.prod.id"
-        }
-      }
-    },
-    {
-      "id": "platform:aws.security_group:shared_default",
-      "kind": "aws.security_group",
-      "repoId": "platform",
-      "sourceAddress": "aws_security_group.shared_default",
-      "parent": "platform:aws.vpc:shared",
-      "details": {
-        "count": {
-          "resolved": true,
-          "value": 1
-        },
-        "name": {
-          "resolved": true,
-          "value": "shared-default"
-        },
-        "vpc_id": {
-          "resolved": false,
-          "raw": "aws_vpc.shared[0].id"
         }
       }
     },
@@ -958,35 +565,6 @@
           "value": "orders"
         }
       }
-    },
-    {
-      "id": "gitops:k8s.release.batch:report_job",
-      "kind": "k8s.release.batch",
-      "repoId": "gitops",
-      "sourceAddress": "helm_release.report_job",
-      "parent": "platform:aws.eks.nodegroup:default",
-      "details": {
-        "count": {
-          "resolved": true,
-          "value": 1
-        },
-        "name": {
-          "resolved": true,
-          "value": "report-job"
-        },
-        "chart": {
-          "resolved": true,
-          "value": "batch-job"
-        },
-        "version": {
-          "resolved": true,
-          "value": "0.4.0"
-        },
-        "namespace": {
-          "resolved": true,
-          "value": "reports"
-        }
-      }
     }
   ],
   "edges": [
@@ -998,18 +576,6 @@
       "from": "platform:aws.lb:public",
       "to": "platform:aws.security_group:prod_default",
       "label": "protected by"
-    },
-    {
-      "from": "platform:aws.ec2.instance:bastion",
-      "to": "platform:aws.subnet.public:shared_public"
-    },
-    {
-      "from": "platform:aws.ec2.instance:ci_runner",
-      "to": "platform:aws.subnet.private:shared_private"
-    },
-    {
-      "from": "platform:aws.ec2.instance:legacy_api",
-      "to": "platform:aws.subnet.private:prod_private"
     },
     {
       "from": "platform:aws.eks.cluster:this",
@@ -1051,21 +617,11 @@
       "label": "stores endpoint"
     },
     {
-      "from": "platform:aws.ssm.parameter:docdb_endpoint",
-      "to": "platform:aws.docdb.cluster:reports",
-      "label": "stores endpoint"
-    },
-    {
       "from": "platform:aws.ssm.parameter:redis_endpoint",
       "to": "platform:aws.elasticache.redis:sessions",
       "label": "stores endpoint"
     },
     {
-      "from": "platform:aws.ssm.parameter:opensearch_endpoint",
-      "to": "platform:aws.opensearch.domain:logs",
-      "label": "stores endpoint"
-    },
-    {
       "from": "platform:aws.route53.record:api",
       "to": "platform:aws.route53.zone:main"
     },
@@ -1082,15 +638,6 @@
       "from": "platform:aws.route53.record:www",
       "to": "platform:aws.lb:public",
       "label": "alias"
-    },
-    {
-      "from": "platform:aws.route53.record:bastion",
-      "to": "platform:aws.route53.zone:main"
-    },
-    {
-      "from": "platform:aws.route53.record:bastion",
-      "to": "platform:aws.ec2.instance:bastion",
-      "label": "points to"
     },
     {
       "from": "platform:aws.rds.instance:orders",
@@ -1098,26 +645,8 @@
       "label": "protected by"
     },
     {
-      "from": "platform:aws.opensearch.domain:logs",
-      "to": "platform:aws.subnet.data:prod_data"
-    },
-    {
-      "from": "platform:aws.vpc_peering:prod_shared",
-      "to": "platform:aws.vpc:prod",
-      "label": "peers"
-    },
-    {
-      "from": "platform:aws.vpc_peering:prod_shared",
-      "to": "platform:aws.vpc:shared",
-      "label": "peers"
-    },
-    {
       "from": "platform:aws.internet_gateway:prod",
       "to": "platform:aws.vpc:prod"
-    },
-    {
-      "from": "platform:aws.internet_gateway:shared",
-      "to": "platform:aws.vpc:shared"
     },
     {
       "from": "platform:aws.subnet.public:prod_public",
@@ -1132,28 +661,12 @@
       "to": "platform:aws.vpc:prod"
     },
     {
-      "from": "platform:aws.subnet.public:shared_public",
-      "to": "platform:aws.vpc:shared"
-    },
-    {
-      "from": "platform:aws.subnet.private:shared_private",
-      "to": "platform:aws.vpc:shared"
-    },
-    {
       "from": "platform:aws.nat_gateway:prod",
       "to": "platform:aws.subnet.public:prod_public"
     },
     {
-      "from": "platform:aws.nat_gateway:shared",
-      "to": "platform:aws.subnet.public:shared_public"
-    },
-    {
       "from": "platform:aws.security_group:prod_default",
       "to": "platform:aws.vpc:prod"
-    },
-    {
-      "from": "platform:aws.security_group:shared_default",
-      "to": "platform:aws.vpc:shared"
     },
     {
       "from": "gitops:k8s.release.service:orders_api",
@@ -1169,16 +682,6 @@
       "from": "gitops:k8s.release.service:orders_api",
       "to": "platform:aws.elasticache.redis:sessions",
       "label": "cache"
-    },
-    {
-      "from": "gitops:k8s.release.service:orders_api",
-      "to": "platform:aws.opensearch.domain:logs",
-      "label": "logs"
-    },
-    {
-      "from": "gitops:k8s.release.batch:report_job",
-      "to": "platform:aws.docdb.cluster:reports",
-      "label": "writes"
     }
   ],
   "coverage": {

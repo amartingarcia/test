@@ -1,0 +1,15 @@
+environment         = "prod"
+eks_version         = "1.29"
+enable_shared_vpc   = true
+enable_legacy       = true
+enable_docdb        = true
+opensearch_enabled  = true
+opensearch_nodes    = 3
+node_instance_types = ["m5.large", "m5a.large"]
+node_min            = 2
+node_max            = 6
+node_desired        = 3
+db_instance_class   = "db.r6g.xlarge"
+db_multi_az         = true
+db_storage_gb       = 100
+redis_nodes         = 2

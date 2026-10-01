@@ -1,0 +1,24 @@
+{
+  "environments": [
+    {
+      "id": "platform_dev",
+      "label": "platform / dev",
+      "source": "envs/dev.tfvars"
+    },
+    {
+      "id": "platform_stage",
+      "label": "platform / stage",
+      "source": "envs/stage.tfvars"
+    },
+    {
+      "id": "platform_prod",
+      "label": "platform / prod",
+      "source": "envs/prod.tfvars"
+    },
+    {
+      "id": "data_dev",
+      "label": "minimal demo (hand-written DOT)",
+      "source": "scripts/build-sample-data.mjs"
+    }
+  ]
+}

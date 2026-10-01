@@ -6,12 +6,14 @@ resource "aws_vpc" "prod" {
 }
 
 resource "aws_vpc" "shared" {
+  count = var.enable_shared_vpc ? 1 : 0
   cidr_block = "10.20.0.0/16"
 }
 
 resource "aws_vpc_peering_connection" "prod_shared" {
+  count = var.enable_shared_vpc ? 1 : 0
   vpc_id      = aws_vpc.prod.id
-  peer_vpc_id = aws_vpc.shared.id
+  peer_vpc_id = aws_vpc.shared[0].id
   auto_accept = true
 }
 
@@ -20,7 +22,8 @@ resource "aws_internet_gateway" "prod" {
 }
 
 resource "aws_internet_gateway" "shared" {
-  vpc_id = aws_vpc.shared.id
+  count = var.enable_shared_vpc ? 1 : 0
+  vpc_id = aws_vpc.shared[0].id
 }
 
 resource "aws_subnet" "prod_public" {
@@ -39,12 +42,14 @@ resource "aws_subnet" "prod_data" {
 }
 
 resource "aws_subnet" "shared_public" {
-  vpc_id     = aws_vpc.shared.id
+  count = var.enable_shared_vpc ? 1 : 0
+  vpc_id     = aws_vpc.shared[0].id
   cidr_block = "10.20.0.0/20"
 }
 
 resource "aws_subnet" "shared_private" {
-  vpc_id     = aws_vpc.shared.id
+  count = var.enable_shared_vpc ? 1 : 0
+  vpc_id     = aws_vpc.shared[0].id
   cidr_block = "10.20.16.0/20"
 }
 
@@ -53,6 +58,7 @@ resource "aws_eip" "prod_nat" {
 }
 
 resource "aws_eip" "shared_nat" {
+  count = var.enable_shared_vpc ? 1 : 0
   domain = "vpc"
 }
 
@@ -62,8 +68,9 @@ resource "aws_nat_gateway" "prod" {
 }
 
 resource "aws_nat_gateway" "shared" {
-  subnet_id     = aws_subnet.shared_public.id
-  allocation_id = aws_eip.shared_nat.id
+  count = var.enable_shared_vpc ? 1 : 0
+  subnet_id     = aws_subnet.shared_public[0].id
+  allocation_id = aws_eip.shared_nat[0].id
 }
 
 resource "aws_security_group" "prod_default" {
@@ -72,6 +79,7 @@ resource "aws_security_group" "prod_default" {
 }
 
 resource "aws_security_group" "shared_default" {
+  count = var.enable_shared_vpc ? 1 : 0
   name   = "shared-default"
-  vpc_id = aws_vpc.shared.id
+  vpc_id = aws_vpc.shared[0].id
 }

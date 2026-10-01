@@ -14,13 +14,15 @@ resource "aws_iam_role" "orders_api_irsa" {
 }
 
 resource "aws_iam_role" "ec2_ssm" {
+  count = var.enable_shared_vpc ? 1 : 0
   name = "shared-ec2-ssm"
   path = "/"
 }
 
 resource "aws_iam_instance_profile" "ec2" {
+  count = var.enable_shared_vpc ? 1 : 0
   name = "shared-ec2"
-  role = aws_iam_role.ec2_ssm.name
+  role = aws_iam_role.ec2_ssm[0].name
 }
 
 resource "aws_iam_role_policy_attachment" "node_worker" {
