@@ -91,7 +91,7 @@ const isGroupKind = (kind) => kind.startsWith('group.');
 const groupOfKind = (kind) => (isGroupKind(kind) ? catalog.groups[kind.slice('group.'.length)] : null);
 
 const CARD = { w: 176, h: 64 };
-const CHIP = { w: 172, h: 50 };
+const CHIP = { w: 208, h: 50 };
 const sizeOf = (kind) => (specFor(kind).size === 'chip' ? CHIP : CARD);
 
 /* ------------------------------------------------------------------ theme */
@@ -229,8 +229,8 @@ function cardSvg({ name, kind, class: cls, details, parentKind }) {
   ${fillLayer}
   <rect x="12" y="${cy0}" width="${chip}" height="${chip}" rx="${chipRx}" fill="${chipFill}" fill-opacity=".16" stroke="${accent}" stroke-opacity="${P.fill === 'flat' ? 0.9 : 0.55}"/>
   <g transform="translate(${12 + (chip - 20 * glyphScale) / 2} ${cy0 + (chip - 20 * glyphScale) / 2}) scale(${glyphScale})" fill="none" stroke="${accent}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="${GLYPHS[spec.glyph] ?? GLYPHS.box}"/></g>
-  <text x="${tx}" y="${compact ? 22 : 30}" font-family="${P.nameFont}" font-size="${compact ? 13 : 14}" font-weight="700" fill="${text}">${xmlEscape(clip(name, compact ? 16 : 15))}</text>
-  <text x="${tx}" y="${compact ? 37 : 46}" font-family="${P.monoFont}" font-size="10" fill="${muted}">${xmlEscape(clip(sub, compact ? 20 : 21))}</text>
+  <text x="${tx}" y="${compact ? 22 : 30}" font-family="${P.nameFont}" font-size="${compact ? 12.5 : 14}" font-weight="700" fill="${text}">${xmlEscape(clip(name, compact ? 20 : 15))}</text>
+  <text x="${tx}" y="${compact ? 37 : 46}" font-family="${P.monoFont}" font-size="10" fill="${muted}">${xmlEscape(clip(sub, compact ? 22 : 21))}</text>
   <circle cx="${w - 14}" cy="14" r="3" fill="${accent}"/>
 </svg>`;
   return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
@@ -402,8 +402,8 @@ function renderGraph(graph) {
 
   for (const entity of visible) {
     const parentKind = byId.get(entity.parent)?.kind ?? '';
-    // inside its namespace container the "ns/" prefix is redundant
-    const name = parentKind === 'k8s.namespace' ? entityName(entity).split('/').pop() : entityName(entity);
+    // Kubernetes ids are ns/name: the namespace is shown by the container (or the sub line), not in the title
+    const name = entity.kind.startsWith('k8s.') && entity.kind !== 'k8s.cluster' ? entityName(entity).split('/').pop() : entityName(entity);
     const size = sizeOf(entity.kind);
     elements.push({
       data: {
