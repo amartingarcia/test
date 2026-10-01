@@ -10,7 +10,7 @@ Input: rendered manifests (plain YAML, `helm template` output, `kustomize build`
    - `view: 'nodes'`: cluster > node pool (Karpenter NodePool or a node group passed in `nodeGroups`) > workloads.
 3. Write each graph to `viewer/data/<id>.json` and register it in `environments.json` (see `scripts/build-k8s-sample.mjs`).
 
-`nodeGroups` come from the cloud layer (EKS managed node groups from the Terraform graph: name, labels, taints). Without them, workloads that target them are reported as `none`.
+With a Terraform graph for the same environment use `nodeGroupsFromCloud(cloud.entities)` for `nodeGroups`, then `mergeK8sIntoCloud({environment, cloud, k8s})` (`lib/k8s/link-cloud.mjs`): workloads nest in the real EKS node groups, IRSA arns link to IAM roles by name, missing roles are findings. `npm run build:samples` shows the whole chain. `nodeGroups` come from the cloud layer (EKS managed node groups from the Terraform graph: name, labels, taints). Without them, workloads that target them are reported as `none`.
 
 ## What is resolved, what is reported
 

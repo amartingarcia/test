@@ -307,6 +307,17 @@ can nest them under it.
         generators other than list, Kustomize/Helm rendering (input is rendered
         YAML), CRDs beyond Karpenter/Argo, NetworkPolicy relations, linking to the
         AWS view (IRSA role arn is in details only), real-cluster validation.
+- [x] T10b — K8s <-> cloud join (`lib/k8s/link-cloud.mjs`, scripts/build-combined-sample.mjs).
+      Node groups (name, labels, taints) come from the Terraform graph and are the
+      scheduling targets; k8s cluster/node groups are replaced by the real
+      aws.eks.* entities; IRSA role arns link to aws.iam.role.* by name (missing =
+      finding); NodeClass role likewise. A node group whose labels/taints do not
+      resolve is `uncertain`: it can never make a placement "resolved" or
+      "impossible". Karpenter-only labels are never satisfied by managed node
+      groups. Combined envs: k8s_prod_namespaces / k8s_prod_nodes (`npm run
+      build:samples`). The sample Terraform gained a tainted `system` node group
+      and workload IRSA roles (prod only); the standalone prod view now reports
+      its two GitOps releases as ambiguous (2 node groups), which is correct.
 - [ ] T8 — End-to-end validation against at least one environment for both
       repos; confirm zero writes happened inside the source repos (e.g.
       `git status --porcelain` clean).
