@@ -1,5 +1,5 @@
 {
-  "environment": "azure_dev",
+  "environment": "azure_prod_k8s_nodes",
   "entities": [
     {
       "id": "azure:azure.resource_group:net",
@@ -388,7 +388,7 @@
         },
         "kubernetes_version": {
           "resolved": true,
-          "value": "1.29"
+          "value": "1.30"
         },
         "default_node_pool.name": {
           "resolved": true,
@@ -400,7 +400,7 @@
         },
         "default_node_pool.node_count": {
           "resolved": true,
-          "value": 1
+          "value": 3
         },
         "default_node_pool.vnet_subnet_id": {
           "resolved": false,
@@ -445,15 +445,15 @@
         },
         "vm_size": {
           "resolved": true,
-          "value": "Standard_D4s_v5"
+          "value": "Standard_D8s_v5"
         },
         "min_count": {
           "resolved": true,
-          "value": 1
+          "value": 3
         },
         "max_count": {
           "resolved": true,
-          "value": 3
+          "value": 12
         },
         "enable_auto_scaling": {
           "resolved": true,
@@ -574,15 +574,69 @@
         },
         "sku_name": {
           "resolved": true,
-          "value": "B_Standard_B2s"
+          "value": "GP_Standard_D4s_v3"
         },
         "storage_mb": {
           "resolved": true,
-          "value": 32768
+          "value": 262144
         },
         "delegated_subnet_id": {
           "resolved": false,
           "raw": "azurerm_subnet.spoke_data.id"
+        }
+      }
+    },
+    {
+      "id": "azure:azure.sql.server:sql",
+      "kind": "azure.sql.server",
+      "repoId": "azure",
+      "sourceAddress": "azurerm_mssql_server.sql",
+      "parent": "azure:azure.resource_group:app",
+      "details": {
+        "count": {
+          "resolved": true,
+          "value": 1
+        },
+        "name": {
+          "resolved": false,
+          "raw": "\"sql-${var.env}\""
+        },
+        "resource_group_name": {
+          "resolved": false,
+          "raw": "azurerm_resource_group.app.name"
+        },
+        "location": {
+          "resolved": true,
+          "value": "westeurope"
+        },
+        "version": {
+          "resolved": true,
+          "value": "12.0"
+        }
+      }
+    },
+    {
+      "id": "azure:azure.sql.database:orders",
+      "kind": "azure.sql.database",
+      "repoId": "azure",
+      "sourceAddress": "azurerm_mssql_database.orders",
+      "parent": "azure:azure.sql.server:sql",
+      "details": {
+        "count": {
+          "resolved": true,
+          "value": 1
+        },
+        "name": {
+          "resolved": true,
+          "value": "orders"
+        },
+        "server_id": {
+          "resolved": false,
+          "raw": "azurerm_mssql_server.sql[0].id"
+        },
+        "sku_name": {
+          "resolved": true,
+          "value": "S1"
         }
       }
     },
@@ -607,7 +661,7 @@
         },
         "capacity": {
           "resolved": true,
-          "value": 1
+          "value": 2
         },
         "family": {
           "resolved": true,
@@ -616,6 +670,39 @@
         "sku_name": {
           "resolved": true,
           "value": "Standard"
+        }
+      }
+    },
+    {
+      "id": "azure:azure.cosmos:cosmos",
+      "kind": "azure.cosmos",
+      "repoId": "azure",
+      "sourceAddress": "azurerm_cosmosdb_account.cosmos",
+      "parent": "azure:azure.resource_group:app",
+      "details": {
+        "count": {
+          "resolved": true,
+          "value": 1
+        },
+        "name": {
+          "resolved": false,
+          "raw": "\"cosmos-${var.env}\""
+        },
+        "resource_group_name": {
+          "resolved": false,
+          "raw": "azurerm_resource_group.app.name"
+        },
+        "location": {
+          "resolved": true,
+          "value": "westeurope"
+        },
+        "offer_type": {
+          "resolved": true,
+          "value": "Standard"
+        },
+        "kind": {
+          "resolved": true,
+          "value": "GlobalDocumentDB"
         }
       }
     },
@@ -798,6 +885,253 @@
           "raw": "azurerm_public_ip.ingress.id"
         }
       }
+    },
+    {
+      "id": "k8s:k8s.nodegroup:system",
+      "kind": "k8s.nodegroup",
+      "parent": "azure:azure.aks.cluster:main",
+      "repoId": "k8s",
+      "sourceAddress": "system",
+      "details": {
+        "labels": {
+          "resolved": true,
+          "value": "kubernetes.azure.com/agentpool=system"
+        },
+        "taints": {
+          "resolved": true,
+          "value": "CriticalAddonsOnly=true:NoSchedule"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.deployment:kube-system/coredns",
+      "kind": "k8s.deployment",
+      "parent": "k8s:k8s.nodegroup:system",
+      "repoId": "k8s",
+      "sourceAddress": "azure.yaml",
+      "details": {
+        "namespace": {
+          "resolved": true,
+          "value": "kube-system"
+        },
+        "replicas": {
+          "resolved": true,
+          "value": 2
+        },
+        "image": {
+          "resolved": true,
+          "value": "registry.k8s.io/coredns/coredns:v1.11.1"
+        },
+        "requests": {
+          "resolved": true,
+          "value": "250m / 256Mi"
+        },
+        "ports": {
+          "resolved": true,
+          "value": "8080/TCP"
+        },
+        "nodeSelector": {
+          "resolved": true,
+          "value": "kubernetes.azure.com/agentpool=system"
+        },
+        "tolerations": {
+          "resolved": true,
+          "value": "CriticalAddonsOnly"
+        },
+        "runsOn": {
+          "resolved": true,
+          "value": "system"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.deployment:ingress-nginx/ingress-nginx-controller",
+      "kind": "k8s.deployment",
+      "parent": "azure:azure.aks.nodepool:user",
+      "repoId": "k8s",
+      "sourceAddress": "azure.yaml",
+      "details": {
+        "namespace": {
+          "resolved": true,
+          "value": "ingress-nginx"
+        },
+        "replicas": {
+          "resolved": true,
+          "value": 2
+        },
+        "image": {
+          "resolved": true,
+          "value": "registry.k8s.io/ingress-nginx/controller:v1.11.1"
+        },
+        "requests": {
+          "resolved": true,
+          "value": "250m / 256Mi"
+        },
+        "ports": {
+          "resolved": true,
+          "value": "8080/TCP"
+        },
+        "nodeSelector": {
+          "resolved": true,
+          "value": "workload=general"
+        },
+        "runsOn": {
+          "resolved": true,
+          "value": "user"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.deployment:shop/web",
+      "kind": "k8s.deployment",
+      "parent": "azure:azure.aks.nodepool:user",
+      "repoId": "k8s",
+      "sourceAddress": "azure.yaml",
+      "details": {
+        "namespace": {
+          "resolved": true,
+          "value": "shop"
+        },
+        "replicas": {
+          "resolved": true,
+          "value": 3
+        },
+        "image": {
+          "resolved": true,
+          "value": "registry.example.com/shop/web:2.4.1"
+        },
+        "requests": {
+          "resolved": true,
+          "value": "250m / 256Mi"
+        },
+        "ports": {
+          "resolved": true,
+          "value": "8080/TCP"
+        },
+        "nodeSelector": {
+          "resolved": true,
+          "value": "workload=general"
+        },
+        "runsOn": {
+          "resolved": true,
+          "value": "user"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.deployment:shop/api",
+      "kind": "k8s.deployment",
+      "parent": "azure:azure.aks.nodepool:user",
+      "repoId": "k8s",
+      "sourceAddress": "azure.yaml",
+      "details": {
+        "namespace": {
+          "resolved": true,
+          "value": "shop"
+        },
+        "replicas": {
+          "resolved": true,
+          "value": 3
+        },
+        "image": {
+          "resolved": true,
+          "value": "registry.example.com/shop/api:2.4.1"
+        },
+        "requests": {
+          "resolved": true,
+          "value": "250m / 256Mi"
+        },
+        "ports": {
+          "resolved": true,
+          "value": "8080/TCP"
+        },
+        "serviceAccount": {
+          "resolved": true,
+          "value": "api"
+        },
+        "nodeSelector": {
+          "resolved": true,
+          "value": "workload=general"
+        },
+        "runsOn": {
+          "resolved": true,
+          "value": "user"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.deployment:shop/worker",
+      "kind": "k8s.deployment",
+      "parent": "azure:azure.aks.nodepool:batch",
+      "repoId": "k8s",
+      "sourceAddress": "azure.yaml",
+      "details": {
+        "namespace": {
+          "resolved": true,
+          "value": "shop"
+        },
+        "replicas": {
+          "resolved": true,
+          "value": 4
+        },
+        "image": {
+          "resolved": true,
+          "value": "registry.example.com/shop/worker:2.4.1"
+        },
+        "requests": {
+          "resolved": true,
+          "value": "250m / 256Mi"
+        },
+        "ports": {
+          "resolved": true,
+          "value": "8080/TCP"
+        },
+        "nodeSelector": {
+          "resolved": true,
+          "value": "workload=batch"
+        },
+        "tolerations": {
+          "resolved": true,
+          "value": "batch"
+        },
+        "runsOn": {
+          "resolved": true,
+          "value": "batch"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.deployment:shop/report",
+      "kind": "k8s.deployment",
+      "parent": "azure:azure.aks.nodepool:user",
+      "repoId": "k8s",
+      "sourceAddress": "azure.yaml",
+      "details": {
+        "namespace": {
+          "resolved": true,
+          "value": "shop"
+        },
+        "replicas": {
+          "resolved": true,
+          "value": 1
+        },
+        "image": {
+          "resolved": true,
+          "value": "registry.example.com/shop/report:1.9.0"
+        },
+        "requests": {
+          "resolved": true,
+          "value": "250m / 256Mi"
+        },
+        "ports": {
+          "resolved": true,
+          "value": "8080/TCP"
+        },
+        "runsOn": {
+          "resolved": true,
+          "value": "user"
+        }
+      }
     }
   ],
   "edges": [
@@ -911,7 +1245,19 @@
       "to": "azure:azure.subnet:spoke_data"
     },
     {
+      "from": "azure:azure.sql.server:sql",
+      "to": "azure:azure.resource_group:app"
+    },
+    {
+      "from": "azure:azure.sql.database:orders",
+      "to": "azure:azure.sql.server:sql"
+    },
+    {
       "from": "azure:azure.redis:cache",
+      "to": "azure:azure.resource_group:app"
+    },
+    {
+      "from": "azure:azure.cosmos:cosmos",
       "to": "azure:azure.resource_group:app"
     },
     {
@@ -961,18 +1307,21 @@
     "azure": {
       "unmapped": [],
       "unresolvedBoundaries": []
+    },
+    "k8s": {
+      "unmapped": [],
+      "unresolvedBoundaries": []
     }
   },
   "unresolvedCrossRepoLinks": [],
   "unresolvedPlacements": [],
+  "findings": [],
   "legend": {
-    "default": "Resource groups",
-    "net": "Network",
-    "eks": "AKS",
-    "compute": "VMs",
-    "data": "Data services",
-    "edgeapp": "LB, DNS & endpoints",
-    "iam": "Identity",
-    "cfg": "Secrets & storage"
+    "net": "Network / namespaces",
+    "compute": "Compute / capacity",
+    "eks": "EKS / ArgoCD",
+    "k8s": "Workloads",
+    "edgeapp": "DNS, LB & services",
+    "cfg": "Config & storage"
   }
 }

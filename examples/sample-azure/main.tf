@@ -135,6 +135,8 @@ resource "azurerm_kubernetes_cluster" "main" {
     vm_size        = "Standard_D4s_v5"
     node_count     = var.system_nodes
     vnet_subnet_id = azurerm_subnet.spoke_aks.id
+
+    only_critical_addons_enabled = true
   }
 
   identity {
@@ -156,6 +158,27 @@ resource "azurerm_kubernetes_cluster_node_pool" "user" {
   max_count             = var.user_max
   enable_auto_scaling   = true
   vnet_subnet_id        = azurerm_subnet.spoke_aks.id
+
+  node_labels = {
+    workload = "general"
+  }
+}
+
+resource "azurerm_kubernetes_cluster_node_pool" "batch" {
+  name                  = "batch"
+  kubernetes_cluster_id = azurerm_kubernetes_cluster.main.id
+  vm_size               = "Standard_D8s_v5"
+  priority              = "Spot"
+  min_count             = 0
+  max_count             = 10
+  enable_auto_scaling   = true
+  vnet_subnet_id        = azurerm_subnet.spoke_aks.id
+
+  node_labels = {
+    workload = "batch"
+  }
+
+  node_taints = ["batch=true:NoSchedule"]
 }
 
 resource "azurerm_container_registry" "acr" {

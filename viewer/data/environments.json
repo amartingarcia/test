@@ -52,23 +52,73 @@
     },
     {
       "id": "k8s_namespaces",
-      "label": "k8s / by namespace",
+      "label": "k8s sample (Karpenter + ArgoCD)",
+      "group": "k8s_sample",
+      "view": "By namespace",
       "source": "examples/sample-k8s"
     },
     {
       "id": "k8s_nodes",
-      "label": "k8s / by node pool",
+      "label": "k8s sample (Karpenter + ArgoCD)",
+      "group": "k8s_sample",
+      "view": "By node pool",
       "source": "examples/sample-k8s"
     },
     {
       "id": "k8s_prod_namespaces",
-      "label": "platform / prod + k8s by namespace",
-      "source": "examples/sample-platform + examples/sample-k8s"
+      "label": "aws / prod + k8s",
+      "group": "platform_prod_k8s",
+      "view": "By namespace",
+      "source": "examples (synthetic)"
     },
     {
       "id": "k8s_prod_nodes",
-      "label": "platform / prod + k8s by node pool",
-      "source": "examples/sample-platform + examples/sample-k8s"
+      "label": "aws / prod + k8s",
+      "group": "platform_prod_k8s",
+      "view": "By node pool",
+      "source": "examples (synthetic)"
+    },
+    {
+      "id": "azure_prod_k8s_namespaces",
+      "label": "azure / prod + k8s",
+      "group": "azure_prod_k8s",
+      "view": "By namespace",
+      "source": "examples (synthetic)"
+    },
+    {
+      "id": "azure_prod_k8s_nodes",
+      "label": "azure / prod + k8s",
+      "group": "azure_prod_k8s",
+      "view": "By node pool",
+      "source": "examples (synthetic)"
+    },
+    {
+      "id": "gcp_prod_k8s_namespaces",
+      "label": "gcp / prod + k8s",
+      "group": "gcp_prod_k8s",
+      "view": "By namespace",
+      "source": "examples (synthetic)"
+    },
+    {
+      "id": "gcp_prod_k8s_nodes",
+      "label": "gcp / prod + k8s",
+      "group": "gcp_prod_k8s",
+      "view": "By node pool",
+      "source": "examples (synthetic)"
+    },
+    {
+      "id": "oci_prod_k8s_namespaces",
+      "label": "oci / prod + k8s",
+      "group": "oci_prod_k8s",
+      "view": "By namespace",
+      "source": "examples (synthetic)"
+    },
+    {
+      "id": "oci_prod_k8s_nodes",
+      "label": "oci / prod + k8s",
+      "group": "oci_prod_k8s",
+      "view": "By node pool",
+      "source": "examples (synthetic)"
     }
   ]
 }

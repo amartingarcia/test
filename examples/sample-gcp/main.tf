@@ -97,6 +97,10 @@ resource "google_container_node_pool" "general" {
   node_config {
     machine_type    = var.machine_type
     service_account = google_service_account.nodes.email
+
+    labels = {
+      workload = "general"
+    }
   }
 
   autoscaling {
@@ -114,6 +118,16 @@ resource "google_container_node_pool" "spot" {
   node_config {
     machine_type = "e2-standard-8"
     spot         = true
+
+    labels = {
+      workload = "batch"
+    }
+
+    taint {
+      key    = "batch"
+      value  = "true"
+      effect = "NO_SCHEDULE"
+    }
   }
 
   autoscaling {

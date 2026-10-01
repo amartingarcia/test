@@ -57,6 +57,7 @@ const ZOOM_STEP = 1.25;
 const FLOW_EDGE_LIMIT = 400; // per-frame style writes get expensive past this
 
 const envSelect = document.getElementById('env-select');
+const viewSelect = document.getElementById('view-select');
 const sidebar = document.getElementById('sidebar');
 const coverageEl = document.getElementById('coverage');
 const zoomLevelEl = document.getElementById('zoom-level');
@@ -69,14 +70,46 @@ async function loadEnvironmentList() {
     const res = await fetch('data/environments.json', { cache: 'no-cache' });
     if (res.ok) list = (await res.json()).environments ?? list;
   } catch { /* offline or missing: use the fallback */ }
+  envList = list;
+  // entries that share a `group` are views of one environment (e.g. by namespace / by node pool)
   envSelect.innerHTML = '';
+  const seen = new Set();
   for (const env of list) {
+    const key = groupKey(env);
+    if (seen.has(key)) continue;
+    seen.add(key);
     const opt = document.createElement('option');
-    opt.value = env.id;
+    opt.value = key;
     opt.textContent = env.label ?? env.id;
     envSelect.appendChild(opt);
   }
   return list;
+}
+
+let envList = [];
+let currentEnvId = null;
+const groupKey = (env) => env.group ?? env.id;
+
+/** Selects a data file: syncs the environment and view selectors, the URL and the diagram. */
+function selectEntry(id) {
+  const entry = envList.find((e) => e.id === id);
+  if (!entry) return;
+  currentEnvId = id;
+  envSelect.value = groupKey(entry);
+  const views = envList.filter((e) => groupKey(e) === groupKey(entry) && e.view);
+  viewSelect.innerHTML = '';
+  for (const v of views) {
+    const opt = document.createElement('option');
+    opt.value = v.id;
+    opt.textContent = v.view;
+    viewSelect.appendChild(opt);
+  }
+  viewSelect.hidden = views.length < 2;
+  viewSelect.value = id;
+  const h = new URLSearchParams(location.hash.slice(1));
+  h.set('env', id);
+  history.replaceState(null, '', `#${h.toString()}`);
+  loadEnvironment(id);
 }
 
 /** `#env=platform_stage` selects an environment, so a view can be linked. */
@@ -638,7 +671,7 @@ function setFlow(on) {
 
 /* --------------------------------------------------------------- export */
 
-const exportName = () => `${envSelect.value || 'diagram'}-${document.documentElement.getAttribute('data-preset')}-${currentTheme()}`;
+const exportName = () => `${currentEnvId || 'diagram'}-${document.documentElement.getAttribute('data-preset')}-${currentTheme()}`;
 
 function download(href, filename) {
   const a = document.createElement('a');
@@ -696,19 +729,15 @@ document.querySelectorAll('#style-pick button').forEach((b) => b.addEventListene
 document.getElementById('rotate-btn').addEventListener('click', () => { vertical = !vertical; applyLayout(true, fit); });
 flowBtn.addEventListener('click', () => setFlow(!flowOn));
 envSelect.addEventListener('change', () => {
-  {
-    const h = new URLSearchParams(location.hash.slice(1));
-    h.set('env', envSelect.value);
-    history.replaceState(null, '', `#${h.toString()}`);
-  }
-  loadEnvironment(envSelect.value);
+  // switching environment keeps the current view (by namespace / by node pool) when the new one has it
+  const current = envList.find((e) => e.id === currentEnvId);
+  const inGroup = envList.filter((e) => groupKey(e) === envSelect.value);
+  selectEntry((inGroup.find((e) => current?.view && e.view === current.view) ?? inGroup[0]).id);
 });
+viewSelect.addEventListener('change', () => selectEntry(viewSelect.value));
 window.addEventListener('hashchange', () => {
   const wanted = envFromHash();
-  if (wanted && wanted !== envSelect.value && [...envSelect.options].some((o) => o.value === wanted)) {
-    envSelect.value = wanted;
-    loadEnvironment(wanted);
-  }
+  if (wanted && wanted !== currentEnvId && envList.some((e) => e.id === wanted)) selectEntry(wanted);
 });
 
 document.addEventListener('keydown', (e) => {
@@ -734,7 +763,5 @@ document.fonts?.ready.then(() => { if (cy) cy.style(buildStyle()); });
 requestAnimationFrame(flowTick);
 loadEnvironmentList().then((list) => {
   const wanted = envFromHash();
-  const initial = list.some((e) => e.id === wanted) ? wanted : list[0].id;
-  envSelect.value = initial;
-  loadEnvironment(initial);
+  selectEntry(list.some((e) => e.id === wanted) ? wanted : list[0].id);
 });

@@ -338,6 +338,22 @@ can nest them under it.
         validation of any of the three providers. Resource types and argument names
         were written from knowledge of the providers, not validated with
         `terraform validate` (no binary here).
+- [x] T11b — K8s <-> AKS/GKE/OKE (extends T10b).
+      `nodeGroupsFromCloud` reads the pools of every supported cloud: EKS node
+      groups, AKS pools (`node_labels`, `node_taints` "k=v:Effect", the default pool
+      declared inside the cluster incl. `only_critical_addons_enabled` ->
+      CriticalAddonsOnly taint, implicit `kubernetes.azure.com/agentpool` label),
+      GKE (`node_config.labels/taint/spot`, implicit `gke-nodepool` label), OKE
+      (`initial_node_labels`). Anything unparsable marks the pool `uncertain`.
+      A pool declared inside its cluster resource stays drawn as its own box in
+      the cluster. GKE Workload Identity: SA annotation
+      `iam.gke.io/gcp-service-account` -> gcp.service_account by account_id (missing
+      = finding). Azure Workload Identity (client-id annotation) and OCI workload
+      identity are not linkable offline (computed ids / policies): not done.
+      Viewer: environments sharing a `group` are views of one environment; a view
+      selector (by namespace / by node pool) appears next to the environment
+      selector. Synthetic workloads in examples/sample-k8s-multi; combined envs
+      `{azure,gcp,oci}_prod_k8s_{namespaces,nodes}` via `npm run build:samples`.
 - [ ] T8 — End-to-end validation against at least one environment for both
       repos; confirm zero writes happened inside the source repos (e.g.
       `git status --porcelain` clean).

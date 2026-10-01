@@ -1,5 +1,5 @@
 {
-  "environment": "oci_dev",
+  "environment": "oci_prod_k8s_namespaces",
   "entities": [
     {
       "id": "oci:oci.compartment:platform",
@@ -301,7 +301,7 @@
         },
         "kubernetes_version": {
           "resolved": true,
-          "value": "v1.29.1"
+          "value": "v1.30.1"
         },
         "name": {
           "resolved": false,
@@ -338,7 +338,7 @@
         },
         "kubernetes_version": {
           "resolved": true,
-          "value": "v1.29.1"
+          "value": "v1.30.1"
         },
         "name": {
           "resolved": true,
@@ -358,7 +358,60 @@
         },
         "node_config_details.size": {
           "resolved": true,
+          "value": 4
+        },
+        "node_config_details.placement_configs.availability_domain": {
+          "resolved": true,
+          "value": "AD-1"
+        },
+        "node_config_details.placement_configs.subnet_id": {
+          "resolved": false,
+          "raw": "oci_core_subnet.workers.id"
+        }
+      }
+    },
+    {
+      "id": "oci:oci.oke.nodepool:batch",
+      "kind": "oci.oke.nodepool",
+      "repoId": "oci",
+      "sourceAddress": "oci_containerengine_node_pool.batch",
+      "parent": "oci:oci.oke.cluster:oke",
+      "details": {
+        "count": {
+          "resolved": true,
           "value": 1
+        },
+        "cluster_id": {
+          "resolved": false,
+          "raw": "oci_containerengine_cluster.oke.id"
+        },
+        "compartment_id": {
+          "resolved": false,
+          "raw": "oci_identity_compartment.platform.id"
+        },
+        "kubernetes_version": {
+          "resolved": true,
+          "value": "v1.30.1"
+        },
+        "name": {
+          "resolved": true,
+          "value": "batch"
+        },
+        "node_shape": {
+          "resolved": true,
+          "value": "VM.Standard.E4.Flex"
+        },
+        "initial_node_labels.key": {
+          "resolved": true,
+          "value": "workload"
+        },
+        "initial_node_labels.value": {
+          "resolved": true,
+          "value": "batch"
+        },
+        "node_config_details.size": {
+          "resolved": true,
+          "value": 2
         },
         "node_config_details.placement_configs.availability_domain": {
           "resolved": true,
@@ -437,11 +490,36 @@
         },
         "shape_name": {
           "resolved": true,
-          "value": "MySQL.VM.Standard.E4.1.8GB"
+          "value": "MySQL.VM.Standard.E4.4.32GB"
         },
         "subnet_id": {
           "resolved": false,
           "raw": "oci_core_subnet.db.id"
+        }
+      }
+    },
+    {
+      "id": "oci:oci.adb:adw",
+      "kind": "oci.adb",
+      "repoId": "oci",
+      "sourceAddress": "oci_database_autonomous_database.adw",
+      "parent": "oci:oci.compartment:platform",
+      "details": {
+        "count": {
+          "resolved": true,
+          "value": 1
+        },
+        "compartment_id": {
+          "resolved": false,
+          "raw": "oci_identity_compartment.platform.id"
+        },
+        "db_name": {
+          "resolved": false,
+          "raw": "\"adw${var.env}\""
+        },
+        "db_workload": {
+          "resolved": true,
+          "value": "DW"
         }
       }
     },
@@ -598,6 +676,351 @@
           "value": 300
         }
       }
+    },
+    {
+      "id": "k8s:k8s.namespace:shop",
+      "kind": "k8s.namespace",
+      "parent": "oci:oci.oke.cluster:oke",
+      "repoId": "k8s",
+      "sourceAddress": "shop",
+      "details": {
+        "declared": {
+          "resolved": true,
+          "value": true
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.namespace:kube-system",
+      "kind": "k8s.namespace",
+      "parent": "oci:oci.oke.cluster:oke",
+      "repoId": "k8s",
+      "sourceAddress": "kube-system",
+      "details": {
+        "declared": {
+          "resolved": true,
+          "value": true
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.namespace:ingress-nginx",
+      "kind": "k8s.namespace",
+      "parent": "oci:oci.oke.cluster:oke",
+      "repoId": "k8s",
+      "sourceAddress": "ingress-nginx",
+      "details": {
+        "declared": {
+          "resolved": true,
+          "value": true
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.deployment:kube-system/coredns",
+      "kind": "k8s.deployment",
+      "parent": "k8s:k8s.namespace:kube-system",
+      "repoId": "k8s",
+      "sourceAddress": "oci.yaml",
+      "details": {
+        "namespace": {
+          "resolved": true,
+          "value": "kube-system"
+        },
+        "replicas": {
+          "resolved": true,
+          "value": 2
+        },
+        "image": {
+          "resolved": true,
+          "value": "registry.k8s.io/coredns/coredns:v1.11.1"
+        },
+        "requests": {
+          "resolved": true,
+          "value": "250m / 256Mi"
+        },
+        "ports": {
+          "resolved": true,
+          "value": "8080/TCP"
+        },
+        "runsOn": {
+          "resolved": false,
+          "raw": "general | batch"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.deployment:ingress-nginx/ingress-nginx-controller",
+      "kind": "k8s.deployment",
+      "parent": "k8s:k8s.namespace:ingress-nginx",
+      "repoId": "k8s",
+      "sourceAddress": "oci.yaml",
+      "details": {
+        "namespace": {
+          "resolved": true,
+          "value": "ingress-nginx"
+        },
+        "replicas": {
+          "resolved": true,
+          "value": 2
+        },
+        "image": {
+          "resolved": true,
+          "value": "registry.k8s.io/ingress-nginx/controller:v1.11.1"
+        },
+        "requests": {
+          "resolved": true,
+          "value": "250m / 256Mi"
+        },
+        "ports": {
+          "resolved": true,
+          "value": "8080/TCP"
+        },
+        "nodeSelector": {
+          "resolved": true,
+          "value": "workload=general"
+        },
+        "runsOn": {
+          "resolved": true,
+          "value": "general"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.deployment:shop/web",
+      "kind": "k8s.deployment",
+      "parent": "k8s:k8s.namespace:shop",
+      "repoId": "k8s",
+      "sourceAddress": "oci.yaml",
+      "details": {
+        "namespace": {
+          "resolved": true,
+          "value": "shop"
+        },
+        "replicas": {
+          "resolved": true,
+          "value": 3
+        },
+        "image": {
+          "resolved": true,
+          "value": "registry.example.com/shop/web:2.4.1"
+        },
+        "requests": {
+          "resolved": true,
+          "value": "250m / 256Mi"
+        },
+        "ports": {
+          "resolved": true,
+          "value": "8080/TCP"
+        },
+        "nodeSelector": {
+          "resolved": true,
+          "value": "workload=general"
+        },
+        "runsOn": {
+          "resolved": true,
+          "value": "general"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.deployment:shop/api",
+      "kind": "k8s.deployment",
+      "parent": "k8s:k8s.namespace:shop",
+      "repoId": "k8s",
+      "sourceAddress": "oci.yaml",
+      "details": {
+        "namespace": {
+          "resolved": true,
+          "value": "shop"
+        },
+        "replicas": {
+          "resolved": true,
+          "value": 3
+        },
+        "image": {
+          "resolved": true,
+          "value": "registry.example.com/shop/api:2.4.1"
+        },
+        "requests": {
+          "resolved": true,
+          "value": "250m / 256Mi"
+        },
+        "ports": {
+          "resolved": true,
+          "value": "8080/TCP"
+        },
+        "serviceAccount": {
+          "resolved": true,
+          "value": "api"
+        },
+        "nodeSelector": {
+          "resolved": true,
+          "value": "workload=general"
+        },
+        "runsOn": {
+          "resolved": true,
+          "value": "general"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.deployment:shop/worker",
+      "kind": "k8s.deployment",
+      "parent": "k8s:k8s.namespace:shop",
+      "repoId": "k8s",
+      "sourceAddress": "oci.yaml",
+      "details": {
+        "namespace": {
+          "resolved": true,
+          "value": "shop"
+        },
+        "replicas": {
+          "resolved": true,
+          "value": 4
+        },
+        "image": {
+          "resolved": true,
+          "value": "registry.example.com/shop/worker:2.4.1"
+        },
+        "requests": {
+          "resolved": true,
+          "value": "250m / 256Mi"
+        },
+        "ports": {
+          "resolved": true,
+          "value": "8080/TCP"
+        },
+        "nodeSelector": {
+          "resolved": true,
+          "value": "workload=batch"
+        },
+        "runsOn": {
+          "resolved": true,
+          "value": "batch"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.deployment:shop/report",
+      "kind": "k8s.deployment",
+      "parent": "k8s:k8s.namespace:shop",
+      "repoId": "k8s",
+      "sourceAddress": "oci.yaml",
+      "details": {
+        "namespace": {
+          "resolved": true,
+          "value": "shop"
+        },
+        "replicas": {
+          "resolved": true,
+          "value": 1
+        },
+        "image": {
+          "resolved": true,
+          "value": "registry.example.com/shop/report:1.9.0"
+        },
+        "requests": {
+          "resolved": true,
+          "value": "250m / 256Mi"
+        },
+        "ports": {
+          "resolved": true,
+          "value": "8080/TCP"
+        },
+        "runsOn": {
+          "resolved": false,
+          "raw": "general | batch"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.service:ingress-nginx/ingress-nginx-controller",
+      "kind": "k8s.service",
+      "parent": "k8s:k8s.namespace:ingress-nginx",
+      "repoId": "k8s",
+      "sourceAddress": "oci.yaml",
+      "details": {
+        "type": {
+          "resolved": true,
+          "value": "ClusterIP"
+        },
+        "ports": {
+          "resolved": true,
+          "value": "80→8080/TCP"
+        },
+        "selector": {
+          "resolved": true,
+          "value": "app=ingress-nginx-controller"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.service:shop/web",
+      "kind": "k8s.service",
+      "parent": "k8s:k8s.namespace:shop",
+      "repoId": "k8s",
+      "sourceAddress": "oci.yaml",
+      "details": {
+        "type": {
+          "resolved": true,
+          "value": "ClusterIP"
+        },
+        "ports": {
+          "resolved": true,
+          "value": "80→8080/TCP"
+        },
+        "selector": {
+          "resolved": true,
+          "value": "app=web"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.service:shop/api",
+      "kind": "k8s.service",
+      "parent": "k8s:k8s.namespace:shop",
+      "repoId": "k8s",
+      "sourceAddress": "oci.yaml",
+      "details": {
+        "type": {
+          "resolved": true,
+          "value": "ClusterIP"
+        },
+        "ports": {
+          "resolved": true,
+          "value": "80→8080/TCP"
+        },
+        "selector": {
+          "resolved": true,
+          "value": "app=api"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.configmap:shop/shop-cfg",
+      "kind": "k8s.configmap",
+      "parent": "k8s:k8s.namespace:shop",
+      "repoId": "k8s",
+      "sourceAddress": "oci.yaml",
+      "details": {}
+    },
+    {
+      "id": "k8s:k8s.ingress:shop/shop",
+      "kind": "k8s.ingress",
+      "parent": "k8s:k8s.namespace:shop",
+      "repoId": "k8s",
+      "sourceAddress": "oci.yaml",
+      "details": {
+        "class": {
+          "resolved": true,
+          "value": "nginx"
+        },
+        "hosts": {
+          "resolved": true,
+          "value": "shop.example.com"
+        }
+      }
     }
   ],
   "edges": [
@@ -746,6 +1169,18 @@
       "to": "oci:oci.subnet:workers"
     },
     {
+      "from": "oci:oci.oke.nodepool:batch",
+      "to": "oci:oci.oke.cluster:oke"
+    },
+    {
+      "from": "oci:oci.oke.nodepool:batch",
+      "to": "oci:oci.compartment:platform"
+    },
+    {
+      "from": "oci:oci.oke.nodepool:batch",
+      "to": "oci:oci.subnet:workers"
+    },
+    {
       "from": "oci:oci.instance:bastion",
       "to": "oci:oci.compartment:platform"
     },
@@ -768,6 +1203,10 @@
     {
       "from": "oci:oci.mysql:mysql",
       "to": "oci:oci.subnet:db"
+    },
+    {
+      "from": "oci:oci.adb:adw",
+      "to": "oci:oci.compartment:platform"
     },
     {
       "from": "oci:oci.bucket:assets",
@@ -806,24 +1245,57 @@
       "from": "oci:oci.dns.record:app",
       "to": "oci:oci.lb:lb",
       "label": "points to"
+    },
+    {
+      "from": "k8s:k8s.service:ingress-nginx/ingress-nginx-controller",
+      "to": "k8s:k8s.deployment:ingress-nginx/ingress-nginx-controller"
+    },
+    {
+      "from": "k8s:k8s.service:shop/web",
+      "to": "k8s:k8s.deployment:shop/web"
+    },
+    {
+      "from": "k8s:k8s.service:shop/api",
+      "to": "k8s:k8s.deployment:shop/api"
+    },
+    {
+      "from": "k8s:k8s.ingress:shop/shop",
+      "to": "k8s:k8s.service:shop/web",
+      "label": "shop.example.com/"
+    },
+    {
+      "from": "k8s:k8s.ingress:shop/shop",
+      "to": "k8s:k8s.service:shop/api",
+      "label": "shop.example.com/api"
+    },
+    {
+      "from": "k8s:k8s.deployment:shop/web",
+      "to": "k8s:k8s.configmap:shop/shop-cfg"
+    },
+    {
+      "from": "k8s:k8s.deployment:shop/api",
+      "to": "k8s:k8s.configmap:shop/shop-cfg"
     }
   ],
   "coverage": {
     "oci": {
       "unmapped": [],
       "unresolvedBoundaries": []
+    },
+    "k8s": {
+      "unmapped": [],
+      "unresolvedBoundaries": []
     }
   },
   "unresolvedCrossRepoLinks": [],
   "unresolvedPlacements": [],
+  "findings": [],
   "legend": {
-    "default": "Compartments",
-    "net": "Network",
-    "eks": "OKE",
-    "compute": "VMs",
-    "data": "Data services",
-    "edgeapp": "LB & DNS",
-    "iam": "IAM",
-    "cfg": "Secrets & storage"
+    "net": "Network / namespaces",
+    "compute": "Compute / capacity",
+    "eks": "EKS / ArgoCD",
+    "k8s": "Workloads",
+    "edgeapp": "DNS, LB & services",
+    "cfg": "Config & storage"
   }
 }

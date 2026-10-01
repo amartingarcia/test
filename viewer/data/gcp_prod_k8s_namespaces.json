@@ -1,5 +1,5 @@
 {
-  "environment": "gcp_dev",
+  "environment": "gcp_prod_k8s_namespaces",
   "entities": [
     {
       "id": "gcp:gcp.vpc:main",
@@ -196,7 +196,7 @@
       "details": {
         "project": {
           "resolved": true,
-          "value": "sample-project-dev"
+          "value": "sample-project-prod"
         },
         "role": {
           "resolved": true,
@@ -241,7 +241,7 @@
         },
         "release_channel.channel": {
           "resolved": true,
-          "value": "RAPID"
+          "value": "REGULAR"
         },
         "workload_identity_config.workload_pool": {
           "resolved": false,
@@ -270,11 +270,11 @@
         },
         "node_count": {
           "resolved": true,
-          "value": 1
+          "value": 3
         },
         "node_config.machine_type": {
           "resolved": true,
-          "value": "e2-standard-4"
+          "value": "e2-standard-8"
         },
         "node_config.service_account": {
           "resolved": false,
@@ -288,11 +288,70 @@
         },
         "autoscaling.min_node_count": {
           "resolved": true,
-          "value": 1
+          "value": 3
         },
         "autoscaling.max_node_count": {
           "resolved": true,
-          "value": 3
+          "value": 12
+        }
+      }
+    },
+    {
+      "id": "gcp:gcp.gke.nodepool:spot",
+      "kind": "gcp.gke.nodepool",
+      "repoId": "gcp",
+      "sourceAddress": "google_container_node_pool.spot",
+      "parent": "gcp:gcp.gke.cluster:gke",
+      "details": {
+        "count": {
+          "resolved": true,
+          "value": 1
+        },
+        "name": {
+          "resolved": true,
+          "value": "spot"
+        },
+        "cluster": {
+          "resolved": false,
+          "raw": "google_container_cluster.gke.name"
+        },
+        "location": {
+          "resolved": true,
+          "value": "europe-west1"
+        },
+        "node_config.machine_type": {
+          "resolved": true,
+          "value": "e2-standard-8"
+        },
+        "node_config.spot": {
+          "resolved": true,
+          "value": true
+        },
+        "node_config.labels": {
+          "resolved": true,
+          "value": {
+            "workload": "batch"
+          }
+        },
+        "node_config.taint.key": {
+          "resolved": true,
+          "value": "batch"
+        },
+        "node_config.taint.value": {
+          "resolved": true,
+          "value": "true"
+        },
+        "node_config.taint.effect": {
+          "resolved": true,
+          "value": "NO_SCHEDULE"
+        },
+        "autoscaling.min_node_count": {
+          "resolved": true,
+          "value": 0
+        },
+        "autoscaling.max_node_count": {
+          "resolved": true,
+          "value": 20
         }
       }
     },
@@ -317,9 +376,38 @@
         },
         "settings.tier": {
           "resolved": true,
-          "value": "db-custom-2-7680"
+          "value": "db-custom-8-30720"
         },
         "settings.ip_configuration.private_network": {
+          "resolved": false,
+          "raw": "google_compute_network.main.id"
+        }
+      }
+    },
+    {
+      "id": "gcp:gcp.redis:cache",
+      "kind": "gcp.redis",
+      "repoId": "gcp",
+      "sourceAddress": "google_redis_instance.cache",
+      "parent": "gcp:gcp.vpc:main",
+      "details": {
+        "count": {
+          "resolved": true,
+          "value": 1
+        },
+        "name": {
+          "resolved": false,
+          "raw": "\"redis-${var.env}\""
+        },
+        "region": {
+          "resolved": true,
+          "value": "europe-west1"
+        },
+        "memory_size_gb": {
+          "resolved": true,
+          "value": 5
+        },
+        "authorized_network": {
           "resolved": false,
           "raw": "google_compute_network.main.id"
         }
@@ -479,6 +567,359 @@
           "raw": "[google_compute_forwarding_rule.ilb.ip_address]"
         }
       }
+    },
+    {
+      "id": "k8s:k8s.namespace:shop",
+      "kind": "k8s.namespace",
+      "parent": "gcp:gcp.gke.cluster:gke",
+      "repoId": "k8s",
+      "sourceAddress": "shop",
+      "details": {
+        "declared": {
+          "resolved": true,
+          "value": true
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.namespace:kube-system",
+      "kind": "k8s.namespace",
+      "parent": "gcp:gcp.gke.cluster:gke",
+      "repoId": "k8s",
+      "sourceAddress": "kube-system",
+      "details": {
+        "declared": {
+          "resolved": true,
+          "value": true
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.namespace:ingress-nginx",
+      "kind": "k8s.namespace",
+      "parent": "gcp:gcp.gke.cluster:gke",
+      "repoId": "k8s",
+      "sourceAddress": "ingress-nginx",
+      "details": {
+        "declared": {
+          "resolved": true,
+          "value": true
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.deployment:kube-system/coredns",
+      "kind": "k8s.deployment",
+      "parent": "k8s:k8s.namespace:kube-system",
+      "repoId": "k8s",
+      "sourceAddress": "gcp.yaml",
+      "details": {
+        "namespace": {
+          "resolved": true,
+          "value": "kube-system"
+        },
+        "replicas": {
+          "resolved": true,
+          "value": 2
+        },
+        "image": {
+          "resolved": true,
+          "value": "registry.k8s.io/coredns/coredns:v1.11.1"
+        },
+        "requests": {
+          "resolved": true,
+          "value": "250m / 256Mi"
+        },
+        "ports": {
+          "resolved": true,
+          "value": "8080/TCP"
+        },
+        "runsOn": {
+          "resolved": true,
+          "value": "general"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.deployment:ingress-nginx/ingress-nginx-controller",
+      "kind": "k8s.deployment",
+      "parent": "k8s:k8s.namespace:ingress-nginx",
+      "repoId": "k8s",
+      "sourceAddress": "gcp.yaml",
+      "details": {
+        "namespace": {
+          "resolved": true,
+          "value": "ingress-nginx"
+        },
+        "replicas": {
+          "resolved": true,
+          "value": 2
+        },
+        "image": {
+          "resolved": true,
+          "value": "registry.k8s.io/ingress-nginx/controller:v1.11.1"
+        },
+        "requests": {
+          "resolved": true,
+          "value": "250m / 256Mi"
+        },
+        "ports": {
+          "resolved": true,
+          "value": "8080/TCP"
+        },
+        "nodeSelector": {
+          "resolved": true,
+          "value": "workload=general"
+        },
+        "runsOn": {
+          "resolved": true,
+          "value": "general"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.deployment:shop/web",
+      "kind": "k8s.deployment",
+      "parent": "k8s:k8s.namespace:shop",
+      "repoId": "k8s",
+      "sourceAddress": "gcp.yaml",
+      "details": {
+        "namespace": {
+          "resolved": true,
+          "value": "shop"
+        },
+        "replicas": {
+          "resolved": true,
+          "value": 3
+        },
+        "image": {
+          "resolved": true,
+          "value": "registry.example.com/shop/web:2.4.1"
+        },
+        "requests": {
+          "resolved": true,
+          "value": "250m / 256Mi"
+        },
+        "ports": {
+          "resolved": true,
+          "value": "8080/TCP"
+        },
+        "nodeSelector": {
+          "resolved": true,
+          "value": "workload=general"
+        },
+        "runsOn": {
+          "resolved": true,
+          "value": "general"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.deployment:shop/api",
+      "kind": "k8s.deployment",
+      "parent": "k8s:k8s.namespace:shop",
+      "repoId": "k8s",
+      "sourceAddress": "gcp.yaml",
+      "details": {
+        "namespace": {
+          "resolved": true,
+          "value": "shop"
+        },
+        "replicas": {
+          "resolved": true,
+          "value": 3
+        },
+        "image": {
+          "resolved": true,
+          "value": "registry.example.com/shop/api:2.4.1"
+        },
+        "requests": {
+          "resolved": true,
+          "value": "250m / 256Mi"
+        },
+        "ports": {
+          "resolved": true,
+          "value": "8080/TCP"
+        },
+        "serviceAccount": {
+          "resolved": true,
+          "value": "api"
+        },
+        "gcpServiceAccount": {
+          "resolved": true,
+          "value": "app-workload@sample-project-prod.iam.gserviceaccount.com"
+        },
+        "nodeSelector": {
+          "resolved": true,
+          "value": "workload=general"
+        },
+        "runsOn": {
+          "resolved": true,
+          "value": "general"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.deployment:shop/worker",
+      "kind": "k8s.deployment",
+      "parent": "k8s:k8s.namespace:shop",
+      "repoId": "k8s",
+      "sourceAddress": "gcp.yaml",
+      "details": {
+        "namespace": {
+          "resolved": true,
+          "value": "shop"
+        },
+        "replicas": {
+          "resolved": true,
+          "value": 4
+        },
+        "image": {
+          "resolved": true,
+          "value": "registry.example.com/shop/worker:2.4.1"
+        },
+        "requests": {
+          "resolved": true,
+          "value": "250m / 256Mi"
+        },
+        "ports": {
+          "resolved": true,
+          "value": "8080/TCP"
+        },
+        "nodeSelector": {
+          "resolved": true,
+          "value": "cloud.google.com/gke-spot=true"
+        },
+        "tolerations": {
+          "resolved": true,
+          "value": "batch"
+        },
+        "runsOn": {
+          "resolved": true,
+          "value": "spot"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.deployment:shop/report",
+      "kind": "k8s.deployment",
+      "parent": "k8s:k8s.namespace:shop",
+      "repoId": "k8s",
+      "sourceAddress": "gcp.yaml",
+      "details": {
+        "namespace": {
+          "resolved": true,
+          "value": "shop"
+        },
+        "replicas": {
+          "resolved": true,
+          "value": 1
+        },
+        "image": {
+          "resolved": true,
+          "value": "registry.example.com/shop/report:1.9.0"
+        },
+        "requests": {
+          "resolved": true,
+          "value": "250m / 256Mi"
+        },
+        "ports": {
+          "resolved": true,
+          "value": "8080/TCP"
+        },
+        "runsOn": {
+          "resolved": true,
+          "value": "general"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.service:ingress-nginx/ingress-nginx-controller",
+      "kind": "k8s.service",
+      "parent": "k8s:k8s.namespace:ingress-nginx",
+      "repoId": "k8s",
+      "sourceAddress": "gcp.yaml",
+      "details": {
+        "type": {
+          "resolved": true,
+          "value": "ClusterIP"
+        },
+        "ports": {
+          "resolved": true,
+          "value": "80→8080/TCP"
+        },
+        "selector": {
+          "resolved": true,
+          "value": "app=ingress-nginx-controller"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.service:shop/web",
+      "kind": "k8s.service",
+      "parent": "k8s:k8s.namespace:shop",
+      "repoId": "k8s",
+      "sourceAddress": "gcp.yaml",
+      "details": {
+        "type": {
+          "resolved": true,
+          "value": "ClusterIP"
+        },
+        "ports": {
+          "resolved": true,
+          "value": "80→8080/TCP"
+        },
+        "selector": {
+          "resolved": true,
+          "value": "app=web"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.service:shop/api",
+      "kind": "k8s.service",
+      "parent": "k8s:k8s.namespace:shop",
+      "repoId": "k8s",
+      "sourceAddress": "gcp.yaml",
+      "details": {
+        "type": {
+          "resolved": true,
+          "value": "ClusterIP"
+        },
+        "ports": {
+          "resolved": true,
+          "value": "80→8080/TCP"
+        },
+        "selector": {
+          "resolved": true,
+          "value": "app=api"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.configmap:shop/shop-cfg",
+      "kind": "k8s.configmap",
+      "parent": "k8s:k8s.namespace:shop",
+      "repoId": "k8s",
+      "sourceAddress": "gcp.yaml",
+      "details": {}
+    },
+    {
+      "id": "k8s:k8s.ingress:shop/shop",
+      "kind": "k8s.ingress",
+      "parent": "k8s:k8s.namespace:shop",
+      "repoId": "k8s",
+      "sourceAddress": "gcp.yaml",
+      "details": {
+        "class": {
+          "resolved": true,
+          "value": "nginx"
+        },
+        "hosts": {
+          "resolved": true,
+          "value": "shop.example.com"
+        }
+      }
     }
   ],
   "edges": [
@@ -525,7 +966,15 @@
       "label": "runs as"
     },
     {
+      "from": "gcp:gcp.gke.nodepool:spot",
+      "to": "gcp:gcp.gke.cluster:gke"
+    },
+    {
       "from": "gcp:gcp.sql.instance:pg",
+      "to": "gcp:gcp.vpc:main"
+    },
+    {
+      "from": "gcp:gcp.redis:cache",
       "to": "gcp:gcp.vpc:main"
     },
     {
@@ -548,23 +997,62 @@
       "from": "gcp:gcp.dns.record:app",
       "to": "gcp:gcp.lb:ilb",
       "label": "points to"
+    },
+    {
+      "from": "k8s:k8s.service:ingress-nginx/ingress-nginx-controller",
+      "to": "k8s:k8s.deployment:ingress-nginx/ingress-nginx-controller"
+    },
+    {
+      "from": "k8s:k8s.service:shop/web",
+      "to": "k8s:k8s.deployment:shop/web"
+    },
+    {
+      "from": "k8s:k8s.service:shop/api",
+      "to": "k8s:k8s.deployment:shop/api"
+    },
+    {
+      "from": "k8s:k8s.ingress:shop/shop",
+      "to": "k8s:k8s.service:shop/web",
+      "label": "shop.example.com/"
+    },
+    {
+      "from": "k8s:k8s.ingress:shop/shop",
+      "to": "k8s:k8s.service:shop/api",
+      "label": "shop.example.com/api"
+    },
+    {
+      "from": "k8s:k8s.deployment:shop/web",
+      "to": "k8s:k8s.configmap:shop/shop-cfg"
+    },
+    {
+      "from": "k8s:k8s.deployment:shop/api",
+      "to": "k8s:k8s.configmap:shop/shop-cfg"
+    },
+    {
+      "from": "k8s:k8s.deployment:shop/api",
+      "to": "gcp:gcp.service_account:workload",
+      "label": "impersonates (Workload Identity)"
     }
   ],
   "coverage": {
     "gcp": {
       "unmapped": [],
       "unresolvedBoundaries": []
+    },
+    "k8s": {
+      "unmapped": [],
+      "unresolvedBoundaries": []
     }
   },
   "unresolvedCrossRepoLinks": [],
   "unresolvedPlacements": [],
+  "findings": [],
   "legend": {
-    "net": "Network",
-    "eks": "GKE",
-    "compute": "VMs",
-    "data": "Data services",
-    "edgeapp": "LB & DNS",
-    "iam": "IAM",
-    "cfg": "Secrets & storage"
+    "net": "Network / namespaces",
+    "compute": "Compute / capacity",
+    "eks": "EKS / ArgoCD",
+    "k8s": "Workloads",
+    "edgeapp": "DNS, LB & services",
+    "cfg": "Config & storage"
   }
 }

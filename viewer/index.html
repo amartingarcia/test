@@ -154,7 +154,7 @@
 
   * { box-sizing: border-box; }
   html, body { height: 100%; margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-ui); }
-  .mono, td.key, .kind, .raw, #env-select, td.val { font-family: var(--font-mono); }
+  .mono, td.key, .kind, .raw, #env-select, #view-select, td.val { font-family: var(--font-mono); }
   #app { display: flex; height: 100vh; }
 
   #graph { flex: 1; min-width: 0; position: relative; overflow: hidden; background: var(--field); }
@@ -204,8 +204,9 @@
   button:hover, select:hover { background: color-mix(in srgb, var(--def) 16%, transparent); }
   button[aria-pressed="true"], button[aria-checked="true"] { color: var(--def); box-shadow: inset 0 0 0 1px var(--def); }
   button:focus-visible, select:focus-visible { outline: 2px solid var(--def); outline-offset: 1px; }
-  #env-select { font-size: 12px; padding-right: 4px; }
-  #env-select option { background: var(--panel-solid); color: var(--text); }
+  #env-select, #view-select { font-size: 12px; padding-right: 4px; }
+  #view-select[hidden] { display: none; }
+  #env-select option, #view-select option { background: var(--panel-solid); color: var(--text); }
   .icon { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
   #zoom-level { min-width: 56px; justify-content: center; font-family: var(--font-mono); font-size: 12px; color: var(--muted); }
   #theme-btn .sun { display: none; }
@@ -259,6 +260,7 @@
 
     <div id="hud-top" class="hud" role="toolbar" aria-label="Diagram controls">
       <select id="env-select" aria-label="Environment"></select>
+      <select id="view-select" aria-label="View" hidden></select>
       <span class="sep"></span>
       <button id="expand-all-btn" title="Expand all groups">
         <svg class="icon" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg><span class="wide">Expand</span>

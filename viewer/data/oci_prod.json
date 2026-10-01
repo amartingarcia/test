@@ -348,6 +348,14 @@
           "resolved": true,
           "value": "VM.Standard.E4.Flex"
         },
+        "initial_node_labels.key": {
+          "resolved": true,
+          "value": "workload"
+        },
+        "initial_node_labels.value": {
+          "resolved": true,
+          "value": "general"
+        },
         "node_config_details.size": {
           "resolved": true,
           "value": 4
@@ -392,6 +400,14 @@
         "node_shape": {
           "resolved": true,
           "value": "VM.Standard.E4.Flex"
+        },
+        "initial_node_labels.key": {
+          "resolved": true,
+          "value": "workload"
+        },
+        "initial_node_labels.value": {
+          "resolved": true,
+          "value": "batch"
         },
         "node_config_details.size": {
           "resolved": true,

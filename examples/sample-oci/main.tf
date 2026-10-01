@@ -109,6 +109,11 @@ resource "oci_containerengine_node_pool" "general" {
   name               = "general"
   node_shape         = "VM.Standard.E4.Flex"
 
+  initial_node_labels {
+    key   = "workload"
+    value = "general"
+  }
+
   node_config_details {
     size = var.nodes
 
@@ -126,6 +131,11 @@ resource "oci_containerengine_node_pool" "batch" {
   kubernetes_version = var.k8s_version
   name               = "batch"
   node_shape         = "VM.Standard.E4.Flex"
+
+  initial_node_labels {
+    key   = "workload"
+    value = "batch"
+  }
 
   node_config_details {
     size = 2

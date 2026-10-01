@@ -280,6 +280,12 @@
           "resolved": false,
           "raw": "google_service_account.nodes.email"
         },
+        "node_config.labels": {
+          "resolved": true,
+          "value": {
+            "workload": "general"
+          }
+        },
         "autoscaling.min_node_count": {
           "resolved": true,
           "value": 3
@@ -320,6 +326,24 @@
         "node_config.spot": {
           "resolved": true,
           "value": true
+        },
+        "node_config.labels": {
+          "resolved": true,
+          "value": {
+            "workload": "batch"
+          }
+        },
+        "node_config.taint.key": {
+          "resolved": true,
+          "value": "batch"
+        },
+        "node_config.taint.value": {
+          "resolved": true,
+          "value": "true"
+        },
+        "node_config.taint.effect": {
+          "resolved": true,
+          "value": "NO_SCHEDULE"
         },
         "autoscaling.min_node_count": {
           "resolved": true,

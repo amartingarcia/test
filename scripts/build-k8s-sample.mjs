@@ -25,14 +25,14 @@ if (errors.length) { console.error(errors); process.exit(1); }
 const nodeGroups = [{ name: 'system', labels: { 'node-role': 'system' }, taints: [{ key: 'CriticalAddonsOnly', effect: 'NoSchedule' }] }];
 
 const views = [
-  { id: 'k8s_namespaces', view: 'namespace', label: 'k8s / by namespace' },
-  { id: 'k8s_nodes', view: 'nodes', label: 'k8s / by node pool' },
+  { id: 'k8s_namespaces', view: 'namespace', label: 'k8s sample (Karpenter + ArgoCD)', title: 'By namespace' },
+  { id: 'k8s_nodes', view: 'nodes', label: 'k8s sample (Karpenter + ArgoCD)', title: 'By node pool' },
 ];
 const environments = [];
 for (const v of views) {
   const graph = buildK8sGraph({ environment: v.id, clusterName: 'shop-prod', objects, view: v.view, nodeGroups });
   await fs.writeFile(path.join(outDir, `${v.id}.json`), JSON.stringify(graph, null, 2) + '\n', 'utf8');
-  environments.push({ id: v.id, label: v.label, source: 'examples/sample-k8s' });
+  environments.push({ id: v.id, label: v.label, group: 'k8s_sample', view: v.title, source: 'examples/sample-k8s' });
   console.log(`${v.id}: ${graph.entities.length} entities, ${graph.edges.length} edges, unmapped ${graph.coverage.k8s.unmapped.length}, ` +
     `ambiguous placements ${graph.unresolvedPlacements.length}, findings ${graph.findings.length}`);
 }

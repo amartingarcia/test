@@ -108,7 +108,7 @@ test('refuses to guess when the cloud graph has no single EKS cluster', () => {
   const { objects } = loadK8sManifests([{ path: 'k.yaml', content: k8sYaml }]);
   const k8s = buildK8sGraph({ environment: 'k', clusterName: 'c', objects, view: 'namespace' });
   const two = { ...cloud, entities: [...cloud.entities, { id: 'p:aws.eks.cluster:other', kind: 'aws.eks.cluster', parent: null, repoId: 'p', details: {} }] };
-  assert.throws(() => mergeK8sIntoCloud({ environment: 'x', cloud: two, k8s }), /exactly one aws\.eks\.cluster/);
+  assert.throws(() => mergeK8sIntoCloud({ environment: 'x', cloud: two, k8s }), /exactly one Kubernetes cluster/);
 });
 
 test('a node group with unresolved labels keeps affected workloads at cluster level, reported', () => {

@@ -406,6 +406,10 @@
           "resolved": false,
           "raw": "azurerm_subnet.spoke_aks.id"
         },
+        "default_node_pool.only_critical_addons_enabled": {
+          "resolved": true,
+          "value": true
+        },
         "identity.type": {
           "resolved": true,
           "value": "UserAssigned"
@@ -458,6 +462,65 @@
         "vnet_subnet_id": {
           "resolved": false,
           "raw": "azurerm_subnet.spoke_aks.id"
+        },
+        "node_labels": {
+          "resolved": true,
+          "value": {
+            "workload": "general"
+          }
+        }
+      }
+    },
+    {
+      "id": "azure:azure.aks.nodepool:batch",
+      "kind": "azure.aks.nodepool",
+      "repoId": "azure",
+      "sourceAddress": "azurerm_kubernetes_cluster_node_pool.batch",
+      "parent": "azure:azure.aks.cluster:main",
+      "details": {
+        "name": {
+          "resolved": true,
+          "value": "batch"
+        },
+        "kubernetes_cluster_id": {
+          "resolved": false,
+          "raw": "azurerm_kubernetes_cluster.main.id"
+        },
+        "vm_size": {
+          "resolved": true,
+          "value": "Standard_D8s_v5"
+        },
+        "priority": {
+          "resolved": true,
+          "value": "Spot"
+        },
+        "min_count": {
+          "resolved": true,
+          "value": 0
+        },
+        "max_count": {
+          "resolved": true,
+          "value": 10
+        },
+        "enable_auto_scaling": {
+          "resolved": true,
+          "value": true
+        },
+        "vnet_subnet_id": {
+          "resolved": false,
+          "raw": "azurerm_subnet.spoke_aks.id"
+        },
+        "node_labels": {
+          "resolved": true,
+          "value": {
+            "workload": "batch"
+          }
+        },
+        "node_taints": {
+          "resolved": true,
+          "value": [
+            "batch=true:NoSchedule"
+          ]
         }
       }
     },
@@ -912,6 +975,14 @@
     },
     {
       "from": "azure:azure.aks.nodepool:user",
+      "to": "azure:azure.subnet:spoke_aks"
+    },
+    {
+      "from": "azure:azure.aks.nodepool:batch",
+      "to": "azure:azure.aks.cluster:main"
+    },
+    {
+      "from": "azure:azure.aks.nodepool:batch",
       "to": "azure:azure.subnet:spoke_aks"
     },
     {
