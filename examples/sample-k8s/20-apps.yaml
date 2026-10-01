@@ -1,0 +1,246 @@
+# Synthetic applications.
+---
+apiVersion: v1
+kind: Namespace
+metadata: {name: shop}
+---
+apiVersion: v1
+kind: Namespace
+metadata: {name: payments}
+---
+apiVersion: v1
+kind: Namespace
+metadata: {name: ml}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: web, namespace: shop, labels: {argocd.argoproj.io/instance: shop}}
+spec:
+  replicas: 4
+  selector: {matchLabels: {app: web}}
+  template:
+    metadata: {labels: {app: web}}
+    spec:
+      serviceAccountName: web
+      nodeSelector: {workload: general}
+      containers:
+        - name: web
+          image: registry.example.com/shop/web:2.4.1
+          ports: [{containerPort: 8080}]
+          resources: {requests: {cpu: 500m, memory: 512Mi}}
+          envFrom: [{configMapRef: {name: web-cfg}}]
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: web
+  namespace: shop
+  annotations: {eks.amazonaws.com/role-arn: "arn:aws:iam::111111111111:role/shop-prod-web"}
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata: {name: web, namespace: shop}
+spec: {scaleTargetRef: {apiVersion: apps/v1, kind: Deployment, name: web}, minReplicas: 4, maxReplicas: 20}
+---
+apiVersion: v1
+kind: Service
+metadata: {name: web, namespace: shop, labels: {argocd.argoproj.io/instance: shop}}
+spec: {type: ClusterIP, selector: {app: web}, ports: [{port: 80, targetPort: 8080}]}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata: {name: shop, namespace: shop, labels: {argocd.argoproj.io/instance: shop}}
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: shop.example.com
+      http:
+        paths:
+            - {path: /, pathType: Prefix, backend: {service: {name: web, port: {number: 80}}}}
+            - {path: /api, pathType: Prefix, backend: {service: {name: api, port: {number: 80}}}}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: api, namespace: shop, labels: {argocd.argoproj.io/instance: shop}}
+spec:
+  replicas: 3
+  selector: {matchLabels: {app: api}}
+  template:
+    metadata: {labels: {app: api}}
+    spec:
+      serviceAccountName: api
+      nodeSelector: {workload: general}
+      containers:
+        - name: api
+          image: registry.example.com/shop/api:2.4.1
+          ports: [{containerPort: 8080}]
+          resources: {requests: {cpu: 500m, memory: 1Gi}}
+          envFrom: [{configMapRef: {name: web-cfg}}]
+          env:
+            - name: SECRET
+              valueFrom: {secretKeyRef: {name: db-credentials, key: v}}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: api
+  namespace: shop
+  annotations: {eks.amazonaws.com/role-arn: "arn:aws:iam::111111111111:role/shop-prod-api"}
+---
+apiVersion: v1
+kind: Service
+metadata: {name: api, namespace: shop, labels: {argocd.argoproj.io/instance: shop}}
+spec: {type: ClusterIP, selector: {app: api}, ports: [{port: 80, targetPort: 8080}]}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: worker, namespace: shop, labels: {argocd.argoproj.io/instance: shop}}
+spec:
+  replicas: 6
+  selector: {matchLabels: {app: worker}}
+  template:
+    metadata: {labels: {app: worker}}
+    spec:
+      serviceAccountName: worker
+      nodeSelector: {karpenter.sh/capacity-type: spot}
+      tolerations: [{key: batch, operator: Exists}]
+      containers:
+        - name: worker
+          image: registry.example.com/shop/worker:2.4.1
+          ports: [{containerPort: 8080}]
+          resources: {requests: {cpu: 250m, memory: 256Mi}}
+          envFrom: [{configMapRef: {name: web-cfg}}]
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: worker
+  namespace: shop
+  annotations: {eks.amazonaws.com/role-arn: "arn:aws:iam::111111111111:role/shop-prod-worker"}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata: {name: redis, namespace: shop, labels: {argocd.argoproj.io/instance: shop}}
+spec:
+  serviceName: redis
+  selector: {matchLabels: {app: redis}}
+  template:
+    metadata: {labels: {app: redis}}
+    spec:
+      nodeSelector: {workload: general}
+      containers:
+        - name: redis
+          image: redis:7.2
+          ports: [{containerPort: 6379}]
+          resources: {requests: {cpu: 250m, memory: 256Mi}}
+---
+apiVersion: v1
+kind: Service
+metadata: {name: redis, namespace: shop, labels: {argocd.argoproj.io/instance: shop}}
+spec: {type: ClusterIP, selector: {app: redis}, ports: [{port: 6379, targetPort: 6379}]}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata: {name: web-cfg, namespace: shop, labels: {argocd.argoproj.io/instance: shop}}
+data: {k: v}
+---
+apiVersion: v1
+kind: Secret
+metadata: {name: db-credentials, namespace: shop, labels: {argocd.argoproj.io/instance: shop}}
+stringData: {v: example-not-a-secret}
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata: {name: nightly-report, namespace: shop, labels: {argocd.argoproj.io/instance: shop}}
+spec:
+  schedule: "0 2 * * *"
+  jobTemplate:
+    spec:
+      template:
+        metadata: {labels: {app: nightly-report}}
+        spec:
+          tolerations: [{key: batch, operator: Exists}]
+          nodeSelector: {workload: batch}
+          containers: [{name: report, image: "registry.example.com/shop/report:1.9.0"}]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: payments-api, namespace: payments, labels: {argocd.argoproj.io/instance: payments}}
+spec:
+  replicas: 3
+  selector: {matchLabels: {app: payments-api}}
+  template:
+    metadata: {labels: {app: payments-api}}
+    spec:
+      serviceAccountName: payments
+      nodeSelector: {workload: general}
+      containers:
+        - name: payments-api
+          image: registry.example.com/payments/api:5.0.2
+          ports: [{containerPort: 8080}]
+          resources: {requests: {cpu: 1, memory: 1Gi}}
+          env:
+            - name: SECRET
+              valueFrom: {secretKeyRef: {name: psp-credentials, key: v}}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: payments
+  namespace: payments
+  annotations: {eks.amazonaws.com/role-arn: "arn:aws:iam::111111111111:role/shop-prod-payments"}
+---
+apiVersion: v1
+kind: Service
+metadata: {name: payments-api, namespace: payments, labels: {argocd.argoproj.io/instance: payments}}
+spec: {type: ClusterIP, selector: {app: payments-api}, ports: [{port: 80, targetPort: 8080}]}
+---
+apiVersion: v1
+kind: Secret
+metadata: {name: psp-credentials, namespace: payments, labels: {argocd.argoproj.io/instance: payments}}
+stringData: {v: example-not-a-secret}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata: {name: payments, namespace: payments, labels: {argocd.argoproj.io/instance: payments}}
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: pay.example.com
+      http:
+        paths:
+            - {path: /, pathType: Prefix, backend: {service: {name: payments-api, port: {number: 80}}}}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: recommender, namespace: ml, labels: {argocd.argoproj.io/instance: ml}}
+spec:
+  replicas: 2
+  selector: {matchLabels: {app: recommender}}
+  template:
+    metadata: {labels: {app: recommender}}
+    spec:
+      nodeSelector: {workload: ml}
+      tolerations: [{key: nvidia.com/gpu, operator: Exists}]
+      containers:
+        - name: recommender
+          image: registry.example.com/ml/recommender:0.7.0
+          ports: [{containerPort: 8000}]
+          resources: {requests: {cpu: 4, memory: 16Gi}}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: trainer, namespace: ml, labels: {argocd.argoproj.io/instance: ml}}
+spec:
+  replicas: 1
+  selector: {matchLabels: {app: trainer}}
+  template:
+    metadata: {labels: {app: trainer}}
+    spec:
+      nodeSelector: {workload: ml-xl}
+      tolerations: [{key: nvidia.com/gpu, operator: Exists}]
+      containers:
+        - name: trainer
+          image: registry.example.com/ml/trainer:0.7.0
+          ports: [{containerPort: 8000}]
+          resources: {requests: {cpu: 8, memory: 32Gi}}

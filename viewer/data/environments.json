@@ -19,6 +19,16 @@
       "id": "data_dev",
       "label": "minimal demo (hand-written DOT)",
       "source": "scripts/build-sample-data.mjs"
+    },
+    {
+      "id": "k8s_namespaces",
+      "label": "k8s / by namespace",
+      "source": "examples/sample-k8s"
+    },
+    {
+      "id": "k8s_nodes",
+      "label": "k8s / by node pool",
+      "source": "examples/sample-k8s"
     }
   ]
 }

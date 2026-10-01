@@ -27,6 +27,12 @@ const KIND_CLASS = (kind) => {
   if (kind.startsWith('aws.ssm') || kind.startsWith('group.ssm')) return 'cfg';
   if (kind.startsWith('aws.route53') || kind.startsWith('aws.lb')) return 'edgeapp';
   if (kind.startsWith('aws.rds') || kind.startsWith('aws.docdb') || kind.startsWith('aws.dynamodb') || kind.startsWith('aws.elasticache') || kind.startsWith('aws.opensearch')) return 'data';
+  if (kind === 'k8s.cluster') return 'default';
+  if (kind === 'k8s.namespace') return 'net';
+  if (/^k8s\.(nodepool|nodeclass|nodegroup)$/.test(kind)) return 'compute';
+  if (/^k8s\.(service|ingress)$/.test(kind)) return 'edgeapp';
+  if (/^k8s\.(configmap|secret|pvc)$/.test(kind)) return 'cfg';
+  if (kind.startsWith('k8s.argo')) return 'eks';
   if (kind.startsWith('k8s.')) return 'k8s';
   if (/^aws\.(vpc|subnet|nat|internet|route_table|security_group)/.test(kind)) return 'net';
   return 'default';
@@ -171,13 +177,15 @@ const GLYPHS = {
   record: 'M4 4h12v12H4zM7 8h6M7 12h4',
   balance: 'M10 3v14M5 17h10M4 6l3 5H1zM16 6l3 5h-6z',
   link: 'M8 12l4-4M7 9L5 11a3 3 0 0 0 4 4l2-2M13 11l2-2a3 3 0 0 0-4-4L9 7',
+  clock: 'M10 3a7 7 0 1 0 .01 0zM10 6v4l3 2',
+  argo: 'M10 2l7 4v8l-7 4-7-4V6zM6.5 10l2.5 2.5L14 7.5',
   box: 'M4 4h12v12H4z',
 };
 const xmlEscape = (t) => String(t).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;' }[c]));
 const clip = (t, n) => (t.length > n ? `${t.slice(0, n - 1)}…` : t);
 const resolved = (details, key) => (details?.[key]?.resolved ? details[key].value : undefined);
 
-function cardSvg({ name, kind, class: cls, details }) {
+function cardSvg({ name, kind, class: cls, details, parentKind }) {
   // (groups, e.g. IAM, only get a card while collapsed; their name arrives as the tab label)
   const accent = classColor(cls);
   const nodeBg = cssVar('--node');
@@ -195,7 +203,12 @@ function cardSvg({ name, kind, class: cls, details }) {
   if (compact) {
     const chart = resolved(details, 'chart');
     const version = resolved(details, 'version');
-    sub = chart ? `${chart}${version ? ` v${version}` : ''}` : kindShort;
+    const image = resolved(details, 'image');
+    const ns = resolved(details, 'namespace');
+    const shortImage = typeof image === 'string' ? image.split('/').pop() : undefined;
+    // a workload drawn outside its namespace container (node-pool view) carries the namespace in its sub line
+    const withNs = ns && parentKind !== 'k8s.namespace' ? `${ns} · ` : '';
+    sub = chart ? `${chart}${version ? ` v${version}` : ''}` : shortImage ? `${withNs}${shortImage}` : kindShort;
   }
 
   const P = currentPreset();
@@ -241,13 +254,13 @@ function buildStyle() {
 
   const style = [
     { selector: 'node', style: {
-      'label': '', 'shape': 'round-rectangle', 'corner-radius': P.radius, 'width': CARD.w, 'height': CARD.h,
+      'label': '', 'shape': 'round-rectangle', 'corner-radius': P.radius, 'width': 'data(w)', 'height': 'data(h)',
       'background-color': nodeBg, 'background-image': 'data(card)', 'background-fit': 'cover', 'background-clip': 'node',
       'border-width': P.border, 'border-color': classColor('default'),
       'underlay-color': classColor('default'), 'underlay-opacity': glow, 'underlay-padding': 7, 'underlay-shape': 'round-rectangle',
       'transition-property': 'opacity, border-width, underlay-opacity', 'transition-duration': '0.18s',
     }},
-    { selector: 'node[kind ^= "k8s."]', style: { 'width': CHIP.w, 'height': CHIP.h, 'corner-radius': Math.min(P.radius, 12) } },
+    { selector: 'node[h < 60]', style: { 'corner-radius': Math.min(P.radius, 12) } },
     { selector: ':parent', style: {
       'background-image': 'none', 'background-opacity': 0.07, 'background-color': classColor('default'), 'border-width': P.border, 'border-style': P.group,
       'label': 'data(groupLabel)', 'color': text, 'font-family': mono, 'font-size': 12, 'font-weight': 'bold', 'text-wrap': 'wrap', 'line-height': 1.35,
@@ -323,6 +336,12 @@ function renderCoverage(graph) {
   if ((graph.unresolvedPlacements ?? []).length) {
     parts.push(`${graph.unresolvedPlacements.length} ambiguous placement(s)`);
   }
+  if ((graph.findings ?? []).length) parts.push(`${graph.findings.length} finding(s)`);
+  // the details behind the counts, readable on hover
+  coverageEl.title = [
+    ...(graph.unresolvedPlacements ?? []).map((u) => `${u.entityId}: ${u.reason}${u.candidates?.length ? ` (${u.candidates.join(', ')})` : ''}`),
+    ...(graph.findings ?? []).map((f) => f.message),
+  ].join('\n');
   coverageEl.textContent = parts.length ? `⚠ ${parts.join(' · ')}` : '';
 }
 
@@ -334,7 +353,7 @@ function renderLegend(graph) {
     counts[cls] = (counts[cls] ?? 0) + 1;
   }
   document.getElementById('legend-row').innerHTML = CLASSES.filter((c) => counts[c])
-    .map((c) => `<span class="key-dot ${c === 'default' ? 'def' : c}"><i></i><span>${CLASS_NAMES[c]} ${counts[c]}</span></span>`)
+    .map((c) => `<span class="key-dot ${c === 'default' ? 'def' : c}"><i></i><span>${(graph.legend ?? {})[c] ?? CLASS_NAMES[c]} ${counts[c]}</span></span>`)
     .join('');
 }
 
@@ -378,15 +397,21 @@ function renderGraph(graph) {
   for (const e of visible) { const g = groupOf(e); if (g) groupIds.add(g); }
   for (const gid of groupIds) {
     const key = gid.slice('group:'.length);
-    elements.push({ data: { id: gid, kind: gid.replace(':', '.'), name: key, class: KIND_CLASS(`group.${key}`), groupLabel: catalog.groups[key]?.label ?? key } });
+    elements.push({ data: { id: gid, kind: gid.replace(':', '.'), name: key, w: CARD.w, h: CARD.h, class: KIND_CLASS(`group.${key}`), groupLabel: catalog.groups[key]?.label ?? key } });
   }
 
   for (const entity of visible) {
-    const name = entityName(entity);
+    const parentKind = byId.get(entity.parent)?.kind ?? '';
+    // inside its namespace container the "ns/" prefix is redundant
+    const name = parentKind === 'k8s.namespace' ? entityName(entity).split('/').pop() : entityName(entity);
+    const size = sizeOf(entity.kind);
     elements.push({
       data: {
         id: entity.id,
         name,
+        w: size.w,
+        h: size.h,
+        parentKind,
         groupLabel: groupLabel(entity, embeddedOf),
         kind: entity.kind,
         parent: entity.parent ?? groupOf(entity) ?? undefined,

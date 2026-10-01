@@ -1,0 +1,117 @@
+# Synthetic ArgoCD resources.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata: {name: shop, namespace: argocd}
+spec:
+  source: {repoURL: "https://git.example.com/shop/deploy.git", path: overlays/prod, targetRevision: main}
+  destination: {server: "https://kubernetes.default.svc", namespace: shop}
+  syncPolicy: {automated: {prune: true, selfHeal: true}}
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata: {name: payments, namespace: argocd}
+spec:
+  source: {repoURL: "https://git.example.com/payments/deploy.git", path: prod, targetRevision: v5.0.2}
+  destination: {server: "https://kubernetes.default.svc", namespace: payments}
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata: {name: observability, namespace: argocd}
+spec:
+  sources:
+    - {repoURL: "https://prometheus-community.github.io/helm-charts", chart: kube-prometheus-stack, targetRevision: 61.3.0}
+  destination: {server: "https://kubernetes.default.svc", namespace: observability}
+  syncPolicy: {automated: {prune: true}}
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata: {name: ingress-nginx, namespace: argocd}
+spec:
+  source: {repoURL: "https://kubernetes.github.io/ingress-nginx", chart: ingress-nginx, targetRevision: 4.11.1}
+  destination: {server: "https://kubernetes.default.svc", namespace: ingress-nginx}
+  syncPolicy: {automated: {selfHeal: true}}
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata: {name: karpenter, namespace: argocd}
+spec:
+  source: {repoURL: "public.ecr.aws/karpenter", chart: karpenter, targetRevision: 1.0.0}
+  destination: {server: "https://kubernetes.default.svc", namespace: karpenter}
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata: {name: argocd, namespace: argocd}
+spec:
+  source: {repoURL: "https://git.example.com/platform/argocd.git", path: bootstrap, targetRevision: main}
+  destination: {server: "https://kubernetes.default.svc", namespace: argocd}
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata: {name: ml, namespace: argocd}
+spec:
+  source: {repoURL: "https://git.example.com/ml/deploy.git", path: prod, targetRevision: main}
+  destination: {server: "https://kubernetes.default.svc", namespace: ml}
+---
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata: {name: tenants, namespace: argocd}
+spec:
+  generators:
+    - list:
+        elements:
+          - {tenant: acme}
+          - {tenant: globex}
+  template:
+    metadata: {name: "tenant-{{tenant}}"}
+    spec:
+      source: {repoURL: "https://git.example.com/tenants.git", path: "{{tenant}}", targetRevision: main}
+      destination: {server: "https://kubernetes.default.svc", namespace: "tenant-{{tenant}}"}
+---
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata: {name: preview-envs, namespace: argocd}
+spec:
+  generators: [{pullRequest: {github: {owner: example, repo: shop}}}]
+  template:
+    metadata: {name: "preview-{{number}}"}
+    spec: {destination: {namespace: "preview-{{number}}"}}
+---
+apiVersion: v1
+kind: Namespace
+metadata: {name: tenant-acme}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: app, namespace: tenant-acme, labels: {argocd.argoproj.io/instance: tenant-acme}}
+spec:
+  replicas: 1
+  selector: {matchLabels: {app: app}}
+  template:
+    metadata: {labels: {app: app}}
+    spec:
+      nodeSelector: {workload: general}
+      containers:
+        - name: app
+          image: registry.example.com/tenant/app:1.0.0
+          ports: [{containerPort: 8080}]
+          resources: {requests: {cpu: 250m, memory: 256Mi}}
+---
+apiVersion: v1
+kind: Namespace
+metadata: {name: tenant-globex}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: app, namespace: tenant-globex, labels: {argocd.argoproj.io/instance: tenant-globex}}
+spec:
+  replicas: 1
+  selector: {matchLabels: {app: app}}
+  template:
+    metadata: {labels: {app: app}}
+    spec:
+      nodeSelector: {workload: general}
+      containers:
+        - name: app
+          image: registry.example.com/tenant/app:1.0.0
+          ports: [{containerPort: 8080}]
+          resources: {requests: {cpu: 250m, memory: 256Mi}}

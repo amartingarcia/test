@@ -1,0 +1,1002 @@
+{
+  "environment": "k8s_nodes",
+  "view": "nodes",
+  "entities": [
+    {
+      "id": "k8s:k8s.cluster:shop-prod",
+      "kind": "k8s.cluster",
+      "parent": null,
+      "repoId": "k8s",
+      "sourceAddress": "shop-prod",
+      "details": {
+        "name": {
+          "resolved": true,
+          "value": "shop-prod"
+        },
+        "objects": {
+          "resolved": true,
+          "value": 67
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.nodeclass:default",
+      "kind": "k8s.nodeclass",
+      "parent": "k8s:k8s.cluster:shop-prod",
+      "repoId": "k8s",
+      "sourceAddress": "00-capacity.yaml",
+      "details": {
+        "ami": {
+          "resolved": true,
+          "value": "al2023@latest"
+        },
+        "role": {
+          "resolved": true,
+          "value": "KarpenterNodeRole-shop-prod"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.nodeclass:gpu",
+      "kind": "k8s.nodeclass",
+      "parent": "k8s:k8s.cluster:shop-prod",
+      "repoId": "k8s",
+      "sourceAddress": "00-capacity.yaml",
+      "details": {
+        "ami": {
+          "resolved": true,
+          "value": "bottlerocket@latest"
+        },
+        "role": {
+          "resolved": true,
+          "value": "KarpenterNodeRole-shop-prod"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.nodepool:general",
+      "kind": "k8s.nodepool",
+      "parent": "k8s:k8s.cluster:shop-prod",
+      "repoId": "k8s",
+      "sourceAddress": "00-capacity.yaml",
+      "details": {
+        "capacity": {
+          "resolved": true,
+          "value": "capacity-type = on-demand · arch = amd64"
+        },
+        "labels": {
+          "resolved": true,
+          "value": "workload=general"
+        },
+        "limits": {
+          "resolved": true,
+          "value": "cpu=200"
+        },
+        "consolidation": {
+          "resolved": true,
+          "value": "WhenEmptyOrUnderutilized"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.nodepool:spot-batch",
+      "kind": "k8s.nodepool",
+      "parent": "k8s:k8s.cluster:shop-prod",
+      "repoId": "k8s",
+      "sourceAddress": "00-capacity.yaml",
+      "details": {
+        "capacity": {
+          "resolved": true,
+          "value": "capacity-type = spot"
+        },
+        "taints": {
+          "resolved": true,
+          "value": "batch=true:NoSchedule"
+        },
+        "labels": {
+          "resolved": true,
+          "value": "workload=batch"
+        },
+        "limits": {
+          "resolved": true,
+          "value": "cpu=400"
+        },
+        "consolidation": {
+          "resolved": true,
+          "value": "WhenEmpty"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.nodepool:gpu",
+      "kind": "k8s.nodepool",
+      "parent": "k8s:k8s.cluster:shop-prod",
+      "repoId": "k8s",
+      "sourceAddress": "00-capacity.yaml",
+      "details": {
+        "capacity": {
+          "resolved": true,
+          "value": "instance-family = g5"
+        },
+        "taints": {
+          "resolved": true,
+          "value": "nvidia.com/gpu=true:NoSchedule"
+        },
+        "labels": {
+          "resolved": true,
+          "value": "workload=ml"
+        },
+        "limits": {
+          "resolved": true,
+          "value": "cpu=64"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.nodegroup:system",
+      "kind": "k8s.nodegroup",
+      "parent": "k8s:k8s.cluster:shop-prod",
+      "repoId": "k8s",
+      "sourceAddress": "system",
+      "details": {
+        "labels": {
+          "resolved": true,
+          "value": "node-role=system"
+        },
+        "taints": {
+          "resolved": true,
+          "value": "CriticalAddonsOnly:NoSchedule"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.deployment:karpenter/karpenter",
+      "kind": "k8s.deployment",
+      "parent": "k8s:k8s.nodegroup:system",
+      "repoId": "k8s",
+      "sourceAddress": "10-platform.yaml",
+      "details": {
+        "namespace": {
+          "resolved": true,
+          "value": "karpenter"
+        },
+        "replicas": {
+          "resolved": true,
+          "value": 2
+        },
+        "image": {
+          "resolved": true,
+          "value": "public.ecr.aws/karpenter/controller:1.0.0"
+        },
+        "requests": {
+          "resolved": true,
+          "value": "250m / 256Mi"
+        },
+        "ports": {
+          "resolved": true,
+          "value": "8080/TCP"
+        },
+        "serviceAccount": {
+          "resolved": true,
+          "value": "karpenter"
+        },
+        "iamRole": {
+          "resolved": true,
+          "value": "arn:aws:iam::111111111111:role/shop-prod-karpenter"
+        },
+        "nodeSelector": {
+          "resolved": true,
+          "value": "node-role=system"
+        },
+        "tolerations": {
+          "resolved": true,
+          "value": "CriticalAddonsOnly"
+        },
+        "runsOn": {
+          "resolved": true,
+          "value": "system"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.deployment:kube-system/coredns",
+      "kind": "k8s.deployment",
+      "parent": "k8s:k8s.nodegroup:system",
+      "repoId": "k8s",
+      "sourceAddress": "10-platform.yaml",
+      "details": {
+        "namespace": {
+          "resolved": true,
+          "value": "kube-system"
+        },
+        "replicas": {
+          "resolved": true,
+          "value": 2
+        },
+        "image": {
+          "resolved": true,
+          "value": "registry.k8s.io/coredns/coredns:v1.11.1"
+        },
+        "requests": {
+          "resolved": true,
+          "value": "250m / 256Mi"
+        },
+        "ports": {
+          "resolved": true,
+          "value": "8080/TCP"
+        },
+        "nodeSelector": {
+          "resolved": true,
+          "value": "node-role=system"
+        },
+        "tolerations": {
+          "resolved": true,
+          "value": "CriticalAddonsOnly"
+        },
+        "runsOn": {
+          "resolved": true,
+          "value": "system"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.deployment:argocd/argocd-server",
+      "kind": "k8s.deployment",
+      "parent": "k8s:k8s.nodegroup:system",
+      "repoId": "k8s",
+      "sourceAddress": "10-platform.yaml",
+      "details": {
+        "namespace": {
+          "resolved": true,
+          "value": "argocd"
+        },
+        "replicas": {
+          "resolved": true,
+          "value": 2
+        },
+        "image": {
+          "resolved": true,
+          "value": "quay.io/argoproj/argocd:v2.12.0"
+        },
+        "requests": {
+          "resolved": true,
+          "value": "250m / 256Mi"
+        },
+        "ports": {
+          "resolved": true,
+          "value": "8080/TCP"
+        },
+        "nodeSelector": {
+          "resolved": true,
+          "value": "node-role=system"
+        },
+        "tolerations": {
+          "resolved": true,
+          "value": "CriticalAddonsOnly"
+        },
+        "runsOn": {
+          "resolved": true,
+          "value": "system"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.deployment:argocd/argocd-repo-server",
+      "kind": "k8s.deployment",
+      "parent": "k8s:k8s.nodegroup:system",
+      "repoId": "k8s",
+      "sourceAddress": "10-platform.yaml",
+      "details": {
+        "namespace": {
+          "resolved": true,
+          "value": "argocd"
+        },
+        "replicas": {
+          "resolved": true,
+          "value": 2
+        },
+        "image": {
+          "resolved": true,
+          "value": "quay.io/argoproj/argocd:v2.12.0"
+        },
+        "requests": {
+          "resolved": true,
+          "value": "250m / 256Mi"
+        },
+        "ports": {
+          "resolved": true,
+          "value": "8080/TCP"
+        },
+        "nodeSelector": {
+          "resolved": true,
+          "value": "node-role=system"
+        },
+        "tolerations": {
+          "resolved": true,
+          "value": "CriticalAddonsOnly"
+        },
+        "runsOn": {
+          "resolved": true,
+          "value": "system"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.deployment:argocd/argocd-applicationset-controller",
+      "kind": "k8s.deployment",
+      "parent": "k8s:k8s.nodegroup:system",
+      "repoId": "k8s",
+      "sourceAddress": "10-platform.yaml",
+      "details": {
+        "namespace": {
+          "resolved": true,
+          "value": "argocd"
+        },
+        "replicas": {
+          "resolved": true,
+          "value": 1
+        },
+        "image": {
+          "resolved": true,
+          "value": "quay.io/argoproj/argocd:v2.12.0"
+        },
+        "requests": {
+          "resolved": true,
+          "value": "250m / 256Mi"
+        },
+        "ports": {
+          "resolved": true,
+          "value": "8080/TCP"
+        },
+        "nodeSelector": {
+          "resolved": true,
+          "value": "node-role=system"
+        },
+        "tolerations": {
+          "resolved": true,
+          "value": "CriticalAddonsOnly"
+        },
+        "runsOn": {
+          "resolved": true,
+          "value": "system"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.deployment:ingress-nginx/ingress-nginx-controller",
+      "kind": "k8s.deployment",
+      "parent": "k8s:k8s.nodepool:general",
+      "repoId": "k8s",
+      "sourceAddress": "10-platform.yaml",
+      "details": {
+        "namespace": {
+          "resolved": true,
+          "value": "ingress-nginx"
+        },
+        "replicas": {
+          "resolved": true,
+          "value": 3
+        },
+        "image": {
+          "resolved": true,
+          "value": "registry.k8s.io/ingress-nginx/controller:v1.11.1"
+        },
+        "requests": {
+          "resolved": true,
+          "value": "250m / 256Mi"
+        },
+        "ports": {
+          "resolved": true,
+          "value": "8080/TCP"
+        },
+        "nodeSelector": {
+          "resolved": true,
+          "value": "workload=general"
+        },
+        "hpa": {
+          "resolved": true,
+          "value": "3-8"
+        },
+        "runsOn": {
+          "resolved": true,
+          "value": "general"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.statefulset:observability/prometheus",
+      "kind": "k8s.statefulset",
+      "parent": "k8s:k8s.nodepool:general",
+      "repoId": "k8s",
+      "sourceAddress": "10-platform.yaml",
+      "details": {
+        "namespace": {
+          "resolved": true,
+          "value": "observability"
+        },
+        "image": {
+          "resolved": true,
+          "value": "quay.io/prometheus/prometheus:v2.53.0"
+        },
+        "requests": {
+          "resolved": true,
+          "value": "1 / 4Gi"
+        },
+        "ports": {
+          "resolved": true,
+          "value": "9090/TCP"
+        },
+        "nodeSelector": {
+          "resolved": true,
+          "value": "workload=general"
+        },
+        "runsOn": {
+          "resolved": true,
+          "value": "general"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.deployment:observability/grafana",
+      "kind": "k8s.deployment",
+      "parent": "k8s:k8s.nodepool:general",
+      "repoId": "k8s",
+      "sourceAddress": "10-platform.yaml",
+      "details": {
+        "namespace": {
+          "resolved": true,
+          "value": "observability"
+        },
+        "replicas": {
+          "resolved": true,
+          "value": 1
+        },
+        "image": {
+          "resolved": true,
+          "value": "grafana/grafana:11.1.0"
+        },
+        "requests": {
+          "resolved": true,
+          "value": "250m / 256Mi"
+        },
+        "ports": {
+          "resolved": true,
+          "value": "3000/TCP"
+        },
+        "nodeSelector": {
+          "resolved": true,
+          "value": "workload=general"
+        },
+        "runsOn": {
+          "resolved": true,
+          "value": "general"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.deployment:observability/loki",
+      "kind": "k8s.deployment",
+      "parent": "k8s:k8s.cluster:shop-prod",
+      "repoId": "k8s",
+      "sourceAddress": "10-platform.yaml",
+      "details": {
+        "namespace": {
+          "resolved": true,
+          "value": "observability"
+        },
+        "replicas": {
+          "resolved": true,
+          "value": 1
+        },
+        "image": {
+          "resolved": true,
+          "value": "grafana/loki:3.1.0"
+        },
+        "requests": {
+          "resolved": true,
+          "value": "250m / 256Mi"
+        },
+        "ports": {
+          "resolved": true,
+          "value": "3100/TCP"
+        },
+        "tolerations": {
+          "resolved": true,
+          "value": "batch"
+        },
+        "runsOn": {
+          "resolved": false,
+          "raw": "general | spot-batch"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.daemonset:observability/node-exporter",
+      "kind": "k8s.daemonset",
+      "parent": "k8s:k8s.cluster:shop-prod",
+      "repoId": "k8s",
+      "sourceAddress": "10-platform.yaml",
+      "details": {
+        "namespace": {
+          "resolved": true,
+          "value": "observability"
+        },
+        "image": {
+          "resolved": true,
+          "value": "quay.io/prometheus/node-exporter:v1.8.1"
+        },
+        "requests": {
+          "resolved": true,
+          "value": "250m / 256Mi"
+        },
+        "ports": {
+          "resolved": true,
+          "value": "9100/TCP"
+        },
+        "tolerations": {
+          "resolved": true,
+          "value": "*"
+        },
+        "runsOn": {
+          "resolved": true,
+          "value": "every node (general, spot-batch, gpu, system)"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.deployment:shop/web",
+      "kind": "k8s.deployment",
+      "parent": "k8s:k8s.nodepool:general",
+      "repoId": "k8s",
+      "sourceAddress": "20-apps.yaml",
+      "details": {
+        "namespace": {
+          "resolved": true,
+          "value": "shop"
+        },
+        "replicas": {
+          "resolved": true,
+          "value": 4
+        },
+        "image": {
+          "resolved": true,
+          "value": "registry.example.com/shop/web:2.4.1"
+        },
+        "requests": {
+          "resolved": true,
+          "value": "500m / 512Mi"
+        },
+        "ports": {
+          "resolved": true,
+          "value": "8080/TCP"
+        },
+        "serviceAccount": {
+          "resolved": true,
+          "value": "web"
+        },
+        "iamRole": {
+          "resolved": true,
+          "value": "arn:aws:iam::111111111111:role/shop-prod-web"
+        },
+        "nodeSelector": {
+          "resolved": true,
+          "value": "workload=general"
+        },
+        "hpa": {
+          "resolved": true,
+          "value": "4-20"
+        },
+        "runsOn": {
+          "resolved": true,
+          "value": "general"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.deployment:shop/api",
+      "kind": "k8s.deployment",
+      "parent": "k8s:k8s.nodepool:general",
+      "repoId": "k8s",
+      "sourceAddress": "20-apps.yaml",
+      "details": {
+        "namespace": {
+          "resolved": true,
+          "value": "shop"
+        },
+        "replicas": {
+          "resolved": true,
+          "value": 3
+        },
+        "image": {
+          "resolved": true,
+          "value": "registry.example.com/shop/api:2.4.1"
+        },
+        "requests": {
+          "resolved": true,
+          "value": "500m / 1Gi"
+        },
+        "ports": {
+          "resolved": true,
+          "value": "8080/TCP"
+        },
+        "serviceAccount": {
+          "resolved": true,
+          "value": "api"
+        },
+        "iamRole": {
+          "resolved": true,
+          "value": "arn:aws:iam::111111111111:role/shop-prod-api"
+        },
+        "nodeSelector": {
+          "resolved": true,
+          "value": "workload=general"
+        },
+        "runsOn": {
+          "resolved": true,
+          "value": "general"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.deployment:shop/worker",
+      "kind": "k8s.deployment",
+      "parent": "k8s:k8s.nodepool:spot-batch",
+      "repoId": "k8s",
+      "sourceAddress": "20-apps.yaml",
+      "details": {
+        "namespace": {
+          "resolved": true,
+          "value": "shop"
+        },
+        "replicas": {
+          "resolved": true,
+          "value": 6
+        },
+        "image": {
+          "resolved": true,
+          "value": "registry.example.com/shop/worker:2.4.1"
+        },
+        "requests": {
+          "resolved": true,
+          "value": "250m / 256Mi"
+        },
+        "ports": {
+          "resolved": true,
+          "value": "8080/TCP"
+        },
+        "serviceAccount": {
+          "resolved": true,
+          "value": "worker"
+        },
+        "iamRole": {
+          "resolved": true,
+          "value": "arn:aws:iam::111111111111:role/shop-prod-worker"
+        },
+        "nodeSelector": {
+          "resolved": true,
+          "value": "karpenter.sh/capacity-type=spot"
+        },
+        "tolerations": {
+          "resolved": true,
+          "value": "batch"
+        },
+        "runsOn": {
+          "resolved": true,
+          "value": "spot-batch"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.statefulset:shop/redis",
+      "kind": "k8s.statefulset",
+      "parent": "k8s:k8s.nodepool:general",
+      "repoId": "k8s",
+      "sourceAddress": "20-apps.yaml",
+      "details": {
+        "namespace": {
+          "resolved": true,
+          "value": "shop"
+        },
+        "image": {
+          "resolved": true,
+          "value": "redis:7.2"
+        },
+        "requests": {
+          "resolved": true,
+          "value": "250m / 256Mi"
+        },
+        "ports": {
+          "resolved": true,
+          "value": "6379/TCP"
+        },
+        "nodeSelector": {
+          "resolved": true,
+          "value": "workload=general"
+        },
+        "runsOn": {
+          "resolved": true,
+          "value": "general"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.cronjob:shop/nightly-report",
+      "kind": "k8s.cronjob",
+      "parent": "k8s:k8s.nodepool:spot-batch",
+      "repoId": "k8s",
+      "sourceAddress": "20-apps.yaml",
+      "details": {
+        "namespace": {
+          "resolved": true,
+          "value": "shop"
+        },
+        "schedule": {
+          "resolved": true,
+          "value": "0 2 * * *"
+        },
+        "image": {
+          "resolved": true,
+          "value": "registry.example.com/shop/report:1.9.0"
+        },
+        "nodeSelector": {
+          "resolved": true,
+          "value": "workload=batch"
+        },
+        "tolerations": {
+          "resolved": true,
+          "value": "batch"
+        },
+        "runsOn": {
+          "resolved": true,
+          "value": "spot-batch"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.deployment:payments/payments-api",
+      "kind": "k8s.deployment",
+      "parent": "k8s:k8s.nodepool:general",
+      "repoId": "k8s",
+      "sourceAddress": "20-apps.yaml",
+      "details": {
+        "namespace": {
+          "resolved": true,
+          "value": "payments"
+        },
+        "replicas": {
+          "resolved": true,
+          "value": 3
+        },
+        "image": {
+          "resolved": true,
+          "value": "registry.example.com/payments/api:5.0.2"
+        },
+        "requests": {
+          "resolved": true,
+          "value": "1 / 1Gi"
+        },
+        "ports": {
+          "resolved": true,
+          "value": "8080/TCP"
+        },
+        "serviceAccount": {
+          "resolved": true,
+          "value": "payments"
+        },
+        "iamRole": {
+          "resolved": true,
+          "value": "arn:aws:iam::111111111111:role/shop-prod-payments"
+        },
+        "nodeSelector": {
+          "resolved": true,
+          "value": "workload=general"
+        },
+        "runsOn": {
+          "resolved": true,
+          "value": "general"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.deployment:ml/recommender",
+      "kind": "k8s.deployment",
+      "parent": "k8s:k8s.nodepool:gpu",
+      "repoId": "k8s",
+      "sourceAddress": "20-apps.yaml",
+      "details": {
+        "namespace": {
+          "resolved": true,
+          "value": "ml"
+        },
+        "replicas": {
+          "resolved": true,
+          "value": 2
+        },
+        "image": {
+          "resolved": true,
+          "value": "registry.example.com/ml/recommender:0.7.0"
+        },
+        "requests": {
+          "resolved": true,
+          "value": "4 / 16Gi"
+        },
+        "ports": {
+          "resolved": true,
+          "value": "8000/TCP"
+        },
+        "nodeSelector": {
+          "resolved": true,
+          "value": "workload=ml"
+        },
+        "tolerations": {
+          "resolved": true,
+          "value": "nvidia.com/gpu"
+        },
+        "runsOn": {
+          "resolved": true,
+          "value": "gpu"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.deployment:ml/trainer",
+      "kind": "k8s.deployment",
+      "parent": "k8s:k8s.cluster:shop-prod",
+      "repoId": "k8s",
+      "sourceAddress": "20-apps.yaml",
+      "details": {
+        "namespace": {
+          "resolved": true,
+          "value": "ml"
+        },
+        "replicas": {
+          "resolved": true,
+          "value": 1
+        },
+        "image": {
+          "resolved": true,
+          "value": "registry.example.com/ml/trainer:0.7.0"
+        },
+        "requests": {
+          "resolved": true,
+          "value": "8 / 32Gi"
+        },
+        "ports": {
+          "resolved": true,
+          "value": "8000/TCP"
+        },
+        "nodeSelector": {
+          "resolved": true,
+          "value": "workload=ml-xl"
+        },
+        "tolerations": {
+          "resolved": true,
+          "value": "nvidia.com/gpu"
+        },
+        "runsOn": {
+          "resolved": false,
+          "raw": "no compatible pool"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.deployment:tenant-acme/app",
+      "kind": "k8s.deployment",
+      "parent": "k8s:k8s.nodepool:general",
+      "repoId": "k8s",
+      "sourceAddress": "30-argocd.yaml",
+      "details": {
+        "namespace": {
+          "resolved": true,
+          "value": "tenant-acme"
+        },
+        "replicas": {
+          "resolved": true,
+          "value": 1
+        },
+        "image": {
+          "resolved": true,
+          "value": "registry.example.com/tenant/app:1.0.0"
+        },
+        "requests": {
+          "resolved": true,
+          "value": "250m / 256Mi"
+        },
+        "ports": {
+          "resolved": true,
+          "value": "8080/TCP"
+        },
+        "nodeSelector": {
+          "resolved": true,
+          "value": "workload=general"
+        },
+        "runsOn": {
+          "resolved": true,
+          "value": "general"
+        }
+      }
+    },
+    {
+      "id": "k8s:k8s.deployment:tenant-globex/app",
+      "kind": "k8s.deployment",
+      "parent": "k8s:k8s.nodepool:general",
+      "repoId": "k8s",
+      "sourceAddress": "30-argocd.yaml",
+      "details": {
+        "namespace": {
+          "resolved": true,
+          "value": "tenant-globex"
+        },
+        "replicas": {
+          "resolved": true,
+          "value": 1
+        },
+        "image": {
+          "resolved": true,
+          "value": "registry.example.com/tenant/app:1.0.0"
+        },
+        "requests": {
+          "resolved": true,
+          "value": "250m / 256Mi"
+        },
+        "ports": {
+          "resolved": true,
+          "value": "8080/TCP"
+        },
+        "nodeSelector": {
+          "resolved": true,
+          "value": "workload=general"
+        },
+        "runsOn": {
+          "resolved": true,
+          "value": "general"
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "from": "k8s:k8s.nodepool:general",
+      "to": "k8s:k8s.nodeclass:default",
+      "label": "uses"
+    },
+    {
+      "from": "k8s:k8s.nodepool:spot-batch",
+      "to": "k8s:k8s.nodeclass:default",
+      "label": "uses"
+    },
+    {
+      "from": "k8s:k8s.nodepool:gpu",
+      "to": "k8s:k8s.nodeclass:gpu",
+      "label": "uses"
+    }
+  ],
+  "coverage": {
+    "k8s": {
+      "unmapped": [],
+      "unresolvedBoundaries": []
+    }
+  },
+  "unresolvedCrossRepoLinks": [],
+  "unresolvedPlacements": [
+    {
+      "entityId": "k8s:k8s.deployment:observability/loki",
+      "reason": "ambiguous",
+      "candidates": [
+        "general",
+        "spot-batch"
+      ]
+    },
+    {
+      "entityId": "k8s:k8s.deployment:ml/trainer",
+      "reason": "none",
+      "candidates": []
+    }
+  ],
+  "findings": [],
+  "legend": {
+    "default": "Cluster",
+    "compute": "Node pools",
+    "k8s": "Workloads"
+  }
+}

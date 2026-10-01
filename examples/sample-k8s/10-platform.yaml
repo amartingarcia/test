@@ -1,0 +1,244 @@
+# Synthetic platform components.
+---
+apiVersion: v1
+kind: Namespace
+metadata: {name: kube-system}
+---
+apiVersion: v1
+kind: Namespace
+metadata: {name: karpenter}
+---
+apiVersion: v1
+kind: Namespace
+metadata: {name: argocd}
+---
+apiVersion: v1
+kind: Namespace
+metadata: {name: ingress-nginx}
+---
+apiVersion: v1
+kind: Namespace
+metadata: {name: observability}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: karpenter, namespace: karpenter, labels: {argocd.argoproj.io/instance: karpenter}}
+spec:
+  replicas: 2
+  selector: {matchLabels: {app: karpenter}}
+  template:
+    metadata: {labels: {app: karpenter}}
+    spec:
+      serviceAccountName: karpenter
+      nodeSelector: {node-role: system}
+      tolerations: [{key: CriticalAddonsOnly, operator: Exists}]
+      containers:
+        - name: karpenter
+          image: public.ecr.aws/karpenter/controller:1.0.0
+          ports: [{containerPort: 8080}]
+          resources: {requests: {cpu: 250m, memory: 256Mi}}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: karpenter
+  namespace: karpenter
+  annotations: {eks.amazonaws.com/role-arn: "arn:aws:iam::111111111111:role/shop-prod-karpenter"}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: coredns, namespace: kube-system, labels: {}}
+spec:
+  replicas: 2
+  selector: {matchLabels: {app: coredns}}
+  template:
+    metadata: {labels: {app: coredns}}
+    spec:
+      nodeSelector: {node-role: system}
+      tolerations: [{key: CriticalAddonsOnly, operator: Exists}]
+      containers:
+        - name: coredns
+          image: registry.k8s.io/coredns/coredns:v1.11.1
+          ports: [{containerPort: 8080}]
+          resources: {requests: {cpu: 250m, memory: 256Mi}}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: argocd-server, namespace: argocd, labels: {argocd.argoproj.io/instance: argocd}}
+spec:
+  replicas: 2
+  selector: {matchLabels: {app: argocd-server}}
+  template:
+    metadata: {labels: {app: argocd-server}}
+    spec:
+      nodeSelector: {node-role: system}
+      tolerations: [{key: CriticalAddonsOnly, operator: Exists}]
+      containers:
+        - name: argocd-server
+          image: quay.io/argoproj/argocd:v2.12.0
+          ports: [{containerPort: 8080}]
+          resources: {requests: {cpu: 250m, memory: 256Mi}}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: argocd-repo-server, namespace: argocd, labels: {argocd.argoproj.io/instance: argocd}}
+spec:
+  replicas: 2
+  selector: {matchLabels: {app: argocd-repo-server}}
+  template:
+    metadata: {labels: {app: argocd-repo-server}}
+    spec:
+      nodeSelector: {node-role: system}
+      tolerations: [{key: CriticalAddonsOnly, operator: Exists}]
+      containers:
+        - name: argocd-repo-server
+          image: quay.io/argoproj/argocd:v2.12.0
+          ports: [{containerPort: 8080}]
+          resources: {requests: {cpu: 250m, memory: 256Mi}}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: argocd-applicationset-controller, namespace: argocd, labels: {argocd.argoproj.io/instance: argocd}}
+spec:
+  replicas: 1
+  selector: {matchLabels: {app: argocd-applicationset-controller}}
+  template:
+    metadata: {labels: {app: argocd-applicationset-controller}}
+    spec:
+      nodeSelector: {node-role: system}
+      tolerations: [{key: CriticalAddonsOnly, operator: Exists}]
+      containers:
+        - name: argocd-applicationset-controller
+          image: quay.io/argoproj/argocd:v2.12.0
+          ports: [{containerPort: 8080}]
+          resources: {requests: {cpu: 250m, memory: 256Mi}}
+---
+apiVersion: v1
+kind: Service
+metadata: {name: argocd-server, namespace: argocd, labels: {argocd.argoproj.io/instance: argocd}}
+spec: {type: ClusterIP, selector: {app: argocd-server}, ports: [{port: 80, targetPort: 8080}]}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: ingress-nginx-controller, namespace: ingress-nginx, labels: {argocd.argoproj.io/instance: ingress-nginx}}
+spec:
+  replicas: 3
+  selector: {matchLabels: {app: ingress-nginx-controller}}
+  template:
+    metadata: {labels: {app: ingress-nginx-controller}}
+    spec:
+      nodeSelector: {workload: general}
+      containers:
+        - name: ingress-nginx-controller
+          image: registry.k8s.io/ingress-nginx/controller:v1.11.1
+          ports: [{containerPort: 8080}]
+          resources: {requests: {cpu: 250m, memory: 256Mi}}
+---
+apiVersion: v1
+kind: Service
+metadata: {name: ingress-nginx-controller, namespace: ingress-nginx, labels: {argocd.argoproj.io/instance: ingress-nginx}}
+spec: {type: LoadBalancer, selector: {app: ingress-nginx-controller}, ports: [{port: 80, targetPort: 8080}]}
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata: {name: ingress-nginx-controller, namespace: ingress-nginx}
+spec: {scaleTargetRef: {apiVersion: apps/v1, kind: Deployment, name: ingress-nginx-controller}, minReplicas: 3, maxReplicas: 8}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata: {name: prometheus, namespace: observability, labels: {argocd.argoproj.io/instance: observability}}
+spec:
+  serviceName: prometheus
+  selector: {matchLabels: {app: prometheus}}
+  template:
+    metadata: {labels: {app: prometheus}}
+    spec:
+      nodeSelector: {workload: general}
+      containers:
+        - name: prometheus
+          image: quay.io/prometheus/prometheus:v2.53.0
+          ports: [{containerPort: 9090}]
+          resources: {requests: {cpu: 1, memory: 4Gi}}
+---
+apiVersion: v1
+kind: Service
+metadata: {name: prometheus, namespace: observability, labels: {argocd.argoproj.io/instance: observability}}
+spec: {type: ClusterIP, selector: {app: prometheus}, ports: [{port: 9090, targetPort: 9090}]}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: grafana, namespace: observability, labels: {argocd.argoproj.io/instance: observability}}
+spec:
+  replicas: 1
+  selector: {matchLabels: {app: grafana}}
+  template:
+    metadata: {labels: {app: grafana}}
+    spec:
+      nodeSelector: {workload: general}
+      containers:
+        - name: grafana
+          image: grafana/grafana:11.1.0
+          ports: [{containerPort: 3000}]
+          resources: {requests: {cpu: 250m, memory: 256Mi}}
+          envFrom: [{configMapRef: {name: grafana-cfg}}]
+          env:
+            - name: SECRET
+              valueFrom: {secretKeyRef: {name: grafana-admin, key: v}}
+---
+apiVersion: v1
+kind: Service
+metadata: {name: grafana, namespace: observability, labels: {argocd.argoproj.io/instance: observability}}
+spec: {type: ClusterIP, selector: {app: grafana}, ports: [{port: 80, targetPort: 3000}]}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata: {name: grafana, namespace: observability, labels: {argocd.argoproj.io/instance: observability}}
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: grafana.example.com
+      http:
+        paths:
+            - {path: /, pathType: Prefix, backend: {service: {name: grafana, port: {number: 80}}}}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata: {name: grafana-cfg, namespace: observability, labels: {argocd.argoproj.io/instance: observability}}
+data: {k: v}
+---
+apiVersion: v1
+kind: Secret
+metadata: {name: grafana-admin, namespace: observability, labels: {argocd.argoproj.io/instance: observability}}
+stringData: {v: example-not-a-secret}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: loki, namespace: observability, labels: {argocd.argoproj.io/instance: observability}}
+spec:
+  replicas: 1
+  selector: {matchLabels: {app: loki}}
+  template:
+    metadata: {labels: {app: loki}}
+    spec:
+      tolerations: [{key: batch, operator: Exists}]
+      containers:
+        - name: loki
+          image: grafana/loki:3.1.0
+          ports: [{containerPort: 3100}]
+          resources: {requests: {cpu: 250m, memory: 256Mi}}
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata: {name: node-exporter, namespace: observability, labels: {argocd.argoproj.io/instance: observability}}
+spec:
+  serviceName: node-exporter
+  selector: {matchLabels: {app: node-exporter}}
+  template:
+    metadata: {labels: {app: node-exporter}}
+    spec:
+      tolerations: [{operator: Exists}]
+      containers:
+        - name: node-exporter
+          image: quay.io/prometheus/node-exporter:v1.8.1
+          ports: [{containerPort: 9100}]
+          resources: {requests: {cpu: 250m, memory: 256Mi}}
