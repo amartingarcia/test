@@ -105,5 +105,63 @@ Strict TDD (test first, red -> green -> refactor) for all testable logic
 (parser, compiler, ...), using Node's built-in test runner
 (`node --test test/`).
 
+## Scope evolution (2026-10-01) — BLOCKING, needs refinement before T3
+
+Original scope assumed: exactly 2 source repos, both pure Terraform, both
+following one hardcoded convention (`vars/<account>/<account>.tfvars`).
+That assumption no longer holds. New requirement: the tool must **detect**
+what kind of repo it's pointed at (not be told), detect the technology/stack
+inside it, and correctly relate N repos of possibly different kinds into one
+diagram — not just the 2-repo Terraform-only case.
+
+This adds a new layer ahead of Layer A:
+
+- **Layer 0 — Repo classifier** (new): given a repo path, detect repo
+  kind(s) present (Terraform, Helm chart, raw Kubernetes manifests, ArgoCD
+  Application/ApplicationSet CRDs, Pulumi, CloudFormation/SAM, ...) via file
+  fingerprints (`*.tf` + provider blocks, `Chart.yaml`, `apiVersion:` +
+  `kind:` YAML, `Pulumi.yaml`, CFN `Resources:` + `Type: AWS::...`), then
+  detect the technology/providers actually in use inside that kind (e.g.
+  Terraform -> which providers: `aws`, `kubernetes`, `helm`, `azurerm`; raw
+  K8s -> which `kind:`s are present: `Deployment`, `ArgoCD Application`,
+  `Karpenter NodePool`, ...). Output: a per-repo classification report, not
+  a diagram yet.
+- Each extractor in Layer A becomes **one of several extractors**, selected
+  by what Layer 0 found, instead of a single Terraform-only extractor
+  invoked unconditionally.
+- Layer B (manifest / entity mapping) and cross-repo linking need to work
+  generically across kinds, not just "repo A's vpc module <-> repo B's eks
+  module" — e.g. an ArgoCD `Application.spec.source.repoURL` pointing at
+  another repo is itself a **detectable** cross-repo link, not something
+  that has to be hand-declared every time like the current AWS-tag-based
+  network<->EKS link.
+
+## Scope evolution — decisions (resolved 2026-10-01)
+
+1. **Detection scope for v1**: Terraform-only detection first (providers,
+   resource kinds). The Layer 0 classifier is a **separate, follow-up
+   feature** — not built as part of this feature. This feature (T3–T8)
+   stays scoped to the known 2-repo Terraform case.
+2. **Classifier mechanism** (applies when that follow-up feature starts):
+   static heuristics only (file globs + regex on key fields — `*.tf` +
+   `provider` blocks, `Chart.yaml`, `apiVersion:`/`kind:` YAML,
+   `Pulumi.yaml`, CFN `Resources:`/`Type: AWS::...`). No LLM-assisted
+   classification. Fully offline and deterministic, same philosophy as
+   Layer A ("real graph, not invented").
+3. **Cross-repo linking**: auto-wire links that are parseable straight from
+   config (`terraform_remote_state`, ArgoCD `Application.spec.source.repoURL`)
+   without requiring a manifest entry. The manifest (Layer B) stays the
+   source of truth only for links that need external knowledge no file
+   encodes (e.g. the current AWS-tag-based network<->EKS link — there is no
+   `terraform_remote_state` between the network and infra repos in the
+   real-world case this is modeled on, confirmed in Layer A validation).
+4. **Delivery order**: T3–T8 (Terraform-only, 2 repos) ship first and are
+   validated end-to-end. The Layer 0 classifier + multi-kind extractors
+   (Helm, raw K8s, ArgoCD, Pulumi, CloudFormation, ...) are a **new feature
+   doc**, written after this one closes, that reuses Layer A's Terraform
+   extractor as "the Terraform case" of a now-pluggable extractor registry.
+
 ## Next step
-T3 — DOT parser.
+Resume T3 — DOT parser (`lib/parse/`): raw DOT string -> normalized
+nodes/edges JSON (resource address, type, module path). Strict TDD, same as
+Layer A.
