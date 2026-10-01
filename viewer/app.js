@@ -381,8 +381,11 @@ function renderGraph(graph) {
   window.__infraCy = cy; // handle for debugging / browser tests
 
   paintCards();
+  vertical = pickOrientation();
   applyLayout();
   cy.fit(undefined, 60);
+  // the container may still be settling (stacked layout on narrow screens): refit once it has its final size
+  requestAnimationFrame(() => { cy?.resize(); cy?.fit(undefined, 60); });
 
   if (cy.expandCollapse) {
     cy.expandCollapse({ layoutBy: () => applyLayout(true), fisheye: false, undoable: false, animate: false });
@@ -404,6 +407,22 @@ const layoutConfig = () => ({
   pad: 30,
   padTop: 50,
 });
+
+/** Whichever orientation lets the diagram be drawn larger in the current container. */
+function pickOrientation() {
+  const nodes = cy.nodes().map((n) => ({ id: n.id(), parent: n.parent().length ? n.parent().id() : null, kind: n.data('kind') }));
+  const scaleFor = (isVertical) => {
+    const previous = vertical;
+    vertical = isVertical;
+    const { boxes } = layoutLanes(nodes, layoutConfig());
+    vertical = previous;
+    const all = Object.values(boxes);
+    const width = Math.max(...all.map((b) => b.x + b.w)) - Math.min(...all.map((b) => b.x));
+    const height = Math.max(...all.map((b) => b.y + b.h)) - Math.min(...all.map((b) => b.y));
+    return Math.min(cy.width() / width, cy.height() / height);
+  };
+  return scaleFor(true) > scaleFor(false);
+}
 
 /** Packs the currently visible nodes by lanes; also used after expand/collapse. */
 function applyLayout(animate = false, onDone = null) {
