@@ -568,7 +568,7 @@ function renderDetails(data) {
   </table>`;
 
   if (data.details) {
-    html += `<h3>Configuration (from source .tf)</h3>${configTable(data.details)}`;
+    html += `<h3>Configuration (from ${data.repoId === 'k8s' ? 'manifests' : 'source .tf'})</h3>${configTable(data.details)}`;
   } else {
     html += '<h3>Configuration</h3><div class="empty" style="margin-top:4px">No attribute details extracted for this resource.</div>';
   }
