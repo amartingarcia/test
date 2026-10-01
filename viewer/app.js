@@ -56,7 +56,55 @@ function toggleTheme() {
   document.documentElement.setAttribute('data-theme', next);
   try { localStorage.setItem('infra-theme', next); } catch { /* storage blocked: choice just isn't remembered */ }
   syncThemeLabel();
-  if (cy) cy.style(buildStyle());
+  if (cy) { cy.style(buildStyle()); paintCards(); }
+}
+
+/* ------------------------------------------------------------------ cards */
+
+// Cytoscape can't draw HTML in a node, so each resource card is an SVG
+// (icon chip, name, kind) rendered to a data URI and used as the node's
+// background image. Regenerated on theme change. Fonts: an SVG used as an
+// <img> can't load web fonts, hence the system stacks.
+const CARD_W = 176;
+const CARD_H = 64;
+const GLYPHS = [
+  ['eks.nodegroup', 'M3 6l7-3 7 3-7 3zM3 10l7 3 7-3M3 14l7 3 7-3'],
+  ['eks.addon', 'M4 4h12v12H4zM10 7v6M7 10h6'],
+  ['eks', 'M10 2l7 4v8l-7 4-7-4V6z'],
+  ['internet_gateway', 'M3 10h14M10 3c3 3 3 11 0 14M10 3c-3 3-3 11 0 14M3 10a7 7 0 1 0 14 0a7 7 0 1 0-14 0'],
+  ['nat', 'M4 10h12M12 6l4 4-4 4'],
+  ['route', 'M4 15l4-4 3 3 5-6'],
+  ['security_group', 'M10 3l6 2v5c0 4-3 6-6 7-3-1-6-3-6-7V5z'],
+  ['subnet', 'M3 3h6v6H3zM11 3h6v6h-6zM3 11h6v6H3zM11 11h6v6h-6z'],
+  ['vpc', 'M6 15a3.5 3.5 0 0 1 .5-6.9A5 5 0 0 1 16 9a3 3 0 0 1 0 6H6z'],
+];
+const glyphFor = (kind) => (GLYPHS.find(([k]) => kind.includes(k)) ?? [null, 'M4 4h12v12H4z'])[1];
+const xmlEscape = (t) => String(t).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;' }[c]));
+const clip = (t, n) => (t.length > n ? `${t.slice(0, n - 1)}…` : t);
+
+function cardSvg({ name, kind, class: cls }) {
+  const accent = { net: cssVar('--net'), eks: cssVar('--eks'), default: cssVar('--def') }[cls] ?? cssVar('--def');
+  const nodeBg = cssVar('--node');
+  const text = cssVar('--text');
+  const muted = cssVar('--muted');
+  const kindShort = kind.split('.').slice(1).join('.');
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${CARD_W}" height="${CARD_H}" viewBox="0 0 ${CARD_W} ${CARD_H}">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${accent}" stop-opacity=".20"/><stop offset=".6" stop-color="${accent}" stop-opacity="0"/></linearGradient>
+  </defs>
+  <rect width="${CARD_W}" height="${CARD_H}" fill="${nodeBg}"/>
+  <rect width="${CARD_W}" height="${CARD_H}" fill="url(#g)"/>
+  <rect x="12" y="14" width="36" height="36" rx="10" fill="${accent}" fill-opacity=".16" stroke="${accent}" stroke-opacity=".55"/>
+  <g transform="translate(20 22)" fill="none" stroke="${accent}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="${glyphFor(kind)}"/></g>
+  <text x="58" y="30" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="14" font-weight="700" fill="${text}">${xmlEscape(clip(name, 15))}</text>
+  <text x="58" y="46" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="10" fill="${muted}">${xmlEscape(clip(kindShort, 21))}</text>
+  <circle cx="${CARD_W - 14}" cy="14" r="3" fill="${accent}"/>
+</svg>`;
+  return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
+}
+
+function paintCards() {
+  cy?.batch(() => cy.nodes().forEach((n) => n.data('card', cardSvg(n.data()))));
 }
 
 /* ----------------------------------------------------------------- styles */
@@ -73,17 +121,18 @@ function buildStyle() {
 
   const style = [
     { selector: 'node', style: {
-      'label': 'data(label)', 'font-size': 11, 'font-family': 'JetBrains Mono, ui-monospace, monospace',
-      'color': text, 'text-wrap': 'wrap', 'text-valign': 'center', 'text-halign': 'center',
-      'shape': 'round-rectangle', 'width': 'label', 'height': 'label', 'padding': '12px',
-      'background-color': nodeBg, 'border-width': 1.5, 'border-color': colors.default,
+      'label': '', 'shape': 'round-rectangle', 'corner-radius': 14, 'width': CARD_W, 'height': CARD_H,
+      'background-color': nodeBg, 'background-image': 'data(card)', 'background-fit': 'cover', 'background-clip': 'node',
+      'border-width': 1.5, 'border-color': colors.default,
       'underlay-color': colors.default, 'underlay-opacity': glow, 'underlay-padding': 7, 'underlay-shape': 'round-rectangle',
       'transition-property': 'opacity, border-width, underlay-opacity', 'transition-duration': '0.18s',
     }},
     { selector: ':parent', style: {
-      'background-opacity': 0.07, 'background-color': colors.default, 'border-width': 1.5, 'border-style': 'dashed',
-      'text-valign': 'top', 'text-halign': 'center', 'font-weight': 'bold', 'font-size': 12, 'padding': '22px',
-      'underlay-opacity': glow * 0.35, 'text-margin-y': -4,
+      'background-image': 'none', 'background-opacity': 0.07, 'background-color': colors.default, 'border-width': 1.5, 'border-style': 'dashed',
+      'label': 'data(groupLabel)', 'color': text, 'font-family': 'JetBrains Mono, ui-monospace, monospace', 'font-size': 12, 'font-weight': 'bold',
+      'text-valign': 'top', 'text-halign': 'center', 'text-margin-y': -2, 'padding': '30px', 'corner-radius': 18,
+      'text-background-color': bg, 'text-background-opacity': 1, 'text-background-padding': '5px', 'text-background-shape': 'round-rectangle',
+      'underlay-opacity': glow * 0.35,
     }},
     ...Object.entries(colors).filter(([k]) => k !== 'default').flatMap(([cls, c]) => [
       { selector: `node[class = "${cls}"]`, style: { 'border-color': c, 'underlay-color': c } },
@@ -168,6 +217,7 @@ function renderGraph(graph) {
         id: entity.id,
         label: entityLabel(entity),
         name: entityName(entity),
+        groupLabel: `${entity.kind.split('.').slice(1).join('.')} · ${entityName(entity)}`,
         kind: entity.kind,
         parent: entity.parent ?? undefined,
         repoId: entity.repoId,
@@ -198,7 +248,7 @@ function renderGraph(graph) {
     minZoom: MIN_ZOOM,
     maxZoom: MAX_ZOOM,
     wheelSensitivity: 0.25,
-    layout: { name: 'fcose', nodeDimensionsIncludeLabels: true, animate: false, padding: 60, nodeRepulsion: () => 9000, idealEdgeLength: () => 110 },
+    layout: { name: 'fcose', nodeDimensionsIncludeLabels: true, animate: false, padding: 60, nodeRepulsion: () => 14000, idealEdgeLength: () => 150 },
   });
 
   cy.on('tap', 'node', (evt) => { renderDetails(evt.target.data()); focusNeighborhood(evt.target); });
@@ -213,6 +263,7 @@ function renderGraph(graph) {
     cy.expandCollapse({ layoutBy: { name: 'fcose', animate: false }, fisheye: false, undoable: false });
   }
 
+  paintCards();
   updateZoomLabel();
   playEntrance();
 }
