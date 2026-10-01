@@ -230,6 +230,23 @@ can nest them under it.
       pull modules from the registry (`terraform-aws-modules/vpc`) or
       `git::ssh://` (needs network/keys at `terraform init`), so Layer A needs
       module download access — only `aws_vpc_msk` is fully self-contained.
+- [x] T9a — "Architect" knowledge: `catalog/kinds.json` (what goes inside what,
+      lane order, axis, glyph, groups) drives compiler placement
+      (`placeByCatalog`: first parent kind with candidates, nest only when
+      exactly one, else `unresolvedPlacements`) and the viewer's lanes layout
+      (`viewer/lanes-layout.mjs`). Also: manifest `embed` (addons are a
+      property of the cluster, not boxes), `nest` cross-repo links, `edgeLabels`.
+- [ ] T9b — Scale the knowledge instead of hand-writing it (decision
+      2026-10-01): (1) infer placement from real attribute references already
+      extracted by A2 (`vpc_id = aws_vpc.x.id`, `subnet_ids`, `cluster_name`,
+      `db_subnet_group_name`) — the repo itself says what lives in what;
+      (2) seed per-provider catalog entries from existing sources
+      (cycloidio/inframap provider classification, Cartography AWS schema)
+      at authoring time, reviewed, licence checked — not at runtime;
+      (3) split the catalog per provider (`catalog/aws.json`, `k8s.json`, ...)
+      and load only providers present in the repo; the catalog stays an
+      override layer (order/glyph/exceptions). No runtime web lookups: Layer A
+      is offline and a lookup would be a guess presented as fact.
 - [ ] T8 — End-to-end validation against at least one environment for both
       repos; confirm zero writes happened inside the source repos (e.g.
       `git status --porcelain` clean).
