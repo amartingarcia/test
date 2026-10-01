@@ -65,3 +65,11 @@ test('reports every error, not just the first', () => {
   });
   assert.ok(errors.length >= 3);
 });
+
+test('link rules: shape is validated and exclusive with entity/ignore', () => {
+  const ok = { repoId: 'r', rules: [{ match: { type: 'x' }, link: { fromType: 'a', toType: 'b', label: 'l' } }] };
+  assert.deepEqual(validateManifest(ok), []);
+  assert.ok(validateManifest({ repoId: 'r', rules: [{ match: { type: 'x' }, link: { fromType: 'a' } }] }).length > 0);
+  assert.ok(validateManifest({ repoId: 'r', rules: [{ match: { type: 'x' }, link: { fromType: 'a', toType: 'b' }, ignore: true }] }).length > 0);
+  assert.ok(validateManifest({ repoId: 'r', rules: [{ match: { type: 'x' }, link: { fromType: 'a', toType: 'b' }, entity: { kind: 'k', idFrom: 'name' } }] }).length > 0);
+});

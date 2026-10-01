@@ -103,3 +103,10 @@ test('detailFields can select a dotted nested key', () => {
   const result = extractResourceDetails(nestedFiles, nestedTarget, {}, { detailFields: ['vpc_config.subnet_ids'] });
   assert.deepEqual(Object.keys(result.attributes), ['vpc_config.subnet_ids']);
 });
+
+import { entityDetails } from '../lib/extract/extract-resource-details.mjs';
+
+test('entityDetails drops meta-arguments (count, for_each, depends_on, provider) but keeps real attributes', () => {
+  const attrs = { count: { resolved: true, value: 1 }, for_each: { resolved: false, raw: 'var.x' }, depends_on: { resolved: false, raw: '[a]' }, provider: { resolved: false, raw: 'aws.x' }, name: { resolved: true, value: 'n' }, 'dynamic.taint.content.key': { resolved: false, raw: 'x' } };
+  assert.deepEqual(Object.keys(entityDetails(attrs)).sort(), ['dynamic.taint.content.key', 'name']);
+});

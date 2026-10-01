@@ -20,7 +20,7 @@ import { parseHclBlocks } from '../lib/parse/parse-hcl-blocks.mjs';
 import { parseResourceAddress } from '../lib/parse/parse-resource-address.mjs';
 import { compileEnvironmentGraph } from '../lib/compile/compile-environment-graph.mjs';
 import { inferPlacementFromReferences, referencesOf } from '../lib/compile/infer-placement.mjs';
-import { extractResourceDetails } from '../lib/extract/extract-resource-details.mjs';
+import { extractResourceDetails, entityDetails } from '../lib/extract/extract-resource-details.mjs';
 import { validateManifest } from '../lib/manifest/validate-manifest.mjs';
 import { parseTfvars } from '../lib/parse/parse-tfvars.mjs';
 import { deriveSubnetTiers } from '../lib/compile/derive-subnet-tier.mjs';
@@ -74,7 +74,8 @@ const platformManifest = {
     ignore('aws_db_subnet_group'),
     ignore('aws_docdb_subnet_group'),
     ignore('aws_elasticache_subnet_group'),
-    ignore('aws_iam_instance_profile'),
+    // instance -> profile -> role: not drawn, but the instance really runs as that role
+    { match: { type: 'aws_iam_instance_profile' }, link: { fromType: 'aws_instance', toType: 'aws_iam_role', label: 'assumes' } },
     ignore('aws_iam_role_policy_attachment'),
     ignore('aws_eip'),
     ignore('aws_route_table'),
@@ -117,11 +118,11 @@ for (const m of [platformManifest, gitopsManifest]) {
 
 // runtime relationships between workloads and what they talk to (not visible as Terraform references)
 const LINKS = [
-  { fromKind: 'k8s.release.service', toKind: 'aws.iam.role.irsa', label: 'assumes (IRSA)' },
-  { fromKind: 'k8s.release.service', toKind: 'aws.rds.instance', label: 'SQL' },
-  { fromKind: 'k8s.release.service', toKind: 'aws.elasticache.redis', label: 'cache' },
-  { fromKind: 'k8s.release.service', toKind: 'aws.opensearch.domain', label: 'logs' },
-  { fromKind: 'k8s.release.batch', toKind: 'aws.docdb.cluster', label: 'writes' },
+  { fromKind: 'k8s.release.service', toKind: 'aws.iam.role.irsa', label: 'declared: assumes (IRSA)' },
+  { fromKind: 'k8s.release.service', toKind: 'aws.rds.instance', label: 'declared: SQL' },
+  { fromKind: 'k8s.release.service', toKind: 'aws.elasticache.redis', label: 'declared: cache' },
+  { fromKind: 'k8s.release.service', toKind: 'aws.opensearch.domain', label: 'declared: logs' },
+  { fromKind: 'k8s.release.batch', toKind: 'aws.docdb.cluster', label: 'declared: writes' },
 ];
 
 const EDGE_LABELS = [
@@ -172,7 +173,7 @@ function buildEnvironment(environment, vars) {
     const parsed = parseResourceAddress(entity.sourceAddress);
     if (!files || !parsed) continue;
     const details = extractResourceDetails(files, { blockType: 'resource', labels: [parsed.type, parsed.name] }, vars);
-    if (details) entity.details = details.attributes;
+    if (details) entity.details = entityDetails(details.attributes);
   }
   return compiled;
 }

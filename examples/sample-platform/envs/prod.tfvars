@@ -1,5 +1,6 @@
 environment         = "prod"
 eks_version         = "1.29"
+kube_proxy_version   = "v1.29.0-eksbuild.1"
 enable_shared_vpc   = true
 enable_legacy       = true
 enable_docdb        = true

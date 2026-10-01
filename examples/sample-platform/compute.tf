@@ -1,7 +1,7 @@
 resource "aws_lb" "public" {
   name               = "edge-alb"
   load_balancer_type = "application"
-  subnets            = [aws_subnet.prod_public.id]
+  subnets            = [aws_subnet.prod_public.id, aws_subnet.prod_public_b.id]
   security_groups    = [aws_security_group.prod_default.id]
 }
 
@@ -33,7 +33,7 @@ resource "aws_eks_cluster" "this" {
   role_arn = aws_iam_role.cluster.arn
 
   vpc_config {
-    subnet_ids              = [aws_subnet.prod_private.id]
+    subnet_ids              = [aws_subnet.prod_private.id, aws_subnet.prod_private_b.id]
     endpoint_private_access = true
     endpoint_public_access  = false
   }
@@ -43,7 +43,7 @@ resource "aws_eks_node_group" "default" {
   cluster_name    = aws_eks_cluster.this.name
   node_group_name = "default"
   node_role_arn   = aws_iam_role.node.arn
-  subnet_ids      = [aws_subnet.prod_private.id]
+  subnet_ids      = [aws_subnet.prod_private.id, aws_subnet.prod_private_b.id]
   instance_types  = var.node_instance_types
   capacity_type   = "ON_DEMAND"
 
@@ -59,7 +59,7 @@ resource "aws_eks_node_group" "system" {
   cluster_name    = aws_eks_cluster.this.name
   node_group_name = "system"
   node_role_arn   = aws_iam_role.node.arn
-  subnet_ids      = [aws_subnet.prod_private.id]
+  subnet_ids      = [aws_subnet.prod_private.id, aws_subnet.prod_private_b.id]
   instance_types  = ["m5.large"]
   capacity_type   = "ON_DEMAND"
 
@@ -94,5 +94,5 @@ resource "aws_eks_addon" "coredns" {
 resource "aws_eks_addon" "kube_proxy" {
   cluster_name  = aws_eks_cluster.this.name
   addon_name    = "kube-proxy"
-  addon_version = "v1.29.0-eksbuild.1"
+  addon_version = var.kube_proxy_version
 }

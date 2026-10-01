@@ -27,18 +27,39 @@ resource "aws_internet_gateway" "shared" {
 }
 
 resource "aws_subnet" "prod_public" {
-  vpc_id     = aws_vpc.prod.id
-  cidr_block = "10.10.0.0/20"
+  vpc_id            = aws_vpc.prod.id
+  cidr_block        = "10.10.0.0/20"
+  availability_zone = "eu-west-1a"
+}
+
+resource "aws_subnet" "prod_public_b" {
+  vpc_id            = aws_vpc.prod.id
+  cidr_block        = "10.10.48.0/20"
+  availability_zone = "eu-west-1b"
 }
 
 resource "aws_subnet" "prod_private" {
-  vpc_id     = aws_vpc.prod.id
-  cidr_block = "10.10.16.0/20"
+  vpc_id            = aws_vpc.prod.id
+  cidr_block        = "10.10.16.0/20"
+  availability_zone = "eu-west-1a"
+}
+
+resource "aws_subnet" "prod_private_b" {
+  vpc_id            = aws_vpc.prod.id
+  cidr_block        = "10.10.64.0/20"
+  availability_zone = "eu-west-1b"
 }
 
 resource "aws_subnet" "prod_data" {
-  vpc_id     = aws_vpc.prod.id
-  cidr_block = "10.10.32.0/20"
+  vpc_id            = aws_vpc.prod.id
+  cidr_block        = "10.10.32.0/20"
+  availability_zone = "eu-west-1a"
+}
+
+resource "aws_subnet" "prod_data_b" {
+  vpc_id            = aws_vpc.prod.id
+  cidr_block        = "10.10.80.0/20"
+  availability_zone = "eu-west-1b"
 }
 
 resource "aws_subnet" "shared_public" {
@@ -114,13 +135,28 @@ resource "aws_route_table_association" "prod_public" {
   route_table_id = aws_route_table.prod_public.id
 }
 
+resource "aws_route_table_association" "prod_public_b" {
+  subnet_id      = aws_subnet.prod_public_b.id
+  route_table_id = aws_route_table.prod_public.id
+}
+
 resource "aws_route_table_association" "prod_private" {
   subnet_id      = aws_subnet.prod_private.id
   route_table_id = aws_route_table.prod_private.id
 }
 
+resource "aws_route_table_association" "prod_private_b" {
+  subnet_id      = aws_subnet.prod_private_b.id
+  route_table_id = aws_route_table.prod_private.id
+}
+
 resource "aws_route_table_association" "prod_data" {
   subnet_id      = aws_subnet.prod_data.id
+  route_table_id = aws_route_table.prod_data.id
+}
+
+resource "aws_route_table_association" "prod_data_b" {
+  subnet_id      = aws_subnet.prod_data_b.id
   route_table_id = aws_route_table.prod_data.id
 }
 

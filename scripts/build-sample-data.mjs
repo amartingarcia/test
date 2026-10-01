@@ -12,7 +12,7 @@ import { fileURLToPath } from 'node:url';
 import { loadCatalog } from '../lib/catalog/load-catalog.mjs';
 import { parseDotGraph } from '../lib/parse/parse-dot-graph.mjs';
 import { compileEnvironmentGraph } from '../lib/compile/compile-environment-graph.mjs';
-import { extractResourceDetails } from '../lib/extract/extract-resource-details.mjs';
+import { extractResourceDetails, entityDetails } from '../lib/extract/extract-resource-details.mjs';
 import { parseResourceAddress } from '../lib/parse/parse-resource-address.mjs';
 import { inferPlacementFromReferences } from '../lib/compile/infer-placement.mjs';
 
@@ -257,7 +257,7 @@ for (const entity of compiled.entities) {
   const parsed = parseResourceAddress(entity.sourceAddress);
   if (!parsed) continue;
   const details = extractResourceDetails(source[0], { blockType: 'resource', labels: [parsed.type, parsed.name] }, source[1]);
-  if (details) entity.details = details.attributes;
+  if (details) entity.details = entityDetails(details.attributes);
 }
 
 // Placement from what the source itself references (same-repo only): narrows

@@ -377,10 +377,6 @@
       "sourceAddress": "oci_containerengine_node_pool.batch",
       "parent": "oci:oci.oke.cluster:oke",
       "details": {
-        "count": {
-          "resolved": true,
-          "value": 1
-        },
         "cluster_id": {
           "resolved": false,
           "raw": "oci_containerengine_cluster.oke.id"
@@ -505,10 +501,6 @@
       "sourceAddress": "oci_database_autonomous_database.adw",
       "parent": "oci:oci.compartment:platform",
       "details": {
-        "count": {
-          "resolved": true,
-          "value": 1
-        },
         "compartment_id": {
           "resolved": false,
           "raw": "oci_identity_compartment.platform.id"

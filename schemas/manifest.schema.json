@@ -22,10 +22,22 @@
     "rule": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["match", "entity"],
+      "required": ["match"],
       "properties": {
         "match": { "$ref": "#/$defs/match" },
-        "entity": { "$ref": "#/$defs/entity" }
+        "entity": { "$ref": "#/$defs/entity" },
+        "ignore": { "const": true, "description": "Deliberately not drawn and not reported as unmapped (helper resources)." },
+        "link": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["fromType", "toType"],
+          "description": "A helper resource that is not drawn: among the resources it references (or that reference it), those of `fromType` get an edge to those of `toType`. Exclusive with entity/ignore.",
+          "properties": {
+            "fromType": { "type": "string", "minLength": 1 },
+            "toType": { "type": "string", "minLength": 1 },
+            "label": { "type": "string" }
+          }
+        }
       }
     },
     "match": {

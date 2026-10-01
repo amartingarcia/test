@@ -158,3 +158,45 @@ test('cross-repo links: reports rather than guesses when either side is not exac
     { fromKind: 'aws.eks.cluster', toKind: 'aws.vpc', fromCount: 1, toCount: 2 },
   ]);
 });
+
+/* ---- `link` rules: a helper resource that is not drawn but whose references become an edge ---- */
+{
+  const node = (type, name) => ({ address: `${type}.${name}`, modulePath: [], isData: false, type, name, index: null });
+  const manifest = {
+    repoId: 'r',
+    rules: [
+      { match: { type: 'azurerm_subnet' }, entity: { kind: 'azure.subnet', idFrom: 'name' } },
+      { match: { type: 'azurerm_network_security_group' }, entity: { kind: 'azure.nsg', idFrom: 'name' } },
+      { match: { type: 'azurerm_subnet_network_security_group_association' }, link: { fromType: 'azurerm_subnet', toType: 'azurerm_network_security_group', label: 'secured by' } },
+    ],
+  };
+  const nodes = [node('azurerm_subnet', 'a'), node('azurerm_network_security_group', 'n'), node('azurerm_subnet_network_security_group_association', 'x')];
+  const ref = (from, to) => ({ from, to });
+
+  test('link rule: the helper is not drawn or reported as unmapped, and its two references become a labelled edge', () => {
+    const g = compileEnvironmentGraph({ environment: 'e', repoGraphs: [{ repoId: 'r', manifest, nodes, edges: [
+      ref('azurerm_subnet_network_security_group_association.x', 'azurerm_subnet.a'),
+      ref('azurerm_subnet_network_security_group_association.x', 'azurerm_network_security_group.n'),
+    ] }] });
+    assert.deepEqual(g.entities.map((e) => e.kind).sort(), ['azure.nsg', 'azure.subnet']);
+    assert.deepEqual(g.coverage.r.unmapped, []);
+    assert.deepEqual(g.edges, [{ from: 'r:azure.subnet:a', to: 'r:azure.nsg:n', label: 'secured by' }]);
+  });
+
+  test('link rule: a chain (A -> helper -> B) is followed in the dependency direction', () => {
+    const m = { repoId: 'r', rules: [
+      { match: { type: 'aws_instance' }, entity: { kind: 'aws.ec2.instance', idFrom: 'name' } },
+      { match: { type: 'aws_iam_role' }, entity: { kind: 'aws.iam.role', idFrom: 'name' } },
+      { match: { type: 'aws_iam_instance_profile' }, link: { fromType: 'aws_instance', toType: 'aws_iam_role', label: 'assumes' } },
+    ] };
+    const ns = [node('aws_instance', 'i'), node('aws_iam_role', 'r1'), node('aws_iam_instance_profile', 'p')];
+    const g = compileEnvironmentGraph({ environment: 'e', repoGraphs: [{ repoId: 'r', manifest: m, nodes: ns, edges: [ref('aws_instance.i', 'aws_iam_instance_profile.p'), ref('aws_iam_instance_profile.p', 'aws_iam_role.r1')] }] });
+    assert.deepEqual(g.edges, [{ from: 'r:aws.ec2.instance:i', to: 'r:aws.iam.role:r1', label: 'assumes' }]);
+  });
+
+  test('link rule: when one side is missing it is reported, not guessed', () => {
+    const g = compileEnvironmentGraph({ environment: 'e', repoGraphs: [{ repoId: 'r', manifest, nodes: nodes.slice(0, 1).concat(nodes[2]), edges: [ref('azurerm_subnet_network_security_group_association.x', 'azurerm_subnet.a')] }] });
+    assert.deepEqual(g.edges, []);
+    assert.ok(g.findings.some((f) => f.type === 'link-not-resolved'));
+  });
+}

@@ -303,10 +303,6 @@
       "sourceAddress": "google_container_node_pool.spot",
       "parent": "gcp:gcp.gke.cluster:gke",
       "details": {
-        "count": {
-          "resolved": true,
-          "value": 1
-        },
         "name": {
           "resolved": true,
           "value": "spot"
@@ -391,10 +387,6 @@
       "sourceAddress": "google_redis_instance.cache",
       "parent": "gcp:gcp.vpc:main",
       "details": {
-        "count": {
-          "resolved": true,
-          "value": 1
-        },
         "name": {
           "resolved": false,
           "raw": "\"redis-${var.env}\""

@@ -6,7 +6,7 @@
       "kind": "aws.lb",
       "repoId": "platform",
       "sourceAddress": "aws_lb.public",
-      "parent": "platform:aws.subnet.public:prod_public",
+      "parent": "platform:aws.vpc:prod",
       "details": {
         "name": {
           "resolved": true,
@@ -18,7 +18,7 @@
         },
         "subnets": {
           "resolved": false,
-          "raw": "[aws_subnet.prod_public.id]"
+          "raw": "[aws_subnet.prod_public.id, aws_subnet.prod_public_b.id]"
         },
         "security_groups": {
           "resolved": false,
@@ -33,10 +33,6 @@
       "sourceAddress": "aws_instance.bastion",
       "parent": "platform:aws.subnet.public:shared_public",
       "details": {
-        "count": {
-          "resolved": true,
-          "value": 1
-        },
         "ami": {
           "resolved": true,
           "value": "ami-0a1b2c3d4e5f67890"
@@ -62,10 +58,6 @@
       "sourceAddress": "aws_instance.ci_runner",
       "parent": "platform:aws.subnet.private:shared_private",
       "details": {
-        "count": {
-          "resolved": true,
-          "value": 1
-        },
         "ami": {
           "resolved": true,
           "value": "ami-0a1b2c3d4e5f67890"
@@ -87,10 +79,6 @@
       "sourceAddress": "aws_instance.legacy_api",
       "parent": "platform:aws.subnet.private:prod_private",
       "details": {
-        "count": {
-          "resolved": true,
-          "value": 1
-        },
         "ami": {
           "resolved": true,
           "value": "ami-0a1b2c3d4e5f67890"
@@ -110,7 +98,7 @@
       "kind": "aws.eks.cluster",
       "repoId": "platform",
       "sourceAddress": "aws_eks_cluster.this",
-      "parent": "platform:aws.subnet.private:prod_private",
+      "parent": "platform:aws.vpc:prod",
       "details": {
         "name": {
           "resolved": true,
@@ -126,7 +114,7 @@
         },
         "vpc_config.subnet_ids": {
           "resolved": false,
-          "raw": "[aws_subnet.prod_private.id]"
+          "raw": "[aws_subnet.prod_private.id, aws_subnet.prod_private_b.id]"
         },
         "vpc_config.endpoint_private_access": {
           "resolved": true,
@@ -159,7 +147,7 @@
         },
         "subnet_ids": {
           "resolved": false,
-          "raw": "[aws_subnet.prod_private.id]"
+          "raw": "[aws_subnet.prod_private.id, aws_subnet.prod_private_b.id]"
         },
         "instance_types": {
           "resolved": true,
@@ -193,10 +181,6 @@
       "sourceAddress": "aws_eks_node_group.system",
       "parent": "platform:aws.eks.cluster:this",
       "details": {
-        "count": {
-          "resolved": true,
-          "value": 1
-        },
         "cluster_name": {
           "resolved": false,
           "raw": "aws_eks_cluster.this.name"
@@ -211,7 +195,7 @@
         },
         "subnet_ids": {
           "resolved": false,
-          "raw": "[aws_subnet.prod_private.id]"
+          "raw": "[aws_subnet.prod_private.id, aws_subnet.prod_private_b.id]"
         },
         "instance_types": {
           "resolved": true,
@@ -345,10 +329,6 @@
       "sourceAddress": "aws_ssm_parameter.docdb_endpoint",
       "parent": null,
       "details": {
-        "count": {
-          "resolved": true,
-          "value": 1
-        },
         "name": {
           "resolved": true,
           "value": "/prod/reports/docdb/endpoint"
@@ -391,10 +371,6 @@
       "sourceAddress": "aws_ssm_parameter.opensearch_endpoint",
       "parent": null,
       "details": {
-        "count": {
-          "resolved": true,
-          "value": 1
-        },
         "name": {
           "resolved": true,
           "value": "/prod/logs/opensearch/endpoint"
@@ -495,10 +471,6 @@
       "sourceAddress": "aws_route53_record.bastion",
       "parent": "platform:aws.route53.zone:main",
       "details": {
-        "count": {
-          "resolved": true,
-          "value": 1
-        },
         "zone_id": {
           "resolved": false,
           "raw": "aws_route53_zone.main.zone_id"
@@ -526,7 +498,7 @@
       "kind": "aws.rds.instance",
       "repoId": "platform",
       "sourceAddress": "aws_db_instance.orders",
-      "parent": "platform:aws.subnet.isolated:prod_data",
+      "parent": "platform:aws.vpc:prod",
       "details": {
         "identifier": {
           "resolved": true,
@@ -556,6 +528,14 @@
           "resolved": true,
           "value": true
         },
+        "username": {
+          "resolved": true,
+          "value": "orders_admin"
+        },
+        "manage_master_user_password": {
+          "resolved": true,
+          "value": true
+        },
         "db_subnet_group_name": {
           "resolved": false,
           "raw": "aws_db_subnet_group.data.name"
@@ -571,12 +551,8 @@
       "kind": "aws.docdb.cluster",
       "repoId": "platform",
       "sourceAddress": "aws_docdb_cluster.reports",
-      "parent": "platform:aws.subnet.isolated:prod_data",
+      "parent": "platform:aws.vpc:prod",
       "details": {
-        "count": {
-          "resolved": true,
-          "value": 1
-        },
         "cluster_identifier": {
           "resolved": true,
           "value": "reports"
@@ -593,6 +569,18 @@
           "resolved": true,
           "value": 7
         },
+        "master_username": {
+          "resolved": true,
+          "value": "reports_admin"
+        },
+        "master_password": {
+          "resolved": false,
+          "raw": "var.docdb_master_password"
+        },
+        "skip_final_snapshot": {
+          "resolved": true,
+          "value": true
+        },
         "db_subnet_group_name": {
           "resolved": false,
           "raw": "aws_docdb_subnet_group.data[0].name"
@@ -604,7 +592,7 @@
       "kind": "aws.elasticache.redis",
       "repoId": "platform",
       "sourceAddress": "aws_elasticache_replication_group.sessions",
-      "parent": "platform:aws.subnet.isolated:prod_data",
+      "parent": "platform:aws.vpc:prod",
       "details": {
         "replication_group_id": {
           "resolved": true,
@@ -641,12 +629,8 @@
       "kind": "aws.opensearch.domain",
       "repoId": "platform",
       "sourceAddress": "aws_opensearch_domain.logs",
-      "parent": "platform:aws.subnet.isolated:prod_data",
+      "parent": "platform:aws.vpc:prod",
       "details": {
-        "count": {
-          "resolved": true,
-          "value": 1
-        },
         "domain_name": {
           "resolved": true,
           "value": "logs"
@@ -665,7 +649,7 @@
         },
         "vpc_options.subnet_ids": {
           "resolved": false,
-          "raw": "[aws_subnet.prod_data.id]"
+          "raw": "[aws_subnet.prod_data.id, aws_subnet.prod_data_b.id]"
         }
       }
     },
@@ -676,6 +660,10 @@
       "sourceAddress": "aws_iam_role.cluster",
       "parent": null,
       "details": {
+        "assume_role_policy": {
+          "resolved": false,
+          "raw": "local.trust_eks"
+        },
         "name": {
           "resolved": true,
           "value": "prod-eks-cluster"
@@ -693,6 +681,10 @@
       "sourceAddress": "aws_iam_role.node",
       "parent": null,
       "details": {
+        "assume_role_policy": {
+          "resolved": false,
+          "raw": "local.trust_ec2"
+        },
         "name": {
           "resolved": true,
           "value": "prod-eks-node"
@@ -710,6 +702,10 @@
       "sourceAddress": "aws_iam_role.orders_api_irsa",
       "parent": null,
       "details": {
+        "assume_role_policy": {
+          "resolved": false,
+          "raw": "local.trust_irsa"
+        },
         "name": {
           "resolved": true,
           "value": "prod-orders-api-irsa"
@@ -727,9 +723,9 @@
       "sourceAddress": "aws_iam_role.ec2_ssm",
       "parent": null,
       "details": {
-        "count": {
-          "resolved": true,
-          "value": 1
+        "assume_role_policy": {
+          "resolved": false,
+          "raw": "local.trust_ec2"
         },
         "name": {
           "resolved": true,
@@ -748,9 +744,9 @@
       "sourceAddress": "aws_iam_role.wl_web",
       "parent": null,
       "details": {
-        "count": {
-          "resolved": true,
-          "value": 1
+        "assume_role_policy": {
+          "resolved": false,
+          "raw": "local.trust_irsa"
         },
         "name": {
           "resolved": true,
@@ -769,9 +765,9 @@
       "sourceAddress": "aws_iam_role.wl_api",
       "parent": null,
       "details": {
-        "count": {
-          "resolved": true,
-          "value": 1
+        "assume_role_policy": {
+          "resolved": false,
+          "raw": "local.trust_irsa"
         },
         "name": {
           "resolved": true,
@@ -790,9 +786,9 @@
       "sourceAddress": "aws_iam_role.wl_worker",
       "parent": null,
       "details": {
-        "count": {
-          "resolved": true,
-          "value": 1
+        "assume_role_policy": {
+          "resolved": false,
+          "raw": "local.trust_irsa"
         },
         "name": {
           "resolved": true,
@@ -811,9 +807,9 @@
       "sourceAddress": "aws_iam_role.wl_payments",
       "parent": null,
       "details": {
-        "count": {
-          "resolved": true,
-          "value": 1
+        "assume_role_policy": {
+          "resolved": false,
+          "raw": "local.trust_irsa"
         },
         "name": {
           "resolved": true,
@@ -832,9 +828,9 @@
       "sourceAddress": "aws_iam_role.wl_karpenter",
       "parent": null,
       "details": {
-        "count": {
-          "resolved": true,
-          "value": 1
+        "assume_role_policy": {
+          "resolved": false,
+          "raw": "local.trust_irsa"
         },
         "name": {
           "resolved": true,
@@ -853,9 +849,9 @@
       "sourceAddress": "aws_iam_role.wl_karpenter_node",
       "parent": null,
       "details": {
-        "count": {
-          "resolved": true,
-          "value": 1
+        "assume_role_policy": {
+          "resolved": false,
+          "raw": "local.trust_irsa"
         },
         "name": {
           "resolved": true,
@@ -891,10 +887,6 @@
       "sourceAddress": "aws_vpc.shared",
       "parent": null,
       "details": {
-        "count": {
-          "resolved": true,
-          "value": 1
-        },
         "cidr_block": {
           "resolved": true,
           "value": "10.20.0.0/16"
@@ -908,10 +900,6 @@
       "sourceAddress": "aws_vpc_peering_connection.prod_shared",
       "parent": null,
       "details": {
-        "count": {
-          "resolved": true,
-          "value": 1
-        },
         "vpc_id": {
           "resolved": false,
           "raw": "aws_vpc.prod.id"
@@ -946,10 +934,6 @@
       "sourceAddress": "aws_internet_gateway.shared",
       "parent": "platform:aws.vpc:shared",
       "details": {
-        "count": {
-          "resolved": true,
-          "value": 1
-        },
         "vpc_id": {
           "resolved": false,
           "raw": "aws_vpc.shared[0].id"
@@ -970,6 +954,31 @@
         "cidr_block": {
           "resolved": true,
           "value": "10.10.0.0/20"
+        },
+        "availability_zone": {
+          "resolved": true,
+          "value": "eu-west-1a"
+        }
+      }
+    },
+    {
+      "id": "platform:aws.subnet.public:prod_public_b",
+      "kind": "aws.subnet.public",
+      "repoId": "platform",
+      "sourceAddress": "aws_subnet.prod_public_b",
+      "parent": "platform:aws.vpc:prod",
+      "details": {
+        "vpc_id": {
+          "resolved": false,
+          "raw": "aws_vpc.prod.id"
+        },
+        "cidr_block": {
+          "resolved": true,
+          "value": "10.10.48.0/20"
+        },
+        "availability_zone": {
+          "resolved": true,
+          "value": "eu-west-1b"
         }
       }
     },
@@ -987,6 +996,31 @@
         "cidr_block": {
           "resolved": true,
           "value": "10.10.16.0/20"
+        },
+        "availability_zone": {
+          "resolved": true,
+          "value": "eu-west-1a"
+        }
+      }
+    },
+    {
+      "id": "platform:aws.subnet.private:prod_private_b",
+      "kind": "aws.subnet.private",
+      "repoId": "platform",
+      "sourceAddress": "aws_subnet.prod_private_b",
+      "parent": "platform:aws.vpc:prod",
+      "details": {
+        "vpc_id": {
+          "resolved": false,
+          "raw": "aws_vpc.prod.id"
+        },
+        "cidr_block": {
+          "resolved": true,
+          "value": "10.10.64.0/20"
+        },
+        "availability_zone": {
+          "resolved": true,
+          "value": "eu-west-1b"
         }
       }
     },
@@ -1004,6 +1038,31 @@
         "cidr_block": {
           "resolved": true,
           "value": "10.10.32.0/20"
+        },
+        "availability_zone": {
+          "resolved": true,
+          "value": "eu-west-1a"
+        }
+      }
+    },
+    {
+      "id": "platform:aws.subnet.isolated:prod_data_b",
+      "kind": "aws.subnet.isolated",
+      "repoId": "platform",
+      "sourceAddress": "aws_subnet.prod_data_b",
+      "parent": "platform:aws.vpc:prod",
+      "details": {
+        "vpc_id": {
+          "resolved": false,
+          "raw": "aws_vpc.prod.id"
+        },
+        "cidr_block": {
+          "resolved": true,
+          "value": "10.10.80.0/20"
+        },
+        "availability_zone": {
+          "resolved": true,
+          "value": "eu-west-1b"
         }
       }
     },
@@ -1014,10 +1073,6 @@
       "sourceAddress": "aws_subnet.shared_public",
       "parent": "platform:aws.vpc:shared",
       "details": {
-        "count": {
-          "resolved": true,
-          "value": 1
-        },
         "vpc_id": {
           "resolved": false,
           "raw": "aws_vpc.shared[0].id"
@@ -1035,10 +1090,6 @@
       "sourceAddress": "aws_subnet.shared_private",
       "parent": "platform:aws.vpc:shared",
       "details": {
-        "count": {
-          "resolved": true,
-          "value": 1
-        },
         "vpc_id": {
           "resolved": false,
           "raw": "aws_vpc.shared[0].id"
@@ -1073,10 +1124,6 @@
       "sourceAddress": "aws_nat_gateway.shared",
       "parent": "platform:aws.subnet.public:shared_public",
       "details": {
-        "count": {
-          "resolved": true,
-          "value": 1
-        },
         "subnet_id": {
           "resolved": false,
           "raw": "aws_subnet.shared_public[0].id"
@@ -1111,10 +1158,6 @@
       "sourceAddress": "aws_security_group.shared_default",
       "parent": "platform:aws.vpc:shared",
       "details": {
-        "count": {
-          "resolved": true,
-          "value": 1
-        },
         "name": {
           "resolved": true,
           "value": "shared-default"
@@ -1157,10 +1200,6 @@
       "sourceAddress": "helm_release.report_job",
       "parent": null,
       "details": {
-        "count": {
-          "resolved": true,
-          "value": 1
-        },
         "name": {
           "resolved": true,
           "value": "report-job"
@@ -1184,6 +1223,10 @@
     {
       "from": "platform:aws.lb:public",
       "to": "platform:aws.subnet.public:prod_public"
+    },
+    {
+      "from": "platform:aws.lb:public",
+      "to": "platform:aws.subnet.public:prod_public_b"
     },
     {
       "from": "platform:aws.lb:public",
@@ -1212,6 +1255,10 @@
       "to": "platform:aws.subnet.private:prod_private"
     },
     {
+      "from": "platform:aws.eks.cluster:this",
+      "to": "platform:aws.subnet.private:prod_private_b"
+    },
+    {
       "from": "platform:aws.eks.nodegroup:default",
       "to": "platform:aws.eks.cluster:this"
     },
@@ -1225,6 +1272,10 @@
       "to": "platform:aws.subnet.private:prod_private"
     },
     {
+      "from": "platform:aws.eks.nodegroup:default",
+      "to": "platform:aws.subnet.private:prod_private_b"
+    },
+    {
       "from": "platform:aws.eks.nodegroup:system",
       "to": "platform:aws.eks.cluster:this"
     },
@@ -1236,6 +1287,10 @@
     {
       "from": "platform:aws.eks.nodegroup:system",
       "to": "platform:aws.subnet.private:prod_private"
+    },
+    {
+      "from": "platform:aws.eks.nodegroup:system",
+      "to": "platform:aws.subnet.private:prod_private_b"
     },
     {
       "from": "platform:aws.eks.addon:vpc_cni",
@@ -1306,6 +1361,10 @@
       "to": "platform:aws.subnet.isolated:prod_data"
     },
     {
+      "from": "platform:aws.opensearch.domain:logs",
+      "to": "platform:aws.subnet.isolated:prod_data_b"
+    },
+    {
       "from": "platform:aws.vpc_peering:prod_shared",
       "to": "platform:aws.vpc:prod",
       "label": "peers"
@@ -1328,11 +1387,23 @@
       "to": "platform:aws.vpc:prod"
     },
     {
+      "from": "platform:aws.subnet.public:prod_public_b",
+      "to": "platform:aws.vpc:prod"
+    },
+    {
       "from": "platform:aws.subnet.private:prod_private",
       "to": "platform:aws.vpc:prod"
     },
     {
+      "from": "platform:aws.subnet.private:prod_private_b",
+      "to": "platform:aws.vpc:prod"
+    },
+    {
       "from": "platform:aws.subnet.isolated:prod_data",
+      "to": "platform:aws.vpc:prod"
+    },
+    {
+      "from": "platform:aws.subnet.isolated:prod_data_b",
       "to": "platform:aws.vpc:prod"
     },
     {
@@ -1360,29 +1431,34 @@
       "to": "platform:aws.vpc:shared"
     },
     {
+      "from": "platform:aws.ec2.instance:bastion",
+      "to": "platform:aws.iam.role.ec2:ec2_ssm",
+      "label": "assumes"
+    },
+    {
       "from": "gitops:k8s.release.service:orders_api",
       "to": "platform:aws.iam.role.irsa:orders_api_irsa",
-      "label": "assumes (IRSA)"
+      "label": "declared: assumes (IRSA)"
     },
     {
       "from": "gitops:k8s.release.service:orders_api",
       "to": "platform:aws.rds.instance:orders",
-      "label": "SQL"
+      "label": "declared: SQL"
     },
     {
       "from": "gitops:k8s.release.service:orders_api",
       "to": "platform:aws.elasticache.redis:sessions",
-      "label": "cache"
+      "label": "declared: cache"
     },
     {
       "from": "gitops:k8s.release.service:orders_api",
       "to": "platform:aws.opensearch.domain:logs",
-      "label": "logs"
+      "label": "declared: logs"
     },
     {
       "from": "gitops:k8s.release.batch:report_job",
       "to": "platform:aws.docdb.cluster:reports",
-      "label": "writes"
+      "label": "declared: writes"
     }
   ],
   "coverage": {

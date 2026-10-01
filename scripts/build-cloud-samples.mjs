@@ -15,7 +15,7 @@ import { parseResourceAddress } from '../lib/parse/parse-resource-address.mjs';
 import { parseTfvars } from '../lib/parse/parse-tfvars.mjs';
 import { compileEnvironmentGraph } from '../lib/compile/compile-environment-graph.mjs';
 import { inferPlacementFromReferences } from '../lib/compile/infer-placement.mjs';
-import { extractResourceDetails } from '../lib/extract/extract-resource-details.mjs';
+import { extractResourceDetails, entityDetails } from '../lib/extract/extract-resource-details.mjs';
 import { validateManifest } from '../lib/manifest/validate-manifest.mjs';
 import { lintManifest } from '../lib/manifest/lint-manifest.mjs';
 import { dotFromTerraform } from './lib/sample-dot.mjs';
@@ -37,8 +37,10 @@ const CLOUDS = {
       ['azurerm_cosmosdb_account', 'azure.cosmos'], ['azurerm_dns_zone', 'azure.dns.zone'], ['azurerm_dns_a_record', 'azure.dns.record'],
       ['azurerm_user_assigned_identity', 'azure.identity'], ['azurerm_key_vault', 'azure.keyvault'], ['azurerm_storage_account', 'azure.storage'],
       ['azurerm_container_registry', 'azure.acr'],
-      ['azurerm_virtual_network_peering', null], ['azurerm_subnet_network_security_group_association', null],
-      ['azurerm_nat_gateway_public_ip_association', null], ['azurerm_subnet_nat_gateway_association', null], ['azurerm_role_assignment', null], ['azurerm_network_interface', null],
+      ['azurerm_virtual_network_peering', { link: { fromType: 'azurerm_virtual_network', toType: 'azurerm_virtual_network', label: 'peers' } }],
+      ['azurerm_subnet_network_security_group_association', { link: { fromType: 'azurerm_subnet', toType: 'azurerm_network_security_group', label: 'secured by' } }],
+      ['azurerm_nat_gateway_public_ip_association', { link: { fromType: 'azurerm_nat_gateway', toType: 'azurerm_public_ip', label: 'uses' } }],
+      ['azurerm_subnet_nat_gateway_association', { link: { fromType: 'azurerm_subnet', toType: 'azurerm_nat_gateway', label: 'egress via' } }], ['azurerm_role_assignment', null], ['azurerm_network_interface', null],
     ],
     edgeLabels: [
       { fromKind: 'azure.aks.cluster', toKind: 'azure.identity', label: 'control-plane identity' },
@@ -97,7 +99,8 @@ for (const [cloud, cfg] of Object.entries(CLOUDS)) {
 
   const manifest = {
     repoId: cloud,
-    rules: cfg.rules.map(([type, kind]) => (kind ? { match: { type }, entity: { kind, idFrom: 'name' } } : { match: { type }, ignore: true })),
+    // [type, kind]: kind = string -> entity, null -> not drawn, { link } -> not drawn, becomes an edge
+    rules: cfg.rules.map(([type, kind]) => (typeof kind === 'string' ? { match: { type }, entity: { kind, idFrom: 'name' } } : kind?.link ? { match: { type }, link: kind.link } : { match: { type }, ignore: true })),
   };
   const errors = validateManifest(manifest);
   if (errors.length) throw new Error(`invalid ${cloud} manifest: ${errors.join('; ')}`);
@@ -118,7 +121,7 @@ for (const [cloud, cfg] of Object.entries(CLOUDS)) {
     for (const entity of compiled.entities) {
       const p = parseResourceAddress(entity.sourceAddress);
       const d = p && extractResourceDetails(files, { blockType: 'resource', labels: [p.type, p.name] }, vars);
-      if (d) entity.details = d.attributes;
+      if (d) entity.details = entityDetails(d.attributes);
     }
     compiled.legend = cfg.legend;
     await fs.writeFile(path.join(outDir, `${id}.json`), JSON.stringify(compiled, null, 2) + '\n', 'utf8');

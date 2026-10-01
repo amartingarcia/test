@@ -605,10 +605,6 @@
       "sourceAddress": "azurerm_mssql_server.sql",
       "parent": "azure:azure.resource_group:app",
       "details": {
-        "count": {
-          "resolved": true,
-          "value": 1
-        },
         "name": {
           "resolved": false,
           "raw": "\"sql-${var.env}\""
@@ -642,10 +638,6 @@
       "sourceAddress": "azurerm_mssql_database.orders",
       "parent": "azure:azure.sql.server:sql",
       "details": {
-        "count": {
-          "resolved": true,
-          "value": 1
-        },
         "name": {
           "resolved": true,
           "value": "orders"
@@ -700,10 +692,6 @@
       "sourceAddress": "azurerm_cosmosdb_account.cosmos",
       "parent": "azure:azure.resource_group:app",
       "details": {
-        "count": {
-          "resolved": true,
-          "value": 1
-        },
         "name": {
           "resolved": false,
           "raw": "\"cosmos-${var.env}\""
@@ -1118,6 +1106,26 @@
       "from": "azure:azure.dns.record:app",
       "to": "azure:azure.public_ip:ingress",
       "label": "points to"
+    },
+    {
+      "from": "azure:azure.vnet:hub",
+      "to": "azure:azure.vnet:spoke",
+      "label": "peers"
+    },
+    {
+      "from": "azure:azure.subnet:spoke_aks",
+      "to": "azure:azure.nsg:aks",
+      "label": "secured by"
+    },
+    {
+      "from": "azure:azure.nat_gateway:hub",
+      "to": "azure:azure.public_ip:nat",
+      "label": "uses"
+    },
+    {
+      "from": "azure:azure.subnet:hub_mgmt",
+      "to": "azure:azure.nat_gateway:hub",
+      "label": "egress via"
     }
   ],
   "coverage": {
