@@ -263,6 +263,22 @@ can nest them under it.
       unresolved. New: manifest `ignore: true` rules (helpers not drawn, not
       "unmapped"); compiler `inferPlacement` hook (runs before the catalog:
       explicit boundary > nest link > references > catalog kind-level).
+- [x] T9e — Environments = tfvars; conditional resolver; viewer presets; skill docs.
+      * `resolveHclValue` handles `cond ? a : b` (bool var/literal, `!`, `==`/`!=`,
+        right-assoc nesting; only the chosen branch must resolve). `count` = 0
+        drops the node and its edges. `ignore` manifest rules, `inferPlacement`
+        hook and `scripts/lint.mjs` (manifest + catalog) done.
+      * `viewer/data/environments.json` drives the env selector; each tfvars
+        (dev/stage/prod) compiles to a different infrastructure.
+      * Viewer: 4 style presets (Blueprint, Draft, Neon, Soft) x light/dark,
+        persisted (localStorage, guarded) and linkable (`#env=..&style=..`);
+        nodes not draggable (layout is computed, nothing persists); PNG and PDF
+        export of the whole diagram (PDF embeds the PNG, not vector).
+      * Skill: SKILL.md rewritten; `references/manifest-authoring.md`,
+        `catalog.md`, `model-guidance.md` (per-model rigor, mandatory
+        lint + coverage loop).
+      Known gaps: SVG/vector export; preset visuals only spot-checked
+      (Soft, Neon) on the live page.
 - [ ] T8 — End-to-end validation against at least one environment for both
       repos; confirm zero writes happened inside the source repos (e.g.
       `git status --porcelain` clean).
