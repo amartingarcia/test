@@ -1944,8 +1944,8 @@
           "value": "batch"
         },
         "runsOn": {
-          "resolved": false,
-          "raw": "spot-batch | default"
+          "resolved": true,
+          "value": "spot-batch"
         },
         "argoApp": {
           "resolved": true,

@@ -1729,7 +1729,7 @@
     {
       "id": "k8s:k8s.deployment:shop/worker",
       "kind": "k8s.deployment",
-      "parent": "platform:aws.eks.cluster:this",
+      "parent": "k8s:k8s.nodepool:spot-batch",
       "repoId": "k8s",
       "sourceAddress": "20-apps.yaml",
       "details": {
@@ -1770,8 +1770,8 @@
           "value": "batch"
         },
         "runsOn": {
-          "resolved": false,
-          "raw": "spot-batch | default"
+          "resolved": true,
+          "value": "spot-batch"
         }
       }
     },
@@ -2294,14 +2294,6 @@
       "reason": "ambiguous",
       "candidates": [
         "general",
-        "spot-batch",
-        "default"
-      ]
-    },
-    {
-      "entityId": "k8s:k8s.deployment:shop/worker",
-      "reason": "ambiguous",
-      "candidates": [
         "spot-batch",
         "default"
       ]

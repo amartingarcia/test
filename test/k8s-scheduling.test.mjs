@@ -54,3 +54,11 @@ test('constructs we do not evaluate make the answer unknown, not wrong', () => {
 test('a toleration with empty key and Exists tolerates every taint', () => {
   assert.equal(candidatePools({ tolerations: [{ operator: 'Exists' }] }, pools).candidates.length, 3);
 });
+
+test('Karpenter labels are never satisfied by a static node group', () => {
+  const mixed = [
+    { name: 'karp', labels: {}, requirements: [], taints: [] },
+    { name: 'mng', labels: {}, requirements: [], taints: [], static: true },
+  ];
+  assert.deepEqual(candidatePools({ nodeSelector: { 'karpenter.sh/capacity-type': 'spot' } }, mixed).candidates.map((p) => p.name), ['karp']);
+});
