@@ -279,6 +279,34 @@ can nest them under it.
         lint + coverage loop).
       Known gaps: SVG/vector export; preset visuals only spot-checked
       (Soft, Neon) on the live page.
+- [x] T10 — Kubernetes layer (static manifests; synthetic sample in examples/sample-k8s).
+      * `lib/yaml/parse-yaml.mjs`: dependency-free YAML subset (npm registry is
+        blocked in the sandbox); unsupported constructs (anchors, tags, merge
+        keys, multi-line plain scalars, tabs) throw with a line number.
+      * `lib/k8s/load-manifests.mjs`: multi-doc/List flattening; Secret
+        `data`/`stringData` dropped at load (test-enforced); parse errors reported
+        per file.
+      * `lib/k8s/scheduling.mjs`: which pools can host a pod (nodeSelector,
+        required nodeAffinity In/NotIn/Exists/DoesNotExist, taints/tolerations,
+        Karpenter well-known labels). resolved | ambiguous | none | unknown.
+      * `lib/k8s/build-k8s-graph.mjs`: two views of one cluster, same output shape
+        as the Terraform compiler. `namespace`: cluster > namespace > workloads,
+        services, ingress, config/secret/pvc, ArgoCD Application/ApplicationSet;
+        `nodes`: cluster > NodePool/node group > workloads. Relations only when
+        evident: service selector, ingress backend, env/volume refs, NodePool >
+        EC2NodeClass, Application > destination namespace, tracking label
+        `argocd.argoproj.io/instance` > managed workloads, ApplicationSet list
+        generator expanded (`{{k}}`, `{{ .k }}`); other generators reported as
+        not expanded. ServiceAccount (+IRSA role annotation), HPA, PDB absorbed
+        into workload details. `findings` (missing refs, services without
+        workload) and `unresolvedPlacements` (ambiguous/none) are surfaced in the
+        viewer. Managed node groups come from the cloud layer (`nodeGroups`).
+      * Viewer: k8s kinds/classes/glyphs, per-graph legend, wrapped (grid) layout
+        for crowded containers, wider chips.
+      * Not done: resolving which node a *pod* lands on (no live state), Argo
+        generators other than list, Kustomize/Helm rendering (input is rendered
+        YAML), CRDs beyond Karpenter/Argo, NetworkPolicy relations, linking to the
+        AWS view (IRSA role arn is in details only), real-cluster validation.
 - [ ] T8 — End-to-end validation against at least one environment for both
       repos; confirm zero writes happened inside the source repos (e.g.
       `git status --porcelain` clean).

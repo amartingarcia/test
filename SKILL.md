@@ -21,6 +21,8 @@ never hand-drawn: if something cannot be resolved from the source it is reported
 5. **Catalog** `catalog/kinds.json` — the "architect": what goes inside what, ordering, glyph per kind. See [catalog](references/catalog.md).
 6. **Viewer** `viewer/` — Cytoscape; 4 styles (Blueprint, Draft, Neon, Soft) x light/dark, zoom, expand/collapse, fixed layout (no dragging), PNG/PDF export, `#env=<id>&style=<preset>` links.
 
+Kubernetes (rendered manifests, Karpenter, ArgoCD) has its own layer: see [kubernetes](references/kubernetes.md).
+
 Environments = tfvars files: each one is compiled separately and may yield a different infrastructure.
 
 ## Workflow when asked to diagram a repo
