@@ -28,12 +28,27 @@ test('returns an empty object for empty content', () => {
   assert.deepEqual(parseTfvars(''), {});
 });
 
-test('leaves a complex (list/map) tfvars value out of the resolved map rather than guessing', () => {
+test('resolves list and map tfvars values made of literals', () => {
   const content = `
 environment = "data_dev"
 azs = ["eu-west-1a", "eu-west-1b"]
+tags = {
+  team = "platform"
+  cost_center = 42
+}
 `;
-  // azs is a list -> not a scalar resolveHclValue can resolve; omitted, not
-  // silently stringified or half-parsed.
+  assert.deepEqual(parseTfvars(content), {
+    environment: 'data_dev',
+    azs: ['eu-west-1a', 'eu-west-1b'],
+    tags: { team: 'platform', cost_center: 42 },
+  });
+});
+
+test('leaves a tfvars value out of the resolved map when it cannot be fully resolved', () => {
+  const content = `
+environment = "data_dev"
+dynamic_thing = [for x in [1, 2] : x * 2]
+`;
+  // omitted, not silently stringified or half-parsed
   assert.deepEqual(parseTfvars(content), { environment: 'data_dev' });
 });

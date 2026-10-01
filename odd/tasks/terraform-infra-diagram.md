@@ -328,9 +328,43 @@ needs `crossRepoLinks` extended with its own `nest: true` option that sets
 `parent` the same way same-repo `boundary` does, once there's a concrete
 case asking for it — not building it speculatively now.
 
+- [x] T7 — Viewer (`viewer/index.html`, `viewer/app.js`, data in
+      `viewer/data/<env>.json` produced by `scripts/build-sample-data.mjs`).
+      Cytoscape.js + fcose + expand-collapse, environment dropdown, click ->
+      detail panel (kind, repo, source address, parent, resolved/unresolved
+      config), coverage banner. Deployed via GitHub Pages
+      (`.github/workflows/pages.yml`, source = GitHub Actions; the Pages
+      settings page showed "GitHub Actions" with no workflow, which is why it
+      404'd until the workflow existed) and **verified live** at
+      https://amartingarcia.github.io/test/ — compound nesting, the
+      cross-repo "runs in" edge, and the node-group drill-down all render.
+      Fixes found by testing the live page: narrow-viewport layout (sidebar
+      stacks under the graph below 760px); ambiguous labels (now
+      `kind\nname`); redundant child->parent edges no longer drawn
+      (containment already shows them).
+      **Layer A2 improvement driven by what the live panel showed**: lists
+      and objects of literals (`instance_types = ["m5.large"]`,
+      `scaling_config = { min_size = 2 ... }`) were shown "unresolved" though
+      trivially resolvable. `resolveHclValue` now resolves a list/object into
+      an array/object when *every* element resolves (recursive, var refs
+      included); all-or-nothing, so anything containing `local.x`,
+      cross-resource refs, interpolation, `for` expressions or quoted object
+      keys stays unresolved with raw text kept — never half-resolved. Three
+      older tests that pinned "lists/objects always unresolved" were
+      deliberately rewritten to the new rule. 100/102 total (the 2 failures
+      are the pre-existing terraform-binary-dependent Layer A tests).
+      Known viewer gaps (not blocking): environment list is hardcoded in
+      `app.js` (static site, no directory listing); detail lookup covers
+      managed resources only (blockType `resource`), not data sources.
+- [ ] T8 — End-to-end validation against real repos (see below).
+
 ## Next step
-T7 — Viewer: Cytoscape.js + expand-collapse, environment selector,
-drill-down into EKS node showing config-derived details (via T5's
-extract-resource-details). GitHub Pages is enabled on `main` for this repo
-— the viewer can be a static page committed under e.g. `viewer/` or `docs/`
-and checked live once deployed.
+T8 — end-to-end validation against at least one real environment for both
+repos, confirming zero writes inside the source repos (`git status
+--porcelain` clean). Needs a machine with `terraform` installed and access to
+the real repos (this cloud sandbox has neither: no terraform binary, and the
+repos are private/local to the user's computer) — the user's linked computer
+is the place to run it: `extractTerraformGraph` (Layer A) -> `parseDotGraph`
+-> manifests (T4/T5, real ones authored against the actual repos, kept out of
+this public repo) -> `compileEnvironmentGraph` -> viewer data file. This also
+re-validates T3 against a live multi-module DOT graph (see T3 caveat).

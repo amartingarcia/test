@@ -14,20 +14,23 @@ resource "aws_eks_cluster" "this" {
   tags = {
     team = "platform"
   }
+  role_arn = aws_iam_role.cluster.arn
 }
 `,
   },
 ];
 
-test('resolves scalar attributes and leaves complex ones unresolved with raw text kept', () => {
+test('resolves literal/var/object attributes and leaves references unresolved with raw text kept', () => {
   const result = extractResourceDetails(files, { blockType: 'resource', labels: ['aws_eks_cluster', 'this'] }, { eks_version: '1.29' });
 
   assert.equal(result.filePath, 'eks.tf');
   assert.deepEqual(result.attributes.name, { resolved: true, value: 'prod' });
   assert.deepEqual(result.attributes.version, { resolved: true, value: '1.29' }); // resolved via var
   assert.deepEqual(result.attributes.endpoint_access, { resolved: true, value: 'private' });
-  assert.equal(result.attributes.tags.resolved, false);
-  assert.match(result.attributes.tags.raw, /team = "platform"/);
+  // an object of literals now resolves into a plain object...
+  assert.deepEqual(result.attributes.tags, { resolved: true, value: { team: 'platform' } });
+  // ...while a cross-resource reference stays unresolved, raw text kept
+  assert.deepEqual(result.attributes.role_arn, { resolved: false, raw: 'aws_iam_role.cluster.arn' });
 });
 
 test('limits output to requested detailFields when provided', () => {

@@ -76,16 +76,23 @@
           "value": "default"
         },
         "instance_types": {
-          "resolved": false,
-          "raw": "[\"m5.large\", \"m5a.large\"]"
+          "resolved": true,
+          "value": [
+            "m5.large",
+            "m5a.large"
+          ]
         },
         "capacity_type": {
           "resolved": true,
           "value": "ON_DEMAND"
         },
         "scaling_config": {
-          "resolved": false,
-          "raw": "{\n    min_size     = 2\n    max_size     = 6\n    desired_size = 3\n  }"
+          "resolved": true,
+          "value": {
+            "min_size": 2,
+            "max_size": 6,
+            "desired_size": 3
+          }
         }
       }
     },

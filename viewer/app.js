@@ -44,6 +44,17 @@ async function loadEnvironment(env) {
   renderCoverage(graph);
 }
 
+function entityName(entity) {
+  const rawName = entity.id.split(':').slice(2).join(':');
+  return rawName.includes('.') ? rawName.split('.').pop() : rawName;
+}
+
+/** "vpc\nmain", "subnet.public\npublic", "eks.nodegroup\ndefault": kind first, then name. */
+function entityLabel(entity) {
+  const kindShort = entity.kind.split('.').slice(1).join('.');
+  return `${kindShort}\n${entityName(entity)}`;
+}
+
 function renderCoverage(graph) {
   const parts = [];
   for (const [repoId, cov] of Object.entries(graph.coverage ?? {})) {
@@ -63,7 +74,8 @@ function renderGraph(graph) {
     elements.push({
       data: {
         id: entity.id,
-        label: entity.id.split(':').pop(),
+        label: entityLabel(entity),
+        name: entityName(entity),
         kind: entity.kind,
         parent: entity.parent ?? undefined,
         repoId: entity.repoId,
@@ -80,7 +92,12 @@ function renderGraph(graph) {
     }
   }
 
+  // Containment already says "child belongs to parent"; an edge from a child
+  // to its own parent (e.g. subnet -> vpc, addon -> cluster) would just draw a
+  // noisy loop on top of it, so skip those.
+  const parentOf = new Map(graph.entities.map((e) => [e.id, e.parent]));
   for (const [i, edge] of graph.edges.entries()) {
+    if (parentOf.get(edge.from) === edge.to || parentOf.get(edge.to) === edge.from) continue;
     elements.push({ data: { id: `e${i}`, source: edge.from, target: edge.to, label: edge.label ?? '' } });
   }
 
@@ -91,6 +108,7 @@ function renderGraph(graph) {
     style: [
       { selector: 'node', style: {
         'label': 'data(label)', 'font-size': 10, 'color': '#c9d1d9',
+        'text-wrap': 'wrap', 'text-max-width': 110,
         'background-color': '#21262d', 'border-width': 1, 'border-color': '#30363d',
         'shape': 'round-rectangle', 'padding': '8px', 'text-valign': 'center',
       }},
@@ -119,7 +137,7 @@ function renderGraph(graph) {
 
 function renderDetails(data) {
   const badge = data.class !== 'default' ? `<span class="badge ${data.class}">${data.class}</span>` : '';
-  let html = `<h2>${data.label}${badge}</h2><div class="kind">${data.kind}</div>`;
+  let html = `<h2>${data.name}${badge}</h2><div class="kind">${data.kind}</div>`;
   html += `<table>
     <tr><td class="key">repo</td><td class="val">${data.repoId}</td></tr>
     <tr><td class="key">source address</td><td class="val">${data.sourceAddress}</td></tr>
