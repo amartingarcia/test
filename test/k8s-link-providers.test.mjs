@@ -15,7 +15,7 @@ test('AKS: user pools (labels, taints in key=value:Effect form) and the default 
     E('c:azure.aks.nodepool:batch', 'azure.aks.nodepool', { name: v('batch'), node_labels: v({ workload: 'batch' }), node_taints: v(['batch=true:NoSchedule']) }),
   ]);
   const batch = nodeGroups.find((g) => g.name === 'batch');
-  assert.deepEqual(batch.labels, { workload: 'batch', 'kubernetes.azure.com/agentpool': 'batch' });
+  assert.deepEqual(batch.labels, { workload: 'batch', 'kubernetes.azure.com/agentpool': 'batch', 'kubernetes.azure.com/mode': 'user' });
   assert.deepEqual(batch.taints, [{ key: 'batch', value: 'true', effect: 'NoSchedule' }]);
   assert.deepEqual(batch.source, { entityId: 'c:azure.aks.nodepool:batch' });
   const sys = nodeGroups.find((g) => g.name === 'system');

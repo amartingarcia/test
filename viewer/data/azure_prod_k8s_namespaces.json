@@ -1134,8 +1134,8 @@
           "value": "batch"
         },
         "runsOn": {
-          "resolved": true,
-          "value": "batch"
+          "resolved": false,
+          "raw": "no compatible pool"
         }
       }
     },

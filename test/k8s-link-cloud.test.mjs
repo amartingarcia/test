@@ -26,7 +26,7 @@ const cloud = {
 test('node groups are derived from the cloud graph; unresolved labels are flagged uncertain, taints mapped to k8s effects', () => {
   const { nodeGroups } = nodeGroupsFromCloud(cloud.entities);
   const sys = nodeGroups.find((g) => g.name === 'system');
-  assert.deepEqual(sys.labels, { 'node-role': 'system' });
+  assert.deepEqual(sys.labels, { 'eks.amazonaws.com/capacityType': 'ON_DEMAND', 'node-role': 'system' });
   assert.deepEqual(sys.taints, [{ key: 'CriticalAddonsOnly', value: undefined, effect: 'NoSchedule' }]);
   assert.equal(nodeGroups.find((g) => g.name === 'odd').uncertain, true);
 });
@@ -91,7 +91,7 @@ test('namespace view: namespaces live inside the AWS EKS cluster', () => {
 
 test('IRSA: workload -> IAM role by role name; a role missing from the cloud graph is a finding', () => {
   const g = merged('namespace');
-  assert.ok(g.edges.some((e) => e.from === 'k8s:k8s.deployment:shop/web' && e.to === 'p:aws.iam.role.workload:wl_web' && e.label === 'assumes (IRSA)'));
+  assert.ok(g.edges.some((e) => e.from === 'k8s:k8s.deployment:shop/web' && e.to === 'p:aws.iam.role.workload:wl_web' && e.label === 'annotated to assume (IRSA)'));
   assert.ok(g.findings.some((f) => f.type === 'irsa-role-not-found' && f.entityId === 'k8s:k8s.deployment:shop/lost'));
 });
 

@@ -1031,7 +1031,7 @@
     {
       "from": "k8s:k8s.deployment:shop/api",
       "to": "gcp:gcp.service_account:workload",
-      "label": "impersonates (Workload Identity)"
+      "label": "annotated to impersonate (Workload Identity)"
     }
   ],
   "coverage": {

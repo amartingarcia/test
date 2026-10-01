@@ -1062,7 +1062,7 @@
     {
       "id": "k8s:k8s.deployment:shop/worker",
       "kind": "k8s.deployment",
-      "parent": "azure:azure.aks.nodepool:batch",
+      "parent": "azure:azure.aks.cluster:main",
       "repoId": "k8s",
       "sourceAddress": "azure.yaml",
       "details": {
@@ -1095,8 +1095,8 @@
           "value": "batch"
         },
         "runsOn": {
-          "resolved": true,
-          "value": "batch"
+          "resolved": false,
+          "raw": "no compatible pool"
         }
       }
     },
@@ -1314,7 +1314,13 @@
     }
   },
   "unresolvedCrossRepoLinks": [],
-  "unresolvedPlacements": [],
+  "unresolvedPlacements": [
+    {
+      "entityId": "k8s:k8s.deployment:shop/worker",
+      "reason": "none",
+      "candidates": []
+    }
+  ],
   "findings": [],
   "legend": {
     "net": "Network / namespaces",
