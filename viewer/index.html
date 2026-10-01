@@ -4,71 +4,201 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>infra-diagram viewer</title>
+<script>
+  // Resolve the theme before first paint (no flash). Storage can throw
+  // (private mode, blocked site data), so every access is guarded.
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem('infra-theme'); } catch (e) {}
+    if (t !== 'light' && t !== 'dark') {
+      t = window.matchMedia && matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+    }
+    document.documentElement.setAttribute('data-theme', t);
+  })();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
 <script src="https://unpkg.com/cytoscape@3.30.1/dist/cytoscape.min.js"></script>
 <script src="https://unpkg.com/layout-base@2.0.1/layout-base.js"></script>
 <script src="https://unpkg.com/cose-base@2.2.0/cose-base.js"></script>
 <script src="https://unpkg.com/cytoscape-fcose@2.2.0/cytoscape-fcose.js"></script>
 <script src="https://unpkg.com/cytoscape-expand-collapse@4.1.1/cytoscape-expand-collapse.js"></script>
 <style>
-  :root {
-    --bg: #0d1117;
-    --panel: #161b22;
-    --border: #30363d;
-    --text: #c9d1d9;
-    --muted: #8b949e;
-    --accent: #58a6ff;
-    --vpc: #3fb950;
-    --eks: #d2a8ff;
-    --net: #f0883e;
+  :root, :root[data-theme="dark"] {
+    --bg: #060a14;
+    --grid: rgba(56, 189, 248, .07);
+    --grid-major: rgba(56, 189, 248, .14);
+    --panel: rgba(10, 18, 34, .82);
+    --panel-solid: #0a1222;
+    --border: rgba(94, 234, 212, .22);
+    --text: #dbeafe;
+    --muted: #7f93b2;
+    --node: #0c1730;
+    --net: #ff9a3c;
+    --eks: #b794ff;
+    --def: #2de2e6;
+    --edge: #2de2e6;
+    --edge-alt: #ff4fd8;
+    --glow: .38;
+    --shadow: 0 10px 40px rgba(0, 0, 0, .55);
+    --hit: #ffffff;
+    --warn: #ffb454;
+  }
+  :root[data-theme="light"] {
+    --bg: #f3f7fc;
+    --grid: rgba(14, 90, 150, .07);
+    --grid-major: rgba(14, 90, 150, .14);
+    --panel: rgba(255, 255, 255, .86);
+    --panel-solid: #ffffff;
+    --border: rgba(14, 90, 150, .25);
+    --text: #0f2744;
+    --muted: #5a7090;
+    --node: #ffffff;
+    --net: #d9560b;
+    --eks: #6d3fd6;
+    --def: #0a7f92;
+    --edge: #0a7f92;
+    --edge-alt: #c2188f;
+    --glow: .16;
+    --shadow: 0 10px 30px rgba(20, 60, 110, .16);
+    --hit: #0f2744;
+    --warn: #b45309;
   }
   * { box-sizing: border-box; }
-  html, body { height: 100%; margin: 0; background: var(--bg); color: var(--text); font-family: -apple-system, system-ui, sans-serif; }
+  html, body { height: 100%; margin: 0; background: var(--bg); color: var(--text); font-family: 'Space Grotesk', system-ui, sans-serif; }
+  .mono, td.key, .kind, .raw, #env-select { font-family: 'JetBrains Mono', ui-monospace, monospace; }
   #app { display: flex; height: 100vh; }
-  #graph { flex: 1; min-width: 0; position: relative; }
-  #sidebar { width: 340px; flex-shrink: 0; background: var(--panel); border-left: 1px solid var(--border); padding: 16px; overflow-y: auto; }
-  /* Narrow viewports (found while testing in a ~563px pane: the fixed 340px
-     sidebar squeezed the graph to 223px): stack the detail panel under the
-     graph instead of beside it. */
+
+  /* Blueprint field: minor + major grid, with a soft colored bloom behind it. */
+  #graph {
+    flex: 1; min-width: 0; position: relative; overflow: hidden;
+    background:
+      radial-gradient(900px 500px at 15% 10%, color-mix(in srgb, var(--def) 14%, transparent), transparent 70%),
+      radial-gradient(800px 500px at 90% 95%, color-mix(in srgb, var(--eks) 14%, transparent), transparent 70%),
+      linear-gradient(var(--grid-major) 1px, transparent 1px) 0 0 / 120px 120px,
+      linear-gradient(90deg, var(--grid-major) 1px, transparent 1px) 0 0 / 120px 120px,
+      linear-gradient(var(--grid) 1px, transparent 1px) 0 0 / 24px 24px,
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px) 0 0 / 24px 24px,
+      var(--bg);
+  }
+  /* Registration marks in the corners of the drawing area. */
+  #graph::before, #graph::after, #frame-b::before, #frame-b::after {
+    content: ''; position: absolute; width: 28px; height: 28px; z-index: 5; pointer-events: none;
+    border: 2px solid var(--def); opacity: .8;
+  }
+  #graph::before { top: 10px; left: 10px; border-right: 0; border-bottom: 0; }
+  #graph::after { top: 10px; right: 10px; border-left: 0; border-bottom: 0; }
+  #frame-b::before { bottom: 10px; left: 10px; border-right: 0; border-top: 0; }
+  #frame-b::after { bottom: 10px; right: 10px; border-left: 0; border-top: 0; }
+  #cy { position: absolute; inset: 0; }
+
+  #sidebar {
+    width: 360px; flex-shrink: 0; padding: 18px; overflow-y: auto;
+    background: var(--panel); backdrop-filter: blur(14px);
+    border-left: 1px solid var(--border);
+  }
+  /* Narrow viewports (a ~563px pane squeezed the graph to 223px): stack the
+     detail panel under the graph instead of beside it. */
   @media (max-width: 760px) {
     #app { flex-direction: column; }
-    #graph { flex: 1 1 60%; min-height: 0; }
-    #sidebar { width: 100%; flex: 0 0 40%; border-left: 0; border-top: 1px solid var(--border); }
+    #graph { flex: 1 1 62%; min-height: 0; }
+    #sidebar { width: 100%; flex: 0 0 38%; border-left: 0; border-top: 1px solid var(--border); }
+    #hud-top { right: 12px; }
+    #hud-top .sep, #hud-top .wide { display: none; }
   }
-  #topbar { position: absolute; top: 12px; left: 12px; z-index: 10; display: flex; gap: 8px; align-items: center; }
-  select, button {
-    background: var(--panel); color: var(--text); border: 1px solid var(--border);
-    border-radius: 6px; padding: 6px 10px; font-size: 13px; cursor: pointer;
+
+  .hud {
+    display: flex; gap: 4px; align-items: center; padding: 5px;
+    background: var(--panel); backdrop-filter: blur(14px);
+    border: 1px solid var(--border); border-radius: 14px; box-shadow: var(--shadow);
   }
-  h2 { font-size: 14px; margin: 0 0 4px; color: var(--accent); }
-  h3 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); margin: 16px 0 6px; }
-  .kind { font-size: 11px; color: var(--muted); font-family: ui-monospace, monospace; }
-  .empty { color: var(--muted); font-size: 13px; margin-top: 40px; text-align: center; }
+  #hud-top { position: absolute; top: 18px; left: 18px; z-index: 10; flex-wrap: wrap; max-width: calc(100% - 36px); }
+  #hud-zoom { position: absolute; right: 22px; bottom: 22px; z-index: 10; }
+  .sep { width: 1px; align-self: stretch; margin: 4px 4px; background: var(--border); }
+  button, select {
+    background: transparent; color: var(--text); border: 0; border-radius: 9px;
+    padding: 7px 11px; font: 500 13px 'Space Grotesk', system-ui, sans-serif; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 6px; transition: background .15s, color .15s, box-shadow .15s;
+  }
+  button:hover, select:hover { background: color-mix(in srgb, var(--def) 16%, transparent); }
+  button[aria-pressed="true"] { color: var(--def); box-shadow: inset 0 0 0 1px var(--def); }
+  button:focus-visible, select:focus-visible { outline: 2px solid var(--def); outline-offset: 1px; }
+  #env-select { font-size: 12px; padding-right: 4px; }
+  #env-select option { background: var(--panel-solid); color: var(--text); }
+  .icon { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  #zoom-level { min-width: 56px; justify-content: center; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--muted); }
+  #theme-btn .sun { display: none; }
+  :root[data-theme="light"] #theme-btn .sun { display: block; }
+  :root[data-theme="light"] #theme-btn .moon { display: none; }
+
+  /* Legend + coverage, bottom-left. */
+  #legend { position: absolute; left: 22px; bottom: 22px; z-index: 10; max-width: min(420px, calc(100% - 200px)); font-size: 12px; }
+  #legend .row { display: flex; gap: 14px; flex-wrap: wrap; padding: 8px 12px; }
+  .key-dot { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); }
+  .key-dot i { width: 10px; height: 10px; border-radius: 3px; border: 1.5px solid currentColor; box-shadow: 0 0 8px currentColor; }
+  .key-dot.net { color: var(--net); } .key-dot.eks { color: var(--eks); } .key-dot.def { color: var(--def); }
+  .key-dot span { color: var(--text); }
+  #coverage { margin-top: 6px; padding: 0 4px; color: var(--warn); }
+  #coverage:empty { display: none; }
+
+  h2 { font: 700 20px 'Space Grotesk', sans-serif; margin: 0 0 4px; letter-spacing: -.01em; }
+  h3 { font: 600 12px 'Space Grotesk', sans-serif; color: var(--muted); margin: 18px 0 6px; }
+  .kind { font-size: 11px; color: var(--def); }
+  .empty { color: var(--muted); font-size: 13px; margin-top: 40px; text-align: center; line-height: 1.5; }
   table { width: 100%; border-collapse: collapse; font-size: 12px; }
-  td { padding: 4px 0; vertical-align: top; border-bottom: 1px solid var(--border); }
-  td.key { color: var(--muted); width: 40%; padding-right: 8px; font-family: ui-monospace, monospace; }
-  td.val { word-break: break-word; }
-  .unresolved { color: #f0883e; font-style: italic; }
-  .raw { font-family: ui-monospace, monospace; white-space: pre-wrap; font-size: 11px; color: var(--muted); }
-  .badge { display: inline-block; font-size: 10px; padding: 1px 6px; border-radius: 10px; margin-left: 6px; }
-  .badge.vpc { background: rgba(63,185,80,.15); color: var(--vpc); }
-  .badge.eks { background: rgba(210,168,255,.15); color: var(--eks); }
-  .badge.net { background: rgba(240,136,62,.15); color: var(--net); }
-  #coverage { position: absolute; bottom: 12px; left: 12px; z-index: 10; font-size: 11px; color: var(--muted); max-width: 400px; }
+  td { padding: 6px 0; vertical-align: top; border-bottom: 1px solid var(--border); }
+  td.key { color: var(--muted); width: 42%; padding-right: 8px; }
+  td.val { word-break: break-word; font-family: 'JetBrains Mono', monospace; }
+  .unresolved { color: var(--warn); font-style: italic; }
+  .raw { white-space: pre-wrap; font-size: 11px; color: var(--muted); }
+  .badge { display: inline-block; font: 600 10px 'Space Grotesk', sans-serif; padding: 2px 8px; border-radius: 10px; margin-left: 8px; vertical-align: middle; border: 1px solid currentColor; }
+  .badge.net { color: var(--net); } .badge.eks { color: var(--eks); } .badge.default { color: var(--def); }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
 </head>
 <body>
 <div id="app">
   <div id="graph">
-    <div id="topbar">
-      <select id="env-select"></select>
-      <button id="fit-btn">Fit</button>
-      <button id="expand-all-btn">Expand all</button>
-      <button id="collapse-all-btn">Collapse all</button>
+    <div id="cy"></div>
+    <div id="frame-b"></div>
+
+    <div id="hud-top" class="hud" role="toolbar" aria-label="Diagram controls">
+      <select id="env-select" aria-label="Environment"></select>
+      <span class="sep"></span>
+      <button id="expand-all-btn" title="Expand all groups">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg><span class="wide">Expand</span>
+      </button>
+      <button id="collapse-all-btn" title="Collapse all groups">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg><span class="wide">Collapse</span>
+      </button>
+      <span class="sep"></span>
+      <button id="flow-btn" aria-pressed="true" title="Animate traffic along the links">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M3 12h4M10 12h4M17 12h4"/></svg><span class="wide">Flow</span>
+      </button>
+      <button id="theme-btn" title="Switch light / dark theme" aria-label="Switch light or dark theme">
+        <svg class="icon moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg>
+        <svg class="icon sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <span class="wide" id="theme-label">Dark</span>
+      </button>
     </div>
-    <div id="coverage"></div>
+
+    <div id="legend">
+      <div class="hud"><div class="row" id="legend-row"></div></div>
+      <div id="coverage"></div>
+    </div>
+
+    <div id="hud-zoom" class="hud" role="toolbar" aria-label="Zoom">
+      <button id="zoom-out" title="Zoom out (−)" aria-label="Zoom out"><svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14"/></svg></button>
+      <button id="zoom-level" title="Reset to 100%" aria-label="Reset zoom">100%</button>
+      <button id="zoom-in" title="Zoom in (+)" aria-label="Zoom in"><svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+      <span class="sep"></span>
+      <button id="fit-btn" title="Fit to screen (F)" aria-label="Fit to screen"><svg class="icon" viewBox="0 0 24 24"><path d="M4 9V5a1 1 0 0 1 1-1h4M20 9V5a1 1 0 0 0-1-1h-4M4 15v4a1 1 0 0 0 1 1h4M20 15v4a1 1 0 0 1-1 1h-4"/></svg></button>
+    </div>
   </div>
   <div id="sidebar">
-    <div class="empty">Click a node to see its details.</div>
+    <div class="empty">Click a resource to see its configuration.<br />Scroll to zoom, drag to pan.</div>
   </div>
 </div>
 <script type="module" src="app.js"></script>

@@ -1,8 +1,7 @@
-// infra-diagram viewer — T7 (Cytoscape.js + expand-collapse, environment
-// selector, attribute drill-down panel). Static page, no build step: reads
-// a pre-compiled compound graph from data/<environment>.json (see
-// scripts/build-sample-data.mjs for how that file is produced from
-// Layer A/A2/B/C).
+// infra-diagram viewer — Cytoscape.js + expand-collapse, environment selector,
+// attribute drill-down panel, light/dark theme, zoom HUD, animated link flow.
+// Static page, no build step: reads a pre-compiled compound graph from
+// data/<environment>.json (see scripts/build-sample-data.mjs).
 //
 // Known limitation: the environment list below is hardcoded because this
 // is a static site with no directory listing — add an entry here whenever
@@ -20,9 +19,18 @@ const KIND_CLASS = (kind) => {
   return 'default';
 };
 
+const REDUCED_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const MIN_ZOOM = 0.15;
+const MAX_ZOOM = 3;
+const ZOOM_STEP = 1.25;
+const FLOW_EDGE_LIMIT = 400; // per-frame style writes get expensive past this
+
 const envSelect = document.getElementById('env-select');
 const sidebar = document.getElementById('sidebar');
 const coverageEl = document.getElementById('coverage');
+const zoomLevelEl = document.getElementById('zoom-level');
+const flowBtn = document.getElementById('flow-btn');
+const themeLabel = document.getElementById('theme-label');
 
 for (const env of ENVIRONMENTS) {
   const opt = document.createElement('option');
@@ -32,18 +40,88 @@ for (const env of ENVIRONMENTS) {
 }
 
 let cy = null;
+let flowOn = !REDUCED_MOTION;
+
+/* ------------------------------------------------------------------ theme */
+
+const cssVar = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+const currentTheme = () => document.documentElement.getAttribute('data-theme');
+
+function syncThemeLabel() {
+  themeLabel.textContent = currentTheme() === 'light' ? 'Light' : 'Dark';
+}
+
+function toggleTheme() {
+  const next = currentTheme() === 'light' ? 'dark' : 'light';
+  document.documentElement.setAttribute('data-theme', next);
+  try { localStorage.setItem('infra-theme', next); } catch { /* storage blocked: choice just isn't remembered */ }
+  syncThemeLabel();
+  if (cy) cy.style(buildStyle());
+}
+
+/* ----------------------------------------------------------------- styles */
+
+function buildStyle() {
+  const colors = { net: cssVar('--net'), eks: cssVar('--eks'), default: cssVar('--def') };
+  const text = cssVar('--text');
+  const muted = cssVar('--muted');
+  const nodeBg = cssVar('--node');
+  const bg = cssVar('--bg');
+  const glow = Number(cssVar('--glow')) || 0.3;
+  const hit = cssVar('--hit');
+  const edgeAlt = cssVar('--edge-alt');
+
+  const style = [
+    { selector: 'node', style: {
+      'label': 'data(label)', 'font-size': 11, 'font-family': 'JetBrains Mono, ui-monospace, monospace',
+      'color': text, 'text-wrap': 'wrap', 'text-valign': 'center', 'text-halign': 'center',
+      'shape': 'round-rectangle', 'width': 'label', 'height': 'label', 'padding': '12px',
+      'background-color': nodeBg, 'border-width': 1.5, 'border-color': colors.default,
+      'underlay-color': colors.default, 'underlay-opacity': glow, 'underlay-padding': 7, 'underlay-shape': 'round-rectangle',
+      'transition-property': 'opacity, border-width, underlay-opacity', 'transition-duration': '0.18s',
+    }},
+    { selector: ':parent', style: {
+      'background-opacity': 0.07, 'background-color': colors.default, 'border-width': 1.5, 'border-style': 'dashed',
+      'text-valign': 'top', 'text-halign': 'center', 'font-weight': 'bold', 'font-size': 12, 'padding': '22px',
+      'underlay-opacity': glow * 0.35, 'text-margin-y': -4,
+    }},
+    ...Object.entries(colors).filter(([k]) => k !== 'default').flatMap(([cls, c]) => [
+      { selector: `node[class = "${cls}"]`, style: { 'border-color': c, 'underlay-color': c } },
+      { selector: `:parent[class = "${cls}"]`, style: { 'background-color': c, 'border-color': c, 'underlay-color': c } },
+    ]),
+    { selector: 'edge', style: {
+      'width': 2, 'curve-style': 'bezier', 'line-color': colors.default, 'target-arrow-color': colors.default,
+      'target-arrow-shape': 'triangle', 'arrow-scale': 1.1,
+      'line-style': 'dashed', 'line-dash-pattern': [8, 6],
+      'underlay-color': colors.default, 'underlay-opacity': glow * 0.7, 'underlay-padding': 3,
+      'label': 'data(label)', 'font-size': 10, 'font-family': 'JetBrains Mono, ui-monospace, monospace', 'color': muted,
+      'text-background-color': bg, 'text-background-opacity': 0.85, 'text-background-padding': '3px', 'text-background-shape': 'round-rectangle',
+      'text-rotation': 'autorotate',
+      'transition-property': 'opacity', 'transition-duration': '0.18s',
+    }},
+    // cross-repo links get their own hot color: they are the whole point of the tool
+    { selector: 'edge[crossRepo]', style: { 'line-color': edgeAlt, 'target-arrow-color': edgeAlt, 'underlay-color': edgeAlt } },
+    { selector: 'node:selected', style: { 'border-width': 3, 'border-color': hit, 'underlay-opacity': Math.min(glow * 2, 0.6), 'underlay-padding': 10 } },
+    { selector: '.dim', style: { 'opacity': 0.16 } },
+    { selector: 'edge.hot', style: { 'width': 3.2, 'underlay-opacity': Math.min(glow * 1.6, 0.6) } },
+  ];
+  return style;
+}
+
+/* ------------------------------------------------------------------- data */
 
 async function loadEnvironment(env) {
   // `no-cache` = always revalidate (cheap, ETag-based): GitHub Pages serves
   // max-age=600, so without this a fresh deploy's data can look stale for 10 min.
   const res = await fetch(`data/${env}.json`, { cache: 'no-cache' });
   if (!res.ok) {
-    sidebar.innerHTML = `<div class="empty">Could not load data/${env}.json (${res.status})</div>`;
+    sidebar.innerHTML = `<div class="empty">Could not load data/${escapeHtml(env)}.json (HTTP ${res.status}).<br />Check that the file exists in viewer/data/.</div>`;
     return;
   }
   const graph = await res.json();
   renderGraph(graph);
   renderCoverage(graph);
+  renderLegend(graph);
 }
 
 function entityName(entity) {
@@ -69,8 +147,20 @@ function renderCoverage(graph) {
   coverageEl.textContent = parts.length ? `⚠ ${parts.join(' · ')}` : '';
 }
 
+function renderLegend(graph) {
+  const counts = { net: 0, eks: 0, default: 0 };
+  for (const e of graph.entities) counts[KIND_CLASS(e.kind)]++;
+  const names = { net: 'Network', eks: 'Kubernetes', default: 'Other' };
+  const cls = { net: 'net', eks: 'eks', default: 'def' };
+  document.getElementById('legend-row').innerHTML = Object.keys(counts)
+    .filter((k) => counts[k] > 0)
+    .map((k) => `<span class="key-dot ${cls[k]}"><i></i><span>${names[k]} ${counts[k]}</span></span>`)
+    .join('');
+}
+
 function renderGraph(graph) {
   const elements = [];
+  const byId = new Map(graph.entities.map((e) => [e.id, e]));
 
   for (const entity of graph.entities) {
     elements.push({
@@ -88,87 +178,156 @@ function renderGraph(graph) {
     });
   }
 
-  for (const entity of graph.entities) {
-    if (entity.parent) {
-      elements.find((e) => e.data.id === entity.id).data.parent = entity.parent;
-    }
-  }
-
   // Containment already says "child belongs to parent"; an edge from a child
   // to its own parent (e.g. subnet -> vpc, addon -> cluster) would just draw a
   // noisy loop on top of it, so skip those.
-  const parentOf = new Map(graph.entities.map((e) => [e.id, e.parent]));
   for (const [i, edge] of graph.edges.entries()) {
-    if (parentOf.get(edge.from) === edge.to || parentOf.get(edge.to) === edge.from) continue;
-    elements.push({ data: { id: `e${i}`, source: edge.from, target: edge.to, label: edge.label ?? '' } });
+    const from = byId.get(edge.from);
+    const to = byId.get(edge.to);
+    if (from?.parent === edge.to || to?.parent === edge.from) continue;
+    const data = { id: `e${i}`, source: edge.from, target: edge.to, label: edge.label ?? '' };
+    if (from && to && from.repoId !== to.repoId) data.crossRepo = true;
+    elements.push({ data });
   }
 
-  if (cy) cy.destroy();
+  if (cy) { cy.destroy(); cy = null; }
   cy = cytoscape({
-    container: document.getElementById('graph'),
+    container: document.getElementById('cy'),
     elements,
-    style: [
-      { selector: 'node', style: {
-        'label': 'data(label)', 'font-size': 10, 'color': '#c9d1d9',
-        'text-wrap': 'wrap', 'text-max-width': 110,
-        'background-color': '#21262d', 'border-width': 1, 'border-color': '#30363d',
-        'shape': 'round-rectangle', 'padding': '8px', 'text-valign': 'center',
-      }},
-      { selector: 'node[class = "net"]', style: { 'border-color': '#f0883e', 'background-color': '#2b1f14' } },
-      { selector: 'node[class = "eks"]', style: { 'border-color': '#d2a8ff', 'background-color': '#241a2e' } },
-      { selector: ':parent', style: {
-        'background-opacity': 0.08, 'border-width': 1.5, 'text-valign': 'top', 'font-weight': 'bold',
-      }},
-      { selector: 'edge', style: {
-        'width': 1.5, 'line-color': '#30363d', 'target-arrow-color': '#30363d',
-        'target-arrow-shape': 'triangle', 'curve-style': 'bezier',
-        'label': 'data(label)', 'font-size': 9, 'color': '#8b949e',
-      }},
-      { selector: 'node:selected', style: { 'border-color': '#58a6ff', 'border-width': 2 } },
-    ],
-    layout: { name: 'fcose', nodeDimensionsIncludeLabels: true, animate: false },
+    style: buildStyle(),
+    minZoom: MIN_ZOOM,
+    maxZoom: MAX_ZOOM,
+    wheelSensitivity: 0.25,
+    layout: { name: 'fcose', nodeDimensionsIncludeLabels: true, animate: false, padding: 60, nodeRepulsion: () => 9000, idealEdgeLength: () => 110 },
   });
 
-  cy.on('tap', 'node', (evt) => renderDetails(evt.target.data()));
-  cy.on('tap', (evt) => { if (evt.target === cy) sidebar.innerHTML = '<div class="empty">Click a node to see its details.</div>'; });
+  cy.on('tap', 'node', (evt) => { renderDetails(evt.target.data()); focusNeighborhood(evt.target); });
+  cy.on('tap', (evt) => {
+    if (evt.target !== cy) return;
+    clearFocus();
+    sidebar.innerHTML = '<div class="empty">Click a resource to see its configuration.<br />Scroll to zoom, drag to pan.</div>';
+  });
+  cy.on('zoom', updateZoomLabel);
 
   if (cy.expandCollapse) {
     cy.expandCollapse({ layoutBy: { name: 'fcose', animate: false }, fisheye: false, undoable: false });
   }
+
+  updateZoomLabel();
+  playEntrance();
 }
 
+/** One orchestrated moment: nodes light up outermost-first, then links. */
+function playEntrance() {
+  if (REDUCED_MOTION) return;
+  cy.elements().style('opacity', 0);
+  const nodes = cy.nodes().sort((a, b) => a.ancestors().length - b.ancestors().length);
+  nodes.forEach((n, i) => n.animate({ style: { opacity: 1 } }, { duration: 420, queue: false, delay: i * 55 }));
+  const t0 = nodes.length * 55 + 150;
+  cy.edges().forEach((e, i) => e.animate({ style: { opacity: 1 } }, { duration: 500, queue: false, delay: t0 + i * 40 }));
+  // drop the inline overrides afterwards so theme/focus styles apply cleanly
+  setTimeout(() => { if (cy) cy.elements().removeStyle('opacity'); }, t0 + cy.edges().length * 40 + 700);
+}
+
+function focusNeighborhood(node) {
+  cy.batch(() => {
+    cy.elements().addClass('dim').removeClass('hot');
+    const hood = node.closedNeighborhood().union(node.ancestors()).union(node.descendants());
+    hood.removeClass('dim');
+    node.connectedEdges().addClass('hot');
+  });
+}
+
+function clearFocus() {
+  cy?.batch(() => cy.elements().removeClass('dim').removeClass('hot'));
+}
+
+/* ------------------------------------------------------------ details panel */
+
 function renderDetails(data) {
-  const badge = data.class !== 'default' ? `<span class="badge ${data.class}">${data.class}</span>` : '';
-  let html = `<h2>${data.name}${badge}</h2><div class="kind">${data.kind}</div>`;
+  const badge = `<span class="badge ${data.class}">${data.class === 'default' ? 'other' : data.class}</span>`;
+  let html = `<h2>${escapeHtml(data.name)}${badge}</h2><div class="kind">${escapeHtml(data.kind)}</div>`;
   html += `<table>
-    <tr><td class="key">repo</td><td class="val">${data.repoId}</td></tr>
-    <tr><td class="key">source address</td><td class="val">${data.sourceAddress}</td></tr>
-    <tr><td class="key">parent</td><td class="val">${data.parent ?? '—'}</td></tr>
+    <tr><td class="key">repo</td><td class="val">${escapeHtml(data.repoId)}</td></tr>
+    <tr><td class="key">source address</td><td class="val">${escapeHtml(data.sourceAddress)}</td></tr>
+    <tr><td class="key">parent</td><td class="val">${escapeHtml(data.parent ?? '—')}</td></tr>
   </table>`;
 
   if (data.details) {
     html += '<h3>Configuration (from source .tf)</h3><table>';
     for (const [key, result] of Object.entries(data.details)) {
       const val = result.resolved
-        ? `<span class="val">${JSON.stringify(result.value)}</span>`
+        ? `<span class="val">${escapeHtml(JSON.stringify(result.value))}</span>`
         : `<span class="unresolved">unresolved</span><div class="raw">${escapeHtml(result.raw)}</div>`;
-      html += `<tr><td class="key">${key}</td><td class="val">${val}</td></tr>`;
+      html += `<tr><td class="key">${escapeHtml(key)}</td><td class="val">${val}</td></tr>`;
     }
     html += '</table>';
   } else {
-    html += '<h3>Configuration</h3><div class="empty" style="margin-top:4px">No attribute details extracted for this entity.</div>';
+    html += '<h3>Configuration</h3><div class="empty" style="margin-top:4px">No attribute details extracted for this resource.</div>';
   }
 
   sidebar.innerHTML = html;
 }
 
 function escapeHtml(s) {
-  return s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  return String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
 
-document.getElementById('fit-btn').addEventListener('click', () => cy?.fit(undefined, 40));
+/* ------------------------------------------------------------------- zoom */
+
+function updateZoomLabel() {
+  if (cy) zoomLevelEl.textContent = `${Math.round(cy.zoom() * 100)}%`;
+}
+
+function zoomBy(factor) {
+  if (!cy) return;
+  const level = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, cy.zoom() * factor));
+  cy.animate({ zoom: { level, renderedPosition: { x: cy.width() / 2, y: cy.height() / 2 } } }, { duration: REDUCED_MOTION ? 0 : 160 });
+}
+
+function fit() { cy?.animate({ fit: { eles: cy.elements(), padding: 60 } }, { duration: REDUCED_MOTION ? 0 : 260 }); }
+
+/* ------------------------------------------------------------ link flow */
+
+let lastTick = 0;
+let dashOffset = 0;
+function flowTick(ts) {
+  requestAnimationFrame(flowTick);
+  if (!flowOn || !cy || ts - lastTick < 33) return; // ~30 fps is plenty for marching dashes
+  lastTick = ts;
+  const edges = cy.edges();
+  if (edges.length > FLOW_EDGE_LIMIT) return;
+  dashOffset = (dashOffset - 0.8) % 1000;
+  edges.style('line-dash-offset', dashOffset);
+}
+
+function setFlow(on) {
+  flowOn = on;
+  flowBtn.setAttribute('aria-pressed', String(on));
+  if (!on) cy?.edges().style('line-dash-offset', 0);
+}
+
+/* --------------------------------------------------------------- wiring */
+
+document.getElementById('fit-btn').addEventListener('click', fit);
+document.getElementById('zoom-in').addEventListener('click', () => zoomBy(ZOOM_STEP));
+document.getElementById('zoom-out').addEventListener('click', () => zoomBy(1 / ZOOM_STEP));
+zoomLevelEl.addEventListener('click', () => cy?.animate({ zoom: { level: 1, renderedPosition: { x: cy.width() / 2, y: cy.height() / 2 } } }, { duration: REDUCED_MOTION ? 0 : 160 }));
 document.getElementById('expand-all-btn').addEventListener('click', () => cy?.expandCollapse('get').expandAll());
 document.getElementById('collapse-all-btn').addEventListener('click', () => cy?.expandCollapse('get').collapseAll());
+document.getElementById('theme-btn').addEventListener('click', toggleTheme);
+flowBtn.addEventListener('click', () => setFlow(!flowOn));
 envSelect.addEventListener('change', () => loadEnvironment(envSelect.value));
 
+document.addEventListener('keydown', (e) => {
+  if (e.target instanceof HTMLSelectElement || e.metaKey || e.ctrlKey || e.altKey) return;
+  if (e.key === '+' || e.key === '=') zoomBy(ZOOM_STEP);
+  else if (e.key === '-' || e.key === '_') zoomBy(1 / ZOOM_STEP);
+  else if (e.key === 'f' || e.key === 'F') fit();
+  else if (e.key === '0') cy?.zoom({ level: 1, renderedPosition: { x: cy.width() / 2, y: cy.height() / 2 } });
+});
+
+flowBtn.setAttribute('aria-pressed', String(flowOn));
+syncThemeLabel();
+requestAnimationFrame(flowTick);
 loadEnvironment(ENVIRONMENTS[0]);
