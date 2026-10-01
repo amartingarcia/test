@@ -161,9 +161,54 @@ offline`) narrows down:
   offline" hard constraint T1–T4 have held to throughout. Only viable if
   that constraint is deliberately relaxed for this one layer.
 
-No option was implemented pending a decision — this is exactly the kind of
-expensive-to-redo, ambiguous architectural call SDD says to stop and ask
-about rather than guess.
+### T5 resolution: Layer A2 (attribute extraction), Option A implemented
+
+Decision confirmed: parse HCL directly + resolve `var.X` against the
+account's `.tfvars` (already available from Layer A). Built as four
+composable, independently-tested primitives rather than one big function:
+
+- `lib/parse/parse-hcl-blocks.mjs` — raw HCL text -> top-level `{blockType,
+  labels, body}` blocks. Purpose-built brace-depth scanner (not a general
+  HCL parser): correctly ignores braces inside string literals (incl.
+  escaped `\"`/`\\`) and `#`/`//` comments. Known limitation: does not
+  handle heredoc strings (`<<EOT`) — flagged in the docstring, not silently
+  wrong.
+- `lib/parse/parse-hcl-attributes.mjs` — a block body -> top-level `key =
+  value` pairs as **raw, unparsed text** (scalars, full nested
+  objects/lists kept verbatim). Skips nested blocks (`lifecycle { ... }`,
+  labeled sub-blocks) entirely rather than misreading them as attributes.
+- `lib/parse/resolve-hcl-value.mjs` — resolves one raw value into a real JS
+  value when it's simple enough: quoted string/number/bool/null literals,
+  and `var.NAME` looked up in a resolved vars map. Everything else (string
+  interpolation, `local.x`, nested objects/lists) comes back
+  `{resolved: false, raw}` — **never guessed**.
+- `lib/parse/parse-tfvars.mjs` — `.tfvars` content -> resolved `{name:
+  value}` map, built on the same two primitives above (tfvars syntax is a
+  subset of attribute assignment). A list/map tfvars value is omitted
+  (not guessed) from the map.
+- `lib/extract/find-resource-block.mjs` + `lib/extract/extract-resource-details.mjs`
+  — Layer A2 entrypoint: given a repo's `.tf` files + a target `{blockType,
+  labels}` + resolved vars, finds the block and returns every attribute (or
+  just `detailFields` the manifest asks for) resolved or honestly flagged
+  unresolved.
+
+33 new tests, strict TDD throughout. 81/83 total (the 2 failures remain the
+pre-existing terraform-binary-dependent Layer A tests).
+
+**Architecture clarification that falls out of this** (not yet
+implemented, affects T6/T7): EKS "node groups" and "addons" are not nested
+attributes inside the `aws_eks_cluster` resource in real Terraform — they
+are **separate resources** (`aws_eks_node_group.*`, `aws_eks_addon.*`)
+connected to the cluster via a real `terraform graph` dependency edge
+(e.g. an addon references `cluster_name = aws_eks_cluster.this.name`).
+So "drill into EKS -> see node groups/addons" is Layer C's job (compose
+child entities whose edges point at the cluster, via `boundary` + the
+already-extracted graph edges), not Layer A2's — A2 only needs to resolve
+each *individual* resource's own scalar fields (the cluster's `version`,
+each node group's `instance_types`/`min_size`, each addon's
+`addon_version`). Layer B manifest rules for `aws_eks_node_group` /
+`aws_eks_addon` should set `boundary` to the cluster entity's id so Layer C
+can nest them under it.
 - [ ] T6 — Layer C: compiler merging repo A + repo B extracted graphs per
       environment via manifests into one compound-node JSON graph.
 - [ ] T7 — Viewer: Cytoscape.js + expand-collapse, environment selector,
@@ -241,5 +286,7 @@ This adds a new layer ahead of Layer A:
    extractor as "the Terraform case" of a now-pluggable extractor registry.
 
 ## Next step
-T4 — Layer B: manifest schema (JSON Schema) + authored manifest for repo A
-(resource/module address pattern -> entity).
+T6 — Layer C: compiler merging repo A + repo B extracted graphs per
+environment via manifests into one compound-node JSON graph, applying the
+boundary-nesting rule noted above (node groups/addons nest under their
+cluster via `boundary` + graph edges, not via attribute nesting).
