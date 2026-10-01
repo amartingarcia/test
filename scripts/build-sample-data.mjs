@@ -34,7 +34,7 @@ for (const rule of networkManifest.rules) {
 const privateIdx = networkManifest.rules.findIndex((r) => r.entity.kind === 'aws.subnet.private');
 networkManifest.rules.splice(privateIdx + 1, 0, {
   match: { type: 'aws_subnet', nameRegex: '^data' },
-  entity: { kind: 'aws.subnet.data', idFrom: 'address', boundary: 'aws.vpc' },
+  entity: { kind: 'aws.subnet.isolated', idFrom: 'address', boundary: 'aws.vpc' },
 });
 
 const infraManifest = {

@@ -293,7 +293,7 @@
       "kind": "oci.oke.cluster",
       "repoId": "oci",
       "sourceAddress": "oci_containerengine_cluster.oke",
-      "parent": "oci:oci.subnet:api",
+      "parent": "oci:oci.vcn:main",
       "details": {
         "compartment_id": {
           "resolved": false,
@@ -577,10 +577,6 @@
           "resolved": true,
           "value": "A"
         },
-        "compartment_id": {
-          "resolved": false,
-          "raw": "oci_identity_compartment.platform.id"
-        },
         "items.domain": {
           "resolved": true,
           "value": "app.sample.example.com"
@@ -731,7 +727,8 @@
     },
     {
       "from": "oci:oci.oke.cluster:oke",
-      "to": "oci:oci.subnet:api"
+      "to": "oci:oci.subnet:api",
+      "label": "API endpoint"
     },
     {
       "from": "oci:oci.oke.nodepool:general",
@@ -743,7 +740,8 @@
     },
     {
       "from": "oci:oci.oke.nodepool:general",
-      "to": "oci:oci.subnet:workers"
+      "to": "oci:oci.subnet:workers",
+      "label": "worker nodes"
     },
     {
       "from": "oci:oci.instance:bastion",
@@ -788,7 +786,7 @@
     {
       "from": "oci:oci.policy:oke",
       "to": "oci:oci.dynamic_group:workers",
-      "label": "applies to"
+      "label": "grants to"
     },
     {
       "from": "oci:oci.dns.zone:main",
@@ -797,10 +795,6 @@
     {
       "from": "oci:oci.dns.record:app",
       "to": "oci:oci.dns.zone:main"
-    },
-    {
-      "from": "oci:oci.dns.record:app",
-      "to": "oci:oci.compartment:platform"
     },
     {
       "from": "oci:oci.dns.record:app",
@@ -816,6 +810,7 @@
   },
   "unresolvedCrossRepoLinks": [],
   "unresolvedPlacements": [],
+  "findings": [],
   "legend": {
     "default": "Compartments",
     "net": "Network",

@@ -455,7 +455,7 @@
           "resolved": true,
           "value": 3
         },
-        "enable_auto_scaling": {
+        "auto_scaling_enabled": {
           "resolved": true,
           "value": true
         },
@@ -494,6 +494,10 @@
           "resolved": true,
           "value": "Spot"
         },
+        "eviction_policy": {
+          "resolved": true,
+          "value": "Delete"
+        },
         "min_count": {
           "resolved": true,
           "value": 0
@@ -502,7 +506,7 @@
           "resolved": true,
           "value": 10
         },
-        "enable_auto_scaling": {
+        "auto_scaling_enabled": {
           "resolved": true,
           "value": true
         },
@@ -583,6 +587,14 @@
         "delegated_subnet_id": {
           "resolved": false,
           "raw": "azurerm_subnet.spoke_data.id"
+        },
+        "administrator_login": {
+          "resolved": true,
+          "value": "pgadmin"
+        },
+        "administrator_password": {
+          "resolved": false,
+          "raw": "var.pg_admin_password"
         }
       }
     },
@@ -750,6 +762,38 @@
         "network_interface_ids": {
           "resolved": false,
           "raw": "[azurerm_network_interface.bastion.id]"
+        },
+        "admin_ssh_key.username": {
+          "resolved": true,
+          "value": "ops"
+        },
+        "admin_ssh_key.public_key": {
+          "resolved": false,
+          "raw": "var.bastion_ssh_public_key"
+        },
+        "os_disk.caching": {
+          "resolved": true,
+          "value": "ReadWrite"
+        },
+        "os_disk.storage_account_type": {
+          "resolved": true,
+          "value": "Standard_LRS"
+        },
+        "source_image_reference.publisher": {
+          "resolved": true,
+          "value": "Canonical"
+        },
+        "source_image_reference.offer": {
+          "resolved": true,
+          "value": "ubuntu-24_04-lts"
+        },
+        "source_image_reference.sku": {
+          "resolved": true,
+          "value": "server"
+        },
+        "source_image_reference.version": {
+          "resolved": true,
+          "value": "latest"
         }
       }
     },
@@ -880,7 +924,7 @@
     {
       "from": "azure:azure.aks.cluster:main",
       "to": "azure:azure.identity:aks",
-      "label": "runs as"
+      "label": "control-plane identity"
     },
     {
       "from": "azure:azure.aks.nodepool:user",
@@ -965,6 +1009,7 @@
   },
   "unresolvedCrossRepoLinks": [],
   "unresolvedPlacements": [],
+  "findings": [],
   "legend": {
     "default": "Resource groups",
     "net": "Network",

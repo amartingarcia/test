@@ -23,6 +23,7 @@ import { inferPlacementFromReferences, referencesOf } from '../lib/compile/infer
 import { extractResourceDetails } from '../lib/extract/extract-resource-details.mjs';
 import { validateManifest } from '../lib/manifest/validate-manifest.mjs';
 import { parseTfvars } from '../lib/parse/parse-tfvars.mjs';
+import { deriveSubnetTiers } from '../lib/compile/derive-subnet-tier.mjs';
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const catalog = await loadCatalog(path.join(root, 'catalog', 'providers'));
@@ -47,9 +48,8 @@ const platformManifest = {
   rules: [
     ent('aws_vpc', 'aws.vpc'),
     ent('aws_vpc_peering_connection', 'aws.vpc_peering'),
-    ent('aws_subnet', 'aws.subnet.public', {}, 'public'),
-    ent('aws_subnet', 'aws.subnet.private', {}, 'private'),
-    ent('aws_subnet', 'aws.subnet.data', {}, 'data'),
+    // tier (public / private / isolated) is derived from the route table, see refineKind below
+    ent('aws_subnet', 'aws.subnet'),
     ent('aws_internet_gateway', 'aws.internet_gateway'),
     ent('aws_nat_gateway', 'aws.nat_gateway'),
     ent('aws_security_group', 'aws.security_group'),
@@ -77,6 +77,9 @@ const platformManifest = {
     ignore('aws_iam_instance_profile'),
     ignore('aws_iam_role_policy_attachment'),
     ignore('aws_eip'),
+    ignore('aws_route_table'),
+    ignore('aws_route'),
+    ignore('aws_route_table_association'),
   ],
 };
 
@@ -143,10 +146,17 @@ function buildEnvironment(environment, vars) {
     { repoId: 'platform', manifest: platformManifest, nodes: platformParsed.nodes, edges: platformParsed.edges },
     { repoId: 'gitops', manifest: gitopsManifest, nodes: gitopsParsed.nodes, edges: gitopsParsed.edges },
   ];
+  const tiers = deriveSubnetTiers({ files: platformFiles, vars });
+  const TIER_KIND = { public: 'aws.subnet.public', private: 'aws.subnet.private', isolated: 'aws.subnet.isolated' };
   const options = {
     environment,
     repoGraphs,
     catalog,
+    refineKind: ({ repoId, kind, sourceAddress }) => {
+      if (repoId !== 'platform' || kind !== 'aws.subnet') return null;
+      const t = tiers.get(sourceAddress);
+      return t?.tier ? { kind: TIER_KIND[t.tier] } : { unresolved: t?.reason ?? 'subnet tier could not be derived' };
+    },
     inferPlacement: (entities) => inferPlacementFromReferences({ entities, files: filesByRepo, vars, catalog }),
     edgeLabels: EDGE_LABELS,
   };

@@ -23,8 +23,8 @@
       "parent": "network:aws.vpc:main"
     },
     {
-      "id": "network:aws.subnet.data:aws_subnet.data",
-      "kind": "aws.subnet.data",
+      "id": "network:aws.subnet.isolated:aws_subnet.data",
+      "kind": "aws.subnet.isolated",
       "repoId": "network",
       "sourceAddress": "aws_subnet.data",
       "parent": "network:aws.vpc:main"
@@ -211,7 +211,7 @@
       "kind": "aws.rds.instance",
       "repoId": "infra",
       "sourceAddress": "aws_db_instance.orders",
-      "parent": "network:aws.subnet.data:aws_subnet.data",
+      "parent": "network:aws.subnet.isolated:aws_subnet.data",
       "details": {
         "identifier": {
           "resolved": true,
@@ -252,7 +252,7 @@
       "kind": "aws.docdb.cluster",
       "repoId": "infra",
       "sourceAddress": "aws_docdb_cluster.reports",
-      "parent": "network:aws.subnet.data:aws_subnet.data",
+      "parent": "network:aws.subnet.isolated:aws_subnet.data",
       "details": {
         "cluster_identifier": {
           "resolved": true,
@@ -333,7 +333,7 @@
       "to": "network:aws.vpc:main"
     },
     {
-      "from": "network:aws.subnet.data:aws_subnet.data",
+      "from": "network:aws.subnet.isolated:aws_subnet.data",
       "to": "network:aws.vpc:main"
     },
     {
@@ -401,5 +401,6 @@
     }
   },
   "unresolvedCrossRepoLinks": [],
-  "unresolvedPlacements": []
+  "unresolvedPlacements": [],
+  "findings": []
 }

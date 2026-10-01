@@ -43,7 +43,7 @@
         ]
       }
     },
-    "aws.subnet.data": {
+    "aws.subnet.isolated": {
       "axis": "column",
       "order": 30,
       "glyph": "subnet",
@@ -106,7 +106,7 @@
       "glyph": "database",
       "placement": {
         "parentKinds": [
-          "aws.subnet.data",
+          "aws.subnet.isolated",
           "aws.subnet.private",
           "aws.vpc"
         ]
@@ -116,7 +116,7 @@
       "glyph": "document",
       "placement": {
         "parentKinds": [
-          "aws.subnet.data",
+          "aws.subnet.isolated",
           "aws.subnet.private",
           "aws.vpc"
         ]
@@ -153,7 +153,7 @@
       "glyph": "bolt",
       "placement": {
         "parentKinds": [
-          "aws.subnet.data",
+          "aws.subnet.isolated",
           "aws.subnet.private",
           "aws.vpc"
         ]
@@ -163,7 +163,7 @@
       "glyph": "search",
       "placement": {
         "parentKinds": [
-          "aws.subnet.data",
+          "aws.subnet.isolated",
           "aws.subnet.private",
           "aws.vpc"
         ]
@@ -834,7 +834,6 @@
       "glyph": "eks",
       "placement": {
         "parentKinds": [
-          "oci.subnet",
           "oci.vcn",
           "oci.compartment"
         ]

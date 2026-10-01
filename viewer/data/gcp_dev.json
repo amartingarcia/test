@@ -558,6 +558,7 @@
   },
   "unresolvedCrossRepoLinks": [],
   "unresolvedPlacements": [],
+  "findings": [],
   "legend": {
     "net": "Network",
     "eks": "GKE",

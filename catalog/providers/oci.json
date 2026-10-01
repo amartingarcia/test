@@ -93,7 +93,6 @@
       "glyph": "eks",
       "placement": {
         "parentKinds": [
-          "oci.subnet",
           "oci.vcn",
           "oci.compartment"
         ]

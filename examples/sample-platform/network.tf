@@ -83,3 +83,76 @@ resource "aws_security_group" "shared_default" {
   name   = "shared-default"
   vpc_id = aws_vpc.shared[0].id
 }
+
+# Routing: this is what makes a subnet public, private or isolated.
+
+resource "aws_route_table" "prod_public" {
+  vpc_id = aws_vpc.prod.id
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.prod.id
+  }
+}
+
+resource "aws_route_table" "prod_private" {
+  vpc_id = aws_vpc.prod.id
+}
+
+resource "aws_route" "prod_private_nat" {
+  route_table_id         = aws_route_table.prod_private.id
+  destination_cidr_block = "0.0.0.0/0"
+  nat_gateway_id         = aws_nat_gateway.prod.id
+}
+
+# no default route: reachable only from inside the VPC
+resource "aws_route_table" "prod_data" {
+  vpc_id = aws_vpc.prod.id
+}
+
+resource "aws_route_table_association" "prod_public" {
+  subnet_id      = aws_subnet.prod_public.id
+  route_table_id = aws_route_table.prod_public.id
+}
+
+resource "aws_route_table_association" "prod_private" {
+  subnet_id      = aws_subnet.prod_private.id
+  route_table_id = aws_route_table.prod_private.id
+}
+
+resource "aws_route_table_association" "prod_data" {
+  subnet_id      = aws_subnet.prod_data.id
+  route_table_id = aws_route_table.prod_data.id
+}
+
+resource "aws_route_table" "shared_public" {
+  count  = var.enable_shared_vpc ? 1 : 0
+  vpc_id = aws_vpc.shared[0].id
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.shared[0].id
+  }
+}
+
+resource "aws_route_table" "shared_private" {
+  count  = var.enable_shared_vpc ? 1 : 0
+  vpc_id = aws_vpc.shared[0].id
+}
+
+resource "aws_route" "shared_private_nat" {
+  count                  = var.enable_shared_vpc ? 1 : 0
+  route_table_id         = aws_route_table.shared_private[0].id
+  destination_cidr_block = "0.0.0.0/0"
+  nat_gateway_id         = aws_nat_gateway.shared[0].id
+}
+
+resource "aws_route_table_association" "shared_public" {
+  count          = var.enable_shared_vpc ? 1 : 0
+  subnet_id      = aws_subnet.shared_public[0].id
+  route_table_id = aws_route_table.shared_public[0].id
+}
+
+resource "aws_route_table_association" "shared_private" {
+  count          = var.enable_shared_vpc ? 1 : 0
+  subnet_id      = aws_subnet.shared_private[0].id
+  route_table_id = aws_route_table.shared_private[0].id
+}

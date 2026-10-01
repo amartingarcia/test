@@ -214,7 +214,6 @@ resource "oci_dns_rrset" "app" {
   zone_name_or_id = oci_dns_zone.main.id
   domain          = "app.sample.example.com"
   rtype           = "A"
-  compartment_id  = oci_identity_compartment.platform.id
   items {
     domain = "app.sample.example.com"
     rtype  = "A"

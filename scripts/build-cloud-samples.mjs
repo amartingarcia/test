@@ -38,10 +38,10 @@ const CLOUDS = {
       ['azurerm_user_assigned_identity', 'azure.identity'], ['azurerm_key_vault', 'azure.keyvault'], ['azurerm_storage_account', 'azure.storage'],
       ['azurerm_container_registry', 'azure.acr'],
       ['azurerm_virtual_network_peering', null], ['azurerm_subnet_network_security_group_association', null],
-      ['azurerm_nat_gateway_public_ip_association', null], ['azurerm_role_assignment', null], ['azurerm_network_interface', null],
+      ['azurerm_nat_gateway_public_ip_association', null], ['azurerm_subnet_nat_gateway_association', null], ['azurerm_role_assignment', null], ['azurerm_network_interface', null],
     ],
     edgeLabels: [
-      { fromKind: 'azure.aks.cluster', toKind: 'azure.identity', label: 'runs as' },
+      { fromKind: 'azure.aks.cluster', toKind: 'azure.identity', label: 'control-plane identity' },
       { fromKind: 'azure.private_endpoint', toKind: 'azure.keyvault', label: 'connects' },
       { fromKind: 'azure.dns.record', toKind: 'azure.public_ip', label: 'points to' },
     ],
@@ -77,7 +77,9 @@ const CLOUDS = {
       ['oci_identity_policy', 'oci.policy'], ['oci_dns_zone', 'oci.dns.zone'], ['oci_dns_rrset', 'oci.dns.record'],
     ],
     edgeLabels: [
-      { fromKind: 'oci.policy', toKind: 'oci.dynamic_group', label: 'applies to' },
+      { fromKind: 'oci.policy', toKind: 'oci.dynamic_group', label: 'grants to' },
+      { fromKind: 'oci.oke.cluster', toKind: 'oci.subnet', label: 'API endpoint' },
+      { fromKind: 'oci.oke.nodepool', toKind: 'oci.subnet', label: 'worker nodes' },
       { fromKind: 'oci.dns.record', toKind: 'oci.lb', label: 'points to' },
     ],
     legend: { default: 'Compartments', net: 'Network', eks: 'OKE', compute: 'VMs', data: 'Data services', edgeapp: 'LB & DNS', iam: 'IAM', cfg: 'Secrets & storage' },

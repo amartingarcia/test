@@ -435,7 +435,7 @@
       "kind": "aws.rds.instance",
       "repoId": "platform",
       "sourceAddress": "aws_db_instance.orders",
-      "parent": "platform:aws.subnet.data:prod_data",
+      "parent": "platform:aws.subnet.isolated:prod_data",
       "details": {
         "identifier": {
           "resolved": true,
@@ -480,7 +480,7 @@
       "kind": "aws.docdb.cluster",
       "repoId": "platform",
       "sourceAddress": "aws_docdb_cluster.reports",
-      "parent": "platform:aws.subnet.data:prod_data",
+      "parent": "platform:aws.subnet.isolated:prod_data",
       "details": {
         "count": {
           "resolved": true,
@@ -513,7 +513,7 @@
       "kind": "aws.elasticache.redis",
       "repoId": "platform",
       "sourceAddress": "aws_elasticache_replication_group.sessions",
-      "parent": "platform:aws.subnet.data:prod_data",
+      "parent": "platform:aws.subnet.isolated:prod_data",
       "details": {
         "replication_group_id": {
           "resolved": true,
@@ -550,7 +550,7 @@
       "kind": "aws.opensearch.domain",
       "repoId": "platform",
       "sourceAddress": "aws_opensearch_domain.logs",
-      "parent": "platform:aws.subnet.data:prod_data",
+      "parent": "platform:aws.subnet.isolated:prod_data",
       "details": {
         "count": {
           "resolved": true,
@@ -774,8 +774,8 @@
       }
     },
     {
-      "id": "platform:aws.subnet.data:prod_data",
-      "kind": "aws.subnet.data",
+      "id": "platform:aws.subnet.isolated:prod_data",
+      "kind": "aws.subnet.isolated",
       "repoId": "platform",
       "sourceAddress": "aws_subnet.prod_data",
       "parent": "platform:aws.vpc:prod",
@@ -1069,7 +1069,7 @@
     },
     {
       "from": "platform:aws.opensearch.domain:logs",
-      "to": "platform:aws.subnet.data:prod_data"
+      "to": "platform:aws.subnet.isolated:prod_data"
     },
     {
       "from": "platform:aws.vpc_peering:prod_shared",
@@ -1098,7 +1098,7 @@
       "to": "platform:aws.vpc:prod"
     },
     {
-      "from": "platform:aws.subnet.data:prod_data",
+      "from": "platform:aws.subnet.isolated:prod_data",
       "to": "platform:aws.vpc:prod"
     },
     {
@@ -1162,5 +1162,6 @@
     }
   },
   "unresolvedCrossRepoLinks": [],
-  "unresolvedPlacements": []
+  "unresolvedPlacements": [],
+  "findings": []
 }

@@ -97,6 +97,11 @@ resource "azurerm_nat_gateway_public_ip_association" "hub" {
   public_ip_address_id = azurerm_public_ip.nat.id
 }
 
+resource "azurerm_subnet_nat_gateway_association" "hub" {
+  subnet_id      = azurerm_subnet.hub_mgmt.id
+  nat_gateway_id = azurerm_nat_gateway.hub.id
+}
+
 resource "azurerm_public_ip" "ingress" {
   name                = "pip-ingress"
   location            = var.location
@@ -156,7 +161,7 @@ resource "azurerm_kubernetes_cluster_node_pool" "user" {
   vm_size               = var.user_vm_size
   min_count             = var.user_min
   max_count             = var.user_max
-  enable_auto_scaling   = true
+  auto_scaling_enabled  = true
   vnet_subnet_id        = azurerm_subnet.spoke_aks.id
 
   node_labels = {
@@ -169,9 +174,10 @@ resource "azurerm_kubernetes_cluster_node_pool" "batch" {
   kubernetes_cluster_id = azurerm_kubernetes_cluster.main.id
   vm_size               = "Standard_D8s_v5"
   priority              = "Spot"
+  eviction_policy       = "Delete"
   min_count             = 0
   max_count             = 10
-  enable_auto_scaling   = true
+  auto_scaling_enabled  = true
   vnet_subnet_id        = azurerm_subnet.spoke_aks.id
 
   node_labels = {
@@ -191,7 +197,8 @@ resource "azurerm_container_registry" "acr" {
 resource "azurerm_role_assignment" "acr_pull" {
   scope                = azurerm_container_registry.acr.id
   role_definition_name = "AcrPull"
-  principal_id         = azurerm_user_assigned_identity.aks.principal_id
+  # image pulls use the kubelet identity, not the control-plane identity
+  principal_id         = azurerm_kubernetes_cluster.main.kubelet_identity[0].object_id
 }
 
 resource "azurerm_postgresql_flexible_server" "pg" {
@@ -202,6 +209,8 @@ resource "azurerm_postgresql_flexible_server" "pg" {
   sku_name               = var.pg_sku
   storage_mb             = var.pg_storage_mb
   delegated_subnet_id    = azurerm_subnet.spoke_data.id
+  administrator_login    = "pgadmin"
+  administrator_password = var.pg_admin_password
 }
 
 resource "azurerm_mssql_server" "sql" {
@@ -210,6 +219,8 @@ resource "azurerm_mssql_server" "sql" {
   resource_group_name  = azurerm_resource_group.app.name
   location             = var.location
   version              = "12.0"
+  administrator_login          = "sqladmin"
+  administrator_login_password = var.sql_admin_password
 }
 
 resource "azurerm_mssql_database" "orders" {
@@ -235,6 +246,15 @@ resource "azurerm_cosmosdb_account" "cosmos" {
   location            = var.location
   offer_type          = "Standard"
   kind                = "GlobalDocumentDB"
+
+  consistency_policy {
+    consistency_level = "Session"
+  }
+
+  geo_location {
+    location          = var.location
+    failover_priority = 0
+  }
 }
 
 resource "azurerm_key_vault" "kv" {
@@ -286,6 +306,23 @@ resource "azurerm_linux_virtual_machine" "bastion" {
   size                  = "Standard_B2s"
   admin_username        = "ops"
   network_interface_ids = [azurerm_network_interface.bastion.id]
+
+  admin_ssh_key {
+    username   = "ops"
+    public_key = var.bastion_ssh_public_key
+  }
+
+  os_disk {
+    caching              = "ReadWrite"
+    storage_account_type = "Standard_LRS"
+  }
+
+  source_image_reference {
+    publisher = "Canonical"
+    offer     = "ubuntu-24_04-lts"
+    sku       = "server"
+    version   = "latest"
+  }
 }
 
 resource "azurerm_dns_zone" "main" {
