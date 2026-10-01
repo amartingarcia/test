@@ -78,8 +78,29 @@ truth source for this diagram.
       Perf note (not blocking): first real-repo run took ~5 min due to a
       776MB AWS provider download (no plugin cache configured); worth adding
       `TF_PLUGIN_CACHE_DIR` support later to speed up repeated runs.
-- [ ] T3 — DOT parser -> normalized nodes/edges JSON schema (resource
-      address, type, module path).
+- [x] T3 — DOT parser (`lib/parse/parse-resource-address.mjs` +
+      `lib/parse/parse-dot-graph.mjs`) -> normalized nodes/edges JSON
+      (resource address, type, module path, data-source flag, count/for_each
+      index). Strict TDD (16 new tests). Handles module nesting at any
+      depth, filters out non-resource DOT nodes (`provider[...]`, bare
+      module boundary nodes, `var./local./output./meta.` references), and
+      registers an edge endpoint as a node even without its own `[label=]`
+      line so no real resource silently drops. Fixtures are synthetic DOT
+      text (no `terraform` binary in this sandbox — see caveat below), but
+      the base two-resource shape is kept byte-for-byte in sync with the
+      regex already asserted against *real* `terraform graph` output in
+      `test/terraform-graph.test.mjs`. Also fixed `package.json`'s `test`
+      script: `node --test test/` silently tried to `require` a file named
+      `test` instead of globbing the directory on this Node version; changed
+      to `node --test "test/**/*.test.mjs"`.
+      **Caveat (not blocking, tracked for later):** this sandbox has no
+      `terraform` binary, so T3 could not be re-validated against a fresh
+      real multi-module DOT graph the way T2 was. Module-nesting and
+      provider-filtering behavior is modeled on documented/standard
+      `terraform graph` DOT output, not re-confirmed against a live run.
+      Re-validate against a real repo (e.g. the 149-node graph from T2) the
+      next time this runs somewhere with `terraform` installed, before
+      trusting T3 output for anything beyond the synthetic fixtures.
 - [ ] T4 — Layer B: manifest schema (JSON Schema) + authored manifest for
       repo A (resource/module address pattern -> entity).
 - [ ] T5 — Layer B: authored manifest for repo B (incl. EKS detail fields:
@@ -162,6 +183,5 @@ This adds a new layer ahead of Layer A:
    extractor as "the Terraform case" of a now-pluggable extractor registry.
 
 ## Next step
-Resume T3 — DOT parser (`lib/parse/`): raw DOT string -> normalized
-nodes/edges JSON (resource address, type, module path). Strict TDD, same as
-Layer A.
+T4 — Layer B: manifest schema (JSON Schema) + authored manifest for repo A
+(resource/module address pattern -> entity).
