@@ -77,7 +77,7 @@
         },
         "boundary": {
           "type": ["string", "null"],
-          "description": "Optional containment boundary id this entity belongs to (e.g. \"vpc\"), resolved by Layer C against other matched entities."
+          "description": "Optional containment parent, given as the exact `kind` of the entity this one nests under (e.g. \"aws.vpc\", not a free-text label like \"vpc\"). Layer C resolves it by finding the one matched entity of that kind in the same repo+environment; zero or multiple candidates leaves the entity un-nested and is reported, never guessed."
         }
       }
     }

@@ -285,8 +285,37 @@ This adds a new layer ahead of Layer A:
    doc**, written after this one closes, that reuses Layer A's Terraform
    extractor as "the Terraform case" of a now-pluggable extractor registry.
 
+- [x] T6 — Layer C: compiler (`lib/compile/compile-environment-graph.mjs`)
+      merging N repos' graphs into one compound-node graph per environment.
+      Compiled entity ids are repo-scoped (`<repoId>:<kind>:<id>`) to
+      guarantee uniqueness across repos without coordination. Three
+      resolve-or-report rules, consistent with every prior layer:
+      (1) a node with no manifest match is **unmapped** — dropped from
+      `entities`, listed in `coverage[repoId].unmapped`, never silently
+      lost; (2) an entity's `boundary` (target kind, see T5's boundary
+      convention fix) resolves to `parent` only when exactly one entity of
+      that kind exists in the *same* repo — ambiguous (0 or 2+) is
+      `parent: null` + `coverage[repoId].unresolvedBoundaries`; (3) a
+      declarative `crossRepoLinks` rule (`{fromKind, toKind, label}`, the
+      "repo A's vpc <-> repo B's eks" case from the original scope) wires
+      an edge only when exactly one entity of each kind exists across all
+      repos combined — otherwise `unresolvedCrossRepoLinks`, not guessed.
+      An edge is kept only when both endpoints are mapped entities. 8 new
+      tests (merge, edge translation+dropping, unmapped-node reporting,
+      boundary resolution happy/zero/ambiguous paths, cross-repo link
+      happy/ambiguous paths), strict TDD. 89/91 total (2 pre-existing
+      terraform-binary failures, unaffected).
+      **Not yet implemented**: `terraform_remote_state`-based auto-wiring
+      (decided earlier as the auto-wire mechanism alongside declarative
+      `crossRepoLinks`) — deferred because neither target repo actually
+      uses `terraform_remote_state` between them (confirmed in the
+      original scope doc), so there was nothing to validate it against;
+      `crossRepoLinks` alone covers the real case. Revisit if a future repo
+      pair does use remote state.
+
 ## Next step
-T6 — Layer C: compiler merging repo A + repo B extracted graphs per
-environment via manifests into one compound-node JSON graph, applying the
-boundary-nesting rule noted above (node groups/addons nest under their
-cluster via `boundary` + graph edges, not via attribute nesting).
+T7 — Viewer: Cytoscape.js + expand-collapse, environment selector,
+drill-down into EKS node showing config-derived details (via T5's
+extract-resource-details). GitHub Pages is enabled on `main` for this repo
+— the viewer can be a static page committed under e.g. `viewer/` or `docs/`
+and checked live once deployed.

@@ -56,11 +56,14 @@ digraph {
   assert.equal(byKind['aws_security_group.default'], 'aws.security_group');
   assert.equal(byKind['data.aws_availability_zones.available'], 'aws.availability_zones.lookup');
 
-  // boundary wiring: subnets/gateways/SGs declare "vpc" as their boundary
+  // boundary wiring: subnets/gateways/SGs declare the VPC's full kind as
+  // their boundary, so Layer C can resolve it to a concrete entity (not a
+  // free-text label) — see the boundary-resolution decision in
+  // odd/tasks/terraform-infra-diagram.md.
   const vpcEntity = entities.find((e) => e.kind === 'aws.vpc');
   assert.equal(vpcEntity.boundary, null); // the VPC itself has no enclosing boundary
   const publicSubnet = entities.find((e) => e.kind === 'aws.subnet.public');
-  assert.equal(publicSubnet.boundary, 'vpc');
+  assert.equal(publicSubnet.boundary, 'aws.vpc');
 });
 
 test('a resource type absent from the manifest is reported as unmapped, not silently dropped', async () => {
